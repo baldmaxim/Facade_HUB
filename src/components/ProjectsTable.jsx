@@ -1,23 +1,63 @@
-import { useState } from 'react';
-import { projects } from '../data/projects';
+import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 import './ProjectsTable.css';
 
 function ProjectsTable() {
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [filter, setFilter] = useState('all');
   const [sortBy, setSortBy] = useState('name');
+
+  useEffect(() => {
+    async function fetchProjects() {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*');
+
+      if (error) {
+        setError(error.message);
+      } else {
+        setProjects(data || []);
+      }
+      setLoading(false);
+    }
+
+    fetchProjects();
+  }, []);
 
   const filteredProjects = projects
     .filter(p => filter === 'all' || p.class === filter)
     .sort((a, b) => {
-      if (sortBy === 'name') return a.name.localeCompare(b.name);
-      if (sortBy === 'price') return b.pricePerSqm - a.pricePerSqm;
-      if (sortBy === 'year') return b.year - a.year;
+      if (sortBy === 'name') return (a.name || '').localeCompare(b.name || '');
+      if (sortBy === 'price') return (b.price_per_sqm || 0) - (a.price_per_sqm || 0);
+      if (sortBy === 'year') return (b.year || 0) - (a.year || 0);
       return 0;
     });
 
   const formatPrice = (price) => {
-    return new Intl.NumberFormat('ru-RU').format(price);
+    return new Intl.NumberFormat('ru-RU').format(price || 0);
   };
+
+  if (loading) {
+    return (
+      <section className="projects" id="projects">
+        <div className="projects-container">
+          <p>Загрузка данных...</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="projects" id="projects">
+        <div className="projects-container">
+          <p>Ошибка загрузки: {error}</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="projects" id="projects">
@@ -56,13 +96,11 @@ function ProjectsTable() {
           <table className="projects-table">
             <thead>
               <tr>
-                <th>Название</th>
+                <th>Объекты</th>
                 <th>Застройщик</th>
                 <th>Класс</th>
-                <th>Тип фасада</th>
-                <th>Материал</th>
-                <th>Цена за м²</th>
                 <th>Площадь</th>
+                <th>Цена общая</th>
                 <th>Год</th>
               </tr>
             </thead>
@@ -79,10 +117,8 @@ function ProjectsTable() {
                       {project.class === 'business' ? 'Бизнес' : 'Премиум'}
                     </span>
                   </td>
-                  <td>{project.facadeType}</td>
-                  <td>{project.material}</td>
-                  <td className="price-cell">{formatPrice(project.pricePerSqm)} ₽</td>
-                  <td>{formatPrice(project.totalArea)} м²</td>
+                  <td>{formatPrice(project.total_area)} м²</td>
+                  <td className="price-cell">{formatPrice(project.price_per_sqm * project.total_area)} ₽</td>
                   <td>{project.year}</td>
                 </tr>
               ))}
