@@ -1,0 +1,92 @@
+.project-card {
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.project-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.project-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.class-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.class-badge.business {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: var(--color-business);
+}
+
+.class-badge.premium {
+  background-color: rgba(139, 92, 246, 0.1);
+  color: var(--color-premium);
+}
+
+.project-year {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.project-card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.project-card-location {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.project-card-info {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.info-label {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.info-value {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.info-value.price {
+  font-weight: 600;
+  color: var(--color-accent);
+}
