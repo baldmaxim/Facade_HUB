@@ -1,16 +1,27 @@
+import { Link } from 'react-router-dom';
 import './Footer.css';
 
 function Footer() {
   return (
     <footer className="footer">
       <div className="footer-container">
-        <div className="footer-content">
-          <span className="footer-brand">FacadeHub</span>
-          <span className="footer-divider">|</span>
-          <span className="footer-text">Аналитика фасадных решений</span>
+        <div className="footer-main">
+          <Link to="/" className="footer-logo">
+            <span className="footer-brand">FacadeHub</span>
+          </Link>
+          <p className="footer-description">
+            Платформа для анализа стоимости фасадных решений
+          </p>
         </div>
-        <div className="footer-copyright">
-          2024
+
+        <nav className="footer-nav">
+          <Link to="/objects" className="footer-link">Объекты</Link>
+          <a href="#analytics" className="footer-link">Аналитика</a>
+          <a href="#about" className="footer-link">О сервисе</a>
+        </nav>
+
+        <div className="footer-bottom">
+          <span className="footer-copyright">© 2024 FacadeHub</span>
         </div>
       </div>
     </footer>

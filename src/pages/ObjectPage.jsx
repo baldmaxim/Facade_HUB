@@ -72,21 +72,10 @@ function ObjectPage() {
 
         <div className="profile-content">
           <div className="profile-header">
-            <div className="profile-avatar">
-              {object.image_url ? (
-                <img src={object.image_url} alt={object.name} />
-              ) : (
-                <span className="avatar-placeholder">
-                  {object.name.charAt(0)}
-                </span>
-              )}
-            </div>
-            <div className="profile-info">
-              <h1 className="profile-name">{object.name}</h1>
-              <p className="profile-meta">
-                Добавлен {formatDate(object.created_at)}
-              </p>
-            </div>
+            <h1 className="profile-name">{object.name}</h1>
+            <p className="profile-meta">
+              Добавлен {formatDate(object.created_at)}
+            </p>
           </div>
 
           <div className="profile-details">

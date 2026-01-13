@@ -1,67 +1,197 @@
 .hero {
-  background-color: var(--color-bg-secondary);
-  border-bottom: 1px solid var(--color-border);
-  padding: 4rem 2rem;
+  position: relative;
+  min-height: calc(100vh - 70px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.hero-background {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+
+.hero-pattern {
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  background-image:
+    radial-gradient(circle at 25% 25%, white 1px, transparent 1px),
+    radial-gradient(circle at 75% 75%, white 1px, transparent 1px);
+  background-size: 50px 50px;
 }
 
 .hero-container {
-  max-width: 1200px;
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
   margin: 0 auto;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.hero-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 2rem;
+  backdrop-filter: blur(10px);
 }
 
 .hero-title {
-  font-size: 2.5rem;
-  font-weight: 600;
-  color: var(--color-text);
-  margin-bottom: 1rem;
-  letter-spacing: -0.02em;
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: white;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.03em;
+}
+
+.hero-title-accent {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .hero-subtitle {
-  font-size: 1.125rem;
-  color: var(--color-text-secondary);
-  max-width: 600px;
-  margin-bottom: 2.5rem;
+  font-size: 1.25rem;
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 550px;
+  margin: 0 auto 3rem;
   line-height: 1.7;
+}
+
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 4rem;
+}
+
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.hero-btn.primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+}
+
+.hero-btn.primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+}
+
+.hero-btn.primary svg {
+  transition: transform 0.3s ease;
+}
+
+.hero-btn.primary:hover svg {
+  transform: translateX(4px);
 }
 
 .hero-stats {
   display: flex;
-  gap: 3rem;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  padding: 1.5rem 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
 }
 
-.stat {
+.stat-card {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .stat-value {
-  font-size: 2rem;
-  font-weight: 600;
-  color: var(--color-text);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: white;
 }
 
 .stat-label {
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
-  margin-top: 0.25rem;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-divider {
+  width: 1px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 @media (max-width: 768px) {
   .hero {
-    padding: 2.5rem 1rem;
+    min-height: auto;
+    padding: 2rem 0;
+  }
+
+  .hero-container {
+    padding: 3rem 1.5rem;
   }
 
   .hero-title {
-    font-size: 1.875rem;
+    font-size: 2.25rem;
   }
 
   .hero-subtitle {
     font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .hero-actions {
+    margin-bottom: 3rem;
+  }
+
+  .hero-btn {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.95rem;
   }
 
   .hero-stats {
-    gap: 2rem;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .stat-divider {
+    width: 60px;
+    height: 1px;
   }
 
   .stat-value {
