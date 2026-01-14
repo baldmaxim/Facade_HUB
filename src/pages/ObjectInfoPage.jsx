@@ -5,7 +5,7 @@ import { fetchObjectWorks, upsertObjectWork } from '../api/works';
 import { WORK_TYPES } from '../data/workTypes';
 import './SubPage.css';
 
-const EDITABLE_FIELDS = ['volume', 'tender_works', 'tender_materials', 'fact_works', 'fact_materials'];
+const EDITABLE_FIELDS = ['volume', 'work_per_unit', 'materials_per_unit'];
 
 function ObjectInfoPage() {
   const { id } = useParams();
@@ -43,28 +43,20 @@ function ObjectInfoPage() {
     return worksData[workTypeId] || {};
   };
 
-  const calcTotal = (works, materials) => {
-    const w = parseFloat(works) || 0;
-    const m = parseFloat(materials) || 0;
-    return w + m;
+  const calcWorkTotal = (volume, workPerUnit) => {
+    const v = parseFloat(volume) || 0;
+    const w = parseFloat(workPerUnit) || 0;
+    return v * w;
   };
 
-  const calcDiff = (fact, tender) => {
-    const f = parseFloat(fact) || 0;
-    const t = parseFloat(tender) || 0;
-    return f - t;
+  const calcMaterialsTotal = (volume, materialsPerUnit) => {
+    const v = parseFloat(volume) || 0;
+    const m = parseFloat(materialsPerUnit) || 0;
+    return v * m;
   };
 
-  const getDiffClass = (value) => {
-    if (value > 0) return 'diff-negative';
-    if (value < 0) return 'diff-positive';
-    return '';
-  };
-
-  const formatDiff = (value) => {
-    if (value === 0) return '0';
-    const formatted = formatPrice(Math.abs(value));
-    return value > 0 ? `+${formatted}` : `-${formatted}`;
+  const calcTotal = (workTotal, materialsTotal) => {
+    return workTotal + materialsTotal;
   };
 
   const handleCellChange = useCallback((workTypeId, field, value) => {
@@ -182,33 +174,22 @@ function ObjectInfoPage() {
             <table className="info-table">
               <thead>
                 <tr>
-                  <th rowSpan="2">Вид работ</th>
-                  <th rowSpan="2">Объем</th>
-                  <th rowSpan="2">Ед. изм.</th>
-                  <th colSpan="3" className="group-header tender">Тендер</th>
-                  <th colSpan="3" className="group-header fact">Факт</th>
-                  <th colSpan="3" className="group-header difference">Разница</th>
-                </tr>
-                <tr>
-                  <th className="sub-header">Работы</th>
-                  <th className="sub-header">Материалы</th>
-                  <th className="sub-header">Итого</th>
-                  <th className="sub-header">Работы</th>
-                  <th className="sub-header">Материалы</th>
-                  <th className="sub-header">Итого</th>
-                  <th className="sub-header">Работы</th>
-                  <th className="sub-header">Материалы</th>
-                  <th className="sub-header">Итого</th>
+                  <th>Вид работ</th>
+                  <th>Объем</th>
+                  <th>Ед. изм.</th>
+                  <th>Работы за ед.</th>
+                  <th>Материалы за ед.</th>
+                  <th>Работы всего</th>
+                  <th>Материалы всего</th>
+                  <th>Итого</th>
                 </tr>
               </thead>
               <tbody>
                 {WORK_TYPES.map((workType, rowIndex) => {
                   const data = getWorkData(workType.id);
-                  const tenderTotal = calcTotal(data.tender_works, data.tender_materials);
-                  const factTotal = calcTotal(data.fact_works, data.fact_materials);
-                  const diffWorks = calcDiff(data.fact_works, data.tender_works);
-                  const diffMaterials = calcDiff(data.fact_materials, data.tender_materials);
-                  const diffTotal = calcDiff(factTotal, tenderTotal);
+                  const workTotal = calcWorkTotal(data.volume, data.work_per_unit);
+                  const materialsTotal = calcMaterialsTotal(data.volume, data.materials_per_unit);
+                  const total = calcTotal(workTotal, materialsTotal);
 
                   return (
                     <tr key={workType.id}>
@@ -234,11 +215,11 @@ function ObjectInfoPage() {
                           inputMode="decimal"
                           className="editable-cell"
                           data-row={workType.id}
-                          data-field="tender_works"
-                          value={getValue(data, 'tender_works')}
-                          onChange={(e) => handleCellChange(workType.id, 'tender_works', e.target.value)}
-                          onBlur={(e) => handleCellBlur(workType.id, 'tender_works', e.target.value)}
-                          onKeyDown={(e) => handleKeyDown(e, rowIndex, 'tender_works')}
+                          data-field="work_per_unit"
+                          value={getValue(data, 'work_per_unit')}
+                          onChange={(e) => handleCellChange(workType.id, 'work_per_unit', e.target.value)}
+                          onBlur={(e) => handleCellBlur(workType.id, 'work_per_unit', e.target.value)}
+                          onKeyDown={(e) => handleKeyDown(e, rowIndex, 'work_per_unit')}
                           placeholder="—"
                         />
                       </td>
@@ -248,53 +229,17 @@ function ObjectInfoPage() {
                           inputMode="decimal"
                           className="editable-cell"
                           data-row={workType.id}
-                          data-field="tender_materials"
-                          value={getValue(data, 'tender_materials')}
-                          onChange={(e) => handleCellChange(workType.id, 'tender_materials', e.target.value)}
-                          onBlur={(e) => handleCellBlur(workType.id, 'tender_materials', e.target.value)}
-                          onKeyDown={(e) => handleKeyDown(e, rowIndex, 'tender_materials')}
+                          data-field="materials_per_unit"
+                          value={getValue(data, 'materials_per_unit')}
+                          onChange={(e) => handleCellChange(workType.id, 'materials_per_unit', e.target.value)}
+                          onBlur={(e) => handleCellBlur(workType.id, 'materials_per_unit', e.target.value)}
+                          onKeyDown={(e) => handleKeyDown(e, rowIndex, 'materials_per_unit')}
                           placeholder="—"
                         />
                       </td>
-                      <td className="cell-calculated">{tenderTotal ? formatPrice(tenderTotal) : '—'}</td>
-                      <td className="cell-editable">
-                        <input
-                          type="text"
-                          inputMode="decimal"
-                          className="editable-cell"
-                          data-row={workType.id}
-                          data-field="fact_works"
-                          value={getValue(data, 'fact_works')}
-                          onChange={(e) => handleCellChange(workType.id, 'fact_works', e.target.value)}
-                          onBlur={(e) => handleCellBlur(workType.id, 'fact_works', e.target.value)}
-                          onKeyDown={(e) => handleKeyDown(e, rowIndex, 'fact_works')}
-                          placeholder="—"
-                        />
-                      </td>
-                      <td className="cell-editable">
-                        <input
-                          type="text"
-                          inputMode="decimal"
-                          className="editable-cell"
-                          data-row={workType.id}
-                          data-field="fact_materials"
-                          value={getValue(data, 'fact_materials')}
-                          onChange={(e) => handleCellChange(workType.id, 'fact_materials', e.target.value)}
-                          onBlur={(e) => handleCellBlur(workType.id, 'fact_materials', e.target.value)}
-                          onKeyDown={(e) => handleKeyDown(e, rowIndex, 'fact_materials')}
-                          placeholder="—"
-                        />
-                      </td>
-                      <td className="cell-calculated">{factTotal ? formatPrice(factTotal) : '—'}</td>
-                      <td className={`cell-calculated ${getDiffClass(diffWorks)}`}>
-                        {diffWorks !== 0 ? formatDiff(diffWorks) : '—'}
-                      </td>
-                      <td className={`cell-calculated ${getDiffClass(diffMaterials)}`}>
-                        {diffMaterials !== 0 ? formatDiff(diffMaterials) : '—'}
-                      </td>
-                      <td className={`cell-calculated ${getDiffClass(diffTotal)}`}>
-                        {diffTotal !== 0 ? formatDiff(diffTotal) : '—'}
-                      </td>
+                      <td className="cell-calculated">{workTotal ? formatPrice(workTotal) : '—'}</td>
+                      <td className="cell-calculated">{materialsTotal ? formatPrice(materialsTotal) : '—'}</td>
+                      <td className="cell-calculated">{total ? formatPrice(total) : '—'}</td>
                     </tr>
                   );
                 })}
