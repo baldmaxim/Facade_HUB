@@ -1,6 +1,29 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 import './StatsPreview.css';
 
 function StatsPreview() {
+  const [stats, setStats] = useState({
+    objects: 0,
+    developers: 0,
+    facadeTypes: 0
+  });
+
+  useEffect(() => {
+    async function fetchStats() {
+      const { data: objects } = await supabase.from('objects').select('developer');
+      if (objects) {
+        const uniqueDevelopers = new Set(objects.map(o => o.developer)).size;
+        setStats({
+          objects: objects.length,
+          developers: uniqueDevelopers,
+          facadeTypes: 5
+        });
+      }
+    }
+    fetchStats();
+  }, []);
+
   return (
     <section className="stats-preview">
       <div className="stats-preview-container">
@@ -11,51 +34,20 @@ function StatsPreview() {
           </p>
         </div>
 
-        <div className="stats-preview-grid">
-          <div className="preview-card">
-            <div className="preview-card-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M3 3v18h18"></path>
-                <path d="M18 17V9"></path>
-                <path d="M13 17V5"></path>
-                <path d="M8 17v-3"></path>
-              </svg>
-            </div>
-            <h3 className="preview-card-title">Графики и диаграммы</h3>
-            <p className="preview-card-text">
-              Визуализация данных по стоимости фасадов
-            </p>
-            <span className="preview-card-badge">Скоро</span>
+        <div className="stats-numbers">
+          <div className="stats-number-card">
+            <span className="stats-number-value">{stats.objects}</span>
+            <span className="stats-number-label">Объектов</span>
           </div>
-
-          <div className="preview-card">
-            <div className="preview-card-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M12 6v6l4 2"></path>
-              </svg>
-            </div>
-            <h3 className="preview-card-title">История изменений</h3>
-            <p className="preview-card-text">
-              Отслеживание динамики цен во времени
-            </p>
-            <span className="preview-card-badge">Скоро</span>
+          <div className="stats-number-divider"></div>
+          <div className="stats-number-card">
+            <span className="stats-number-value">{stats.developers}</span>
+            <span className="stats-number-label">Застройщиков</span>
           </div>
-
-          <div className="preview-card">
-            <div className="preview-card-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                <polyline points="14 2 14 8 20 8"></polyline>
-                <line x1="16" y1="13" x2="8" y2="13"></line>
-                <line x1="16" y1="17" x2="8" y2="17"></line>
-              </svg>
-            </div>
-            <h3 className="preview-card-title">Отчёты</h3>
-            <p className="preview-card-text">
-              Экспорт данных в различных форматах
-            </p>
-            <span className="preview-card-badge">Скоро</span>
+          <div className="stats-number-divider"></div>
+          <div className="stats-number-card">
+            <span className="stats-number-value">{stats.facadeTypes}</span>
+            <span className="stats-number-label">Общая стоимость</span>
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 .stats-preview {
-  padding: 5rem 2rem;
+  padding: 3rem 2rem 2rem;
   background-color: var(--color-bg);
 }
 
@@ -10,7 +10,7 @@
 
 .stats-preview-header {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 1.5rem;
 }
 
 .stats-preview-title {
@@ -23,6 +23,43 @@
 .stats-preview-subtitle {
   font-size: 1.125rem;
   color: var(--color-text-secondary);
+}
+
+.stats-numbers {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 3rem;
+  padding: 1.5rem 3rem;
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+}
+
+.stats-number-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stats-number-value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.stats-number-label {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stats-number-divider {
+  width: 1px;
+  height: 50px;
+  background-color: var(--color-border);
 }
 
 .stats-preview-grid {
@@ -95,6 +132,21 @@
 
   .stats-preview-subtitle {
     font-size: 1rem;
+  }
+
+  .stats-numbers {
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .stats-number-divider {
+    width: 60px;
+    height: 1px;
+  }
+
+  .stats-number-value {
+    font-size: 2rem;
   }
 
   .preview-card {

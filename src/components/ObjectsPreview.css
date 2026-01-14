@@ -1,0 +1,243 @@
+.objects-preview {
+  padding: 2.5rem 2rem;
+  background-color: var(--color-bg);
+}
+
+.objects-preview-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.objects-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.objects-preview-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.objects-view-all {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #667eea;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: gap 0.2s;
+}
+
+.objects-view-all:hover {
+  gap: 0.75rem;
+}
+
+.objects-loading {
+  text-align: center;
+  color: var(--color-text-secondary);
+  padding: 2rem;
+}
+
+.objects-empty {
+  text-align: center;
+  padding: 3rem 2rem;
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+}
+
+.objects-empty p {
+  color: var(--color-text-secondary);
+  margin-bottom: 1rem;
+}
+
+.objects-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.objects-add-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.objects-carousel-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.objects-carousel {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 0.5rem 0;
+}
+
+.objects-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-arrow {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.carousel-arrow:hover {
+  background-color: #667eea;
+  border-color: #667eea;
+  color: white;
+}
+
+.object-card {
+  flex-shrink: 0;
+  width: 320px;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+  text-decoration: none;
+  transition: all 0.3s;
+  scroll-snap-align: start;
+}
+
+.object-card:hover {
+  border-color: rgba(102, 126, 234, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+}
+
+.object-card-image {
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+}
+
+.object-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.object-card:hover .object-card-image img {
+  transform: scale(1.05);
+}
+
+.object-card-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+}
+
+.object-card-info {
+  padding: 1.25rem;
+}
+
+.object-card-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.object-card-address {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  margin-bottom: 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.object-card-developer {
+  display: inline-block;
+  font-size: 0.8rem;
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.1);
+  padding: 0.3rem 0.75rem;
+  border-radius: 6px;
+}
+
+@media (max-width: 768px) {
+  .objects-preview {
+    padding: 2rem 1rem;
+  }
+
+  .objects-preview-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .object-card {
+    width: 280px;
+  }
+
+  .object-card-image {
+    height: 180px;
+  }
+
+  .object-card-info {
+    padding: 1rem;
+  }
+
+  .object-card-name {
+    font-size: 1rem;
+  }
+
+  .object-card-address {
+    font-size: 0.85rem;
+  }
+
+  .carousel-arrow {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .object-card {
+    width: 260px;
+  }
+
+  .carousel-arrow {
+    display: none;
+  }
+}

@@ -1,0 +1,25 @@
+.placeholder-page {
+  flex: 1;
+  background-color: var(--color-bg);
+  min-height: calc(100vh - 150px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.placeholder-container {
+  text-align: center;
+  padding: 2rem;
+}
+
+.placeholder-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 1rem;
+}
+
+.placeholder-text {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+}
