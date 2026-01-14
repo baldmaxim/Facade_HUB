@@ -4,16 +4,21 @@ import './Header.css';
 function Header() {
   return (
     <header className="header">
-      <div className="header-container">
-        <Link to="/" className="logo">
-          <span className="logo-text">FacadeHub</span>
-        </Link>
-        <nav className="nav">
-          <Link to="/objects" className="nav-link">Объекты</Link>
-          <a href="#analytics" className="nav-link">Аналитика</a>
-          <a href="#about" className="nav-link">О сервисе</a>
-        </nav>
+      <div className="header-top">
+        <Link to="/" className="header-logo">FacadeHUB</Link>
+        <p className="header-subtitle">Профессиональная среда для управления проектами фасадного отдела</p>
       </div>
+      <nav className="header-nav">
+        <div className="header-nav-container">
+          <Link to="/objects" className="nav-btn">Объекты</Link>
+          <Link to="/questions" className="nav-btn">Типовые вопросы заказчику</Link>
+          <Link to="/prompts" className="nav-btn">Промты</Link>
+          <Link to="/contractors" className="nav-btn">База подрядчиков</Link>
+          <Link to="/suppliers" className="nav-btn">База поставщиков</Link>
+          <Link to="/work-analysis" className="nav-btn">Анализ работ</Link>
+          <Link to="/materials-analysis" className="nav-btn">Анализ материалов</Link>
+        </div>
+      </nav>
     </header>
   );
 }
