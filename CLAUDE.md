@@ -90,6 +90,35 @@ VITE_SUPABASE_ANON_KEY=<supabase-anon-key>
 - **Max file length**: ESLint enforces 600 lines max per file (`max-lines` rule)
 - **Unused vars**: Must match `^[A-Z_]` pattern or be used
 
+## Supabase SQL Guidelines
+
+При создании таблиц в Supabase **обязательно** добавлять комментарии к таблице и каждому столбцу:
+
+```sql
+-- Пример создания таблицы с комментариями
+CREATE TABLE objects (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  name TEXT NOT NULL,
+  address TEXT NOT NULL,
+  developer TEXT NOT NULL,
+  image_url TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Комментарий к таблице
+COMMENT ON TABLE objects IS 'Объекты строительства для анализа фасадов';
+
+-- Комментарии к столбцам
+COMMENT ON COLUMN objects.id IS 'Уникальный идентификатор объекта';
+COMMENT ON COLUMN objects.name IS 'Название объекта/ЖК';
+COMMENT ON COLUMN objects.address IS 'Адрес объекта';
+COMMENT ON COLUMN objects.developer IS 'Название застройщика';
+COMMENT ON COLUMN objects.image_url IS 'URL изображения объекта в Supabase Storage';
+COMMENT ON COLUMN objects.created_at IS 'Дата и время создания записи';
+```
+
+Это помогает понимать назначение таблиц и полей при работе с базой данных.
+
 ## CSS Variables
 
 Defined in `src/index.css`:

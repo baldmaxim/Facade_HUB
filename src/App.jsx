@@ -13,7 +13,6 @@ import AboutPage from './pages/AboutPage';
 import QuestionsPage from './pages/QuestionsPage';
 import PromptsPage from './pages/PromptsPage';
 import ContractorsPage from './pages/ContractorsPage';
-import SuppliersPage from './pages/SuppliersPage';
 import WorkAnalysisPage from './pages/WorkAnalysisPage';
 import MaterialsAnalysisPage from './pages/MaterialsAnalysisPage';
 import './index.css';
@@ -54,7 +53,6 @@ function App() {
         <Route path="/questions" element={<InnerLayout><QuestionsPage /></InnerLayout>} />
         <Route path="/prompts" element={<InnerLayout><PromptsPage /></InnerLayout>} />
         <Route path="/contractors" element={<InnerLayout><ContractorsPage /></InnerLayout>} />
-        <Route path="/suppliers" element={<InnerLayout><SuppliersPage /></InnerLayout>} />
         <Route path="/work-analysis" element={<InnerLayout><WorkAnalysisPage /></InnerLayout>} />
         <Route path="/materials-analysis" element={<InnerLayout><MaterialsAnalysisPage /></InnerLayout>} />
       </Routes>

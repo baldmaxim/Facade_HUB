@@ -1,0 +1,355 @@
+.prompts-page {
+  min-height: calc(100vh - 200px);
+  padding: 2rem;
+  background: var(--color-bg);
+}
+
+.prompts-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.prompts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.prompts-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.add-prompt-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--color-accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.add-prompt-btn:hover {
+  background: #2563eb;
+}
+
+.prompts-table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-secondary);
+}
+
+.prompts-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.prompts-table th,
+.prompts-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: top;
+}
+
+.prompts-table th {
+  background: var(--color-bg);
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+}
+
+.prompts-table th:first-child {
+  width: 50px;
+  text-align: center;
+}
+
+.prompts-table td:first-child,
+.prompts-table td:nth-child(2) {
+  text-align: center;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  vertical-align: middle;
+}
+
+.prompts-table td:nth-child(2) {
+  text-align: left;
+  color: var(--color-text);
+}
+
+.prompts-table th:nth-child(2) {
+  width: 180px;
+}
+
+.prompts-table th:last-child {
+  width: 130px;
+}
+
+.prompts-table tbody tr:hover {
+  background: var(--color-bg);
+}
+
+.prompts-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.purpose-text {
+  color: var(--color-text);
+  font-weight: 500;
+  line-height: 1.4;
+  vertical-align: middle;
+}
+
+.prompt-text {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.prompt-content {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.prompts-table td:last-child {
+  vertical-align: middle;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.copy-btn,
+.edit-btn,
+.delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.copy-btn:hover {
+  background: #f0fdf4;
+  border-color: #86efac;
+  color: #16a34a;
+}
+
+.copy-btn.copied {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #16a34a;
+}
+
+.edit-btn:hover {
+  background: #e0f2fe;
+  border-color: #7dd3fc;
+  color: #0284c7;
+}
+
+.delete-btn:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+.no-prompts {
+  text-align: center;
+  color: var(--color-text-secondary);
+  padding: 3rem;
+}
+
+/* Modal styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
+  background: var(--color-bg-secondary);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-content.modal-large {
+  max-width: 700px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  color: var(--color-text);
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 500;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  background: var(--color-bg);
+  transition: border-color 0.2s;
+  font-family: inherit;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 200px;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.btn-secondary {
+  padding: 0.625rem 1.25rem;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-secondary:hover {
+  background: var(--color-bg);
+}
+
+.btn-primary {
+  padding: 0.625rem 1.25rem;
+  background: var(--color-accent);
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .prompts-page {
+    padding: 1rem;
+  }
+
+  .prompts-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .prompts-title {
+    font-size: 1.5rem;
+  }
+
+  .add-prompt-btn {
+    justify-content: center;
+  }
+
+  .prompts-table th,
+  .prompts-table td {
+    padding: 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .prompts-table th:nth-child(2) {
+    width: 120px;
+  }
+}
