@@ -11,10 +11,10 @@ export async function fetchCalculationItems(objectId) {
   return data || [];
 }
 
-export async function createCalculationItem({ object_id, svor_code, work_type, note }) {
+export async function createCalculationItem({ object_id, svor_code, work_type, note, image_url }) {
   const { data, error } = await supabase
     .from('calculation_items')
-    .insert([{ object_id, svor_code, work_type, note }])
+    .insert([{ object_id, svor_code, work_type, note, image_url }])
     .select()
     .single();
 
@@ -38,4 +38,22 @@ export async function deleteCalculationItem(id) {
     .eq('id', id);
 
   if (error) throw error;
+}
+
+export async function uploadCalculationImage(file, itemId) {
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${itemId || 'new'}-${Date.now()}.${fileExt}`;
+  const filePath = `calculation-images/${fileName}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from('object-images')
+    .upload(filePath, file);
+
+  if (uploadError) throw uploadError;
+
+  const { data: urlData } = supabase.storage
+    .from('object-images')
+    .getPublicUrl(filePath);
+
+  return urlData.publicUrl;
 }

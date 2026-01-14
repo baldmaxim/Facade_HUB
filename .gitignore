@@ -28,6 +28,10 @@ dist-ssr
 *.sln
 *.sw?
 
+# Environment variables
+.env
+.env.*
+
 # Claude temp files
 tmpclaude-*
 .claude/
