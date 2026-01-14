@@ -14,7 +14,6 @@ function Header() {
           <Link to="/questions" className="nav-btn">Типовые вопросы заказчику</Link>
           <Link to="/prompts" className="nav-btn">Промты</Link>
           <Link to="/contractors" className="nav-btn">База подрядчиков</Link>
-          <Link to="/suppliers" className="nav-btn">База поставщиков</Link>
           <Link to="/work-analysis" className="nav-btn">Анализ работ</Link>
           <Link to="/materials-analysis" className="nav-btn">Анализ материалов</Link>
         </div>
