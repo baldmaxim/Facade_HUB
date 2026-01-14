@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { fetchObjectById } from '../api/objects';
 import './ObjectPage.css';
 
 function ObjectPage() {
@@ -10,22 +10,18 @@ function ObjectPage() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    async function fetchObject() {
-      const { data, error } = await supabase
-        .from('objects')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (error) {
-        setError(error.message);
-      } else {
+    async function loadObject() {
+      try {
+        const data = await fetchObjectById(id);
         setObject(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
 
-    fetchObject();
+    loadObject();
   }, [id]);
 
   if (loading) {

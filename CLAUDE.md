@@ -15,33 +15,48 @@ npm run preview  # Preview production build locally
 
 - **React 19** with JSX (no TypeScript)
 - **Vite 7** for bundling and dev server
+- **React Router DOM 7** for client-side routing
+- **Supabase** for backend database
 - **ESLint 9** with React hooks plugin
 - CSS files with CSS variables for theming
 
 ## Architecture
 
-FacadeHub is a frontend-only SPA for analyzing facade costs in residential projects. No backend/API - uses static data.
+FacadeHub is a SPA for analyzing facade costs in residential construction projects. It uses Supabase as a backend for data persistence.
 
-### Component Hierarchy
+### Routing Structure
 
 ```
-App.jsx
-├── Header.jsx      - Navigation with logo
-├── Hero.jsx        - Landing section with statistics
-├── ProjectsTable.jsx - Main feature: filterable/sortable data table
-└── Footer.jsx
+/                        → HomePage (Hero + StatsPreview)
+/objects                 → ObjectsPage (list of objects from Supabase)
+/objects/:id             → ObjectPage (object profile with tabs)
+/objects/:id/checklist   → ChecklistPage
+/objects/:id/info        → ObjectInfoPage
+/objects/:id/calculation → CalculationPage (editable table for calculation notes)
 ```
+
+### Component Layout
+
+- **HomePage**: Standalone layout with Hero
+- **Inner pages**: Wrapped in `InnerLayout` (Header + children + Footer)
 
 ### Key Patterns
 
-- **Co-located CSS**: Each component has a matching `.css` file
-- **Static data**: Project data lives in `src/data/projects.js`
-- **Local state only**: Uses React useState hooks, no global state management
-- **Russian localization**: All UI text is in Russian, prices formatted with `Intl.NumberFormat('ru-RU')`
+- **Co-located CSS**: Each component has a matching `.css` file in the same directory
+- **Supabase client**: Initialized in `src/lib/supabase.js`, uses `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` env vars
+- **Local state**: Uses React useState/useEffect hooks for data fetching and state management
+- **Russian localization**: All UI text is in Russian, dates formatted with `toLocaleDateString('ru-RU')`
 
-### Data Model (projects.js)
+### Data Sources
 
-Projects have: `id`, `name`, `developer`, `class` (business|premium), `facadeType`, `material`, `pricePerSqm`, `totalArea`, `year`, `location`
+- **Static data**: Sample project data in `src/data/projects.js`, work types in `src/data/workTypes.js`
+- **Database tables**: `objects`, `calculation_items` (fetched via Supabase)
+
+### Data Model
+
+Objects table: `id`, `name`, `address`, `developer`, `image_url`, `created_at`
+
+Calculation items: `id`, `object_id`, `svor_code`, `work_type`, `note`, `created_at`
 
 ## Code Constraints
 

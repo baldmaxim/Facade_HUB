@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { fetchObjects as fetchObjectsApi } from '../api/objects';
 import CreateObjectModal from '../components/CreateObjectModal';
 import './ObjectsPage.css';
 
@@ -10,22 +10,19 @@ function ObjectsPage() {
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const fetchObjects = async () => {
-    const { data, error } = await supabase
-      .from('objects')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      setError(error.message);
-    } else {
-      setObjects(data || []);
+  const loadObjects = async () => {
+    try {
+      const data = await fetchObjectsApi();
+      setObjects(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
-    fetchObjects();
+    loadObjects();
   }, []);
 
   if (loading) {
@@ -96,7 +93,7 @@ function ObjectsPage() {
       <CreateObjectModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSuccess={fetchObjects}
+        onSuccess={loadObjects}
       />
     </main>
   );

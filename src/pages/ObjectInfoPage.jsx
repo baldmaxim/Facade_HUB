@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { fetchObjectById } from '../api/objects';
+import { fetchObjectWorks } from '../api/works';
 import { WORK_TYPES } from '../data/workTypes';
 import './SubPage.css';
 
@@ -11,27 +12,19 @@ function ObjectInfoPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchData() {
-      // Загружаем объект
-      const { data: objectData } = await supabase
-        .from('objects')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      setObject(objectData);
-
-      // Загружаем данные по работам
-      const { data: works } = await supabase
-        .from('object_works')
-        .select('*')
-        .eq('object_id', id)
-        .order('work_type_id');
-
-      setWorksData(works || []);
-      setLoading(false);
+    async function loadData() {
+      try {
+        const [objectData, works] = await Promise.all([
+          fetchObjectById(id),
+          fetchObjectWorks(id)
+        ]);
+        setObject(objectData);
+        setWorksData(works);
+      } finally {
+        setLoading(false);
+      }
     }
-    fetchData();
+    loadData();
   }, [id]);
 
   const formatPrice = (value) => {

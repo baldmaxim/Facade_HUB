@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { fetchObjectName } from '../api/objects';
 import './SubPage.css';
 
 function ChecklistPage() {
@@ -9,16 +9,15 @@ function ChecklistPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchObject() {
-      const { data } = await supabase
-        .from('objects')
-        .select('name')
-        .eq('id', id)
-        .single();
-      setObject(data);
-      setLoading(false);
+    async function loadObject() {
+      try {
+        const data = await fetchObjectName(id);
+        setObject(data);
+      } finally {
+        setLoading(false);
+      }
     }
-    fetchObject();
+    loadObject();
   }, [id]);
 
   if (loading) {

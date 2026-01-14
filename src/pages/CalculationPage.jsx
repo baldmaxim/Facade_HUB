@@ -1,6 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { fetchObjectName } from '../api/objects';
+import {
+  fetchCalculationItems,
+  createCalculationItem,
+  updateCalculationItem,
+  deleteCalculationItem
+} from '../api/calculations';
 import './CalculationPage.css';
 
 const WORK_TYPES = [
@@ -37,68 +43,59 @@ function CalculationPage() {
   });
 
   useEffect(() => {
-    async function fetchData() {
-      const [objectRes, itemsRes] = await Promise.all([
-        supabase.from('objects').select('name').eq('id', id).single(),
-        supabase.from('calculation_items').select('*').eq('object_id', id).order('created_at')
-      ]);
-
-      if (objectRes.data) setObject(objectRes.data);
-      if (itemsRes.data) setItems(itemsRes.data);
-      setLoading(false);
+    async function loadData() {
+      try {
+        const [objectData, itemsData] = await Promise.all([
+          fetchObjectName(id),
+          fetchCalculationItems(id)
+        ]);
+        setObject(objectData);
+        setItems(itemsData);
+      } finally {
+        setLoading(false);
+      }
     }
-    fetchData();
+    loadData();
   }, [id]);
 
   const handleAddItem = async () => {
     if (!newItem.work_type) return;
 
     setSaving(true);
-    const { data, error } = await supabase
-      .from('calculation_items')
-      .insert([{
+    try {
+      const data = await createCalculationItem({
         object_id: id,
         svor_code: newItem.svor_code,
         work_type: newItem.work_type,
         note: newItem.note
-      }])
-      .select()
-      .single();
-
-    if (!error && data) {
+      });
       setItems([...items, data]);
       setNewItem({ svor_code: '', work_type: '', note: '' });
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
   };
 
   const handleDeleteItem = async (itemId) => {
     const confirmed = window.confirm('Вы уверены, что хотите удалить эту запись?');
     if (!confirmed) return;
 
-    const { error } = await supabase
-      .from('calculation_items')
-      .delete()
-      .eq('id', itemId);
-
-    if (!error) {
+    try {
+      await deleteCalculationItem(itemId);
       setItems(items.filter(item => item.id !== itemId));
+    } catch (error) {
+      alert('Ошибка удаления: ' + error.message);
     }
   };
 
   const handleUpdateItem = async (itemId, field, value) => {
-    const { error } = await supabase
-      .from('calculation_items')
-      .update({ [field]: value })
-      .eq('id', itemId);
-
-    if (error) {
-      console.error('Ошибка сохранения:', error);
-      alert('Ошибка сохранения: ' + error.message);
-    } else {
+    try {
+      await updateCalculationItem(itemId, field, value);
       setItems(items.map(item =>
         item.id === itemId ? { ...item, [field]: value } : item
       ));
+    } catch (error) {
+      alert('Ошибка сохранения: ' + error.message);
     }
   };
 

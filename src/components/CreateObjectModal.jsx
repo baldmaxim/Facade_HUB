@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
+import { createObject } from '../api/objects';
+import { uploadObjectImage } from '../api/storage';
 import './CreateObjectModal.css';
 
 function CreateObjectModal({ isOpen, onClose, onSuccess }) {
@@ -43,35 +44,15 @@ function CreateObjectModal({ isOpen, onClose, onSuccess }) {
       let imageUrl = null;
 
       if (imageFile) {
-        const fileExt = imageFile.name.split('.').pop();
-        const fileName = `${Date.now()}.${fileExt}`;
-        const filePath = `${fileName}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('object-images')
-          .upload(filePath, imageFile);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('object-images')
-          .getPublicUrl(filePath);
-
-        imageUrl = publicUrl;
+        imageUrl = await uploadObjectImage(imageFile);
       }
 
-      const { data, error: insertError } = await supabase
-        .from('objects')
-        .insert([{
-          name: formData.name,
-          address: formData.address,
-          developer: formData.developer,
-          image_url: imageUrl
-        }])
-        .select()
-        .single();
-
-      if (insertError) throw insertError;
+      const data = await createObject({
+        name: formData.name,
+        address: formData.address,
+        developer: formData.developer,
+        image_url: imageUrl
+      });
 
       onSuccess?.();
       onClose();
