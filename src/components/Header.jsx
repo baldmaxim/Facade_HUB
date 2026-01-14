@@ -5,7 +5,14 @@ function Header() {
   return (
     <header className="header">
       <div className="header-top">
-        <Link to="/" className="header-logo">FacadeHUB</Link>
+        <Link to="/" className="header-logo">
+          <div className="header-logo-icon">
+            <span className="logo-cube"></span>
+            <span className="logo-cube"></span>
+            <span className="logo-cube"></span>
+          </div>
+          <span className="header-logo-text">Facade<span className="logo-accent">HUB</span></span>
+        </Link>
         <p className="header-subtitle">Профессиональная среда для управления проектами фасадного отдела</p>
       </div>
       <nav className="header-nav">
