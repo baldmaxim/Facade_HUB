@@ -22,6 +22,7 @@ function Footer() {
 
         <div className="footer-bottom">
           <span className="footer-copyright">© 2024 FacadeHub</span>
+          <Link to="/admin" className="footer-admin-link">Управление</Link>
         </div>
       </div>
     </footer>

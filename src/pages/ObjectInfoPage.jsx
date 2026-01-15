@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { WORK_TYPES } from '../data/workTypes';
-import './SubPage.css';
+import './ObjectInfoPage.css';
 
 function ObjectInfoPage() {
   const { id } = useParams();
   const [object, setObject] = useState(null);
-  const [worksData, setWorksData] = useState([]);
+  const [costTypes, setCostTypes] = useState([]);
+  const [costsData, setCostsData] = useState({});
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
-      // Загружаем объект
       const { data: objectData } = await supabase
         .from('objects')
         .select('*')
@@ -21,56 +22,142 @@ function ObjectInfoPage() {
 
       setObject(objectData);
 
-      // Загружаем данные по работам
-      const { data: works } = await supabase
-        .from('object_works')
+      const { data: costTypesData } = await supabase
+        .from('cost_types')
         .select('*')
-        .eq('object_id', id)
-        .order('work_type_id');
+        .order('id');
 
-      setWorksData(works || []);
+      setCostTypes(costTypesData || []);
+
+      const { data: objectCostsData } = await supabase
+        .from('object_costs')
+        .select('*')
+        .eq('object_id', id);
+
+      // Преобразуем в объект для удобства
+      const costsMap = {};
+      (objectCostsData || []).forEach(cost => {
+        costsMap[cost.cost_type_id] = cost;
+      });
+      setCostsData(costsMap);
       setLoading(false);
     }
     fetchData();
   }, [id]);
 
-  const formatPrice = (value) => {
-    if (value === null || value === undefined) return '—';
-    return new Intl.NumberFormat('ru-RU').format(value);
+  const getCostValue = (costTypeId, field) => {
+    return costsData[costTypeId]?.[field] || '';
   };
 
-  const getWorkData = (workTypeId) => {
-    return worksData.find(w => w.work_type_id === workTypeId) || {};
+  const handleInputChange = (costTypeId, field, value) => {
+    const numValue = value === '' ? null : parseFloat(value);
+
+    setCostsData(prev => {
+      const existing = prev[costTypeId] || {};
+      const updated = { ...existing, [field]: numValue };
+
+      // Пересчитываем итоги
+      const volume = field === 'volume' ? numValue : (existing.volume || 0);
+      const worksPerUnit = field === 'works_per_unit' ? numValue : (existing.works_per_unit || 0);
+      const materialsPerUnit = field === 'materials_per_unit' ? numValue : (existing.materials_per_unit || 0);
+
+      const v = parseFloat(volume) || 0;
+      const w = parseFloat(worksPerUnit) || 0;
+      const m = parseFloat(materialsPerUnit) || 0;
+
+      updated.summ_per_unit = w + m;
+      updated.works_summ = v * w;
+      updated.materials_summ = v * m;
+      updated.summ_works_and_materials = v * (w + m);
+
+      return { ...prev, [costTypeId]: updated };
+    });
+
+    setHasChanges(true);
   };
 
-  const calcTotal = (works, materials) => {
-    const w = parseFloat(works) || 0;
-    const m = parseFloat(materials) || 0;
-    return w + m;
+  const handleSave = async () => {
+    setSaving(true);
+    let hasError = false;
+
+    try {
+      for (const costTypeId of Object.keys(costsData)) {
+        const data = costsData[costTypeId];
+
+        // Пропускаем если нет данных
+        if (!data.volume && !data.works_per_unit && !data.materials_per_unit) {
+          continue;
+        }
+
+        const saveData = {
+          object_id: id,
+          cost_type_id: parseInt(costTypeId),
+          volume: data.volume || 0,
+          works_per_unit: data.works_per_unit || 0,
+          materials_per_unit: data.materials_per_unit || 0,
+          summ_per_unit: data.summ_per_unit || 0,
+          works_summ: data.works_summ || 0,
+          materials_summ: data.materials_summ || 0,
+          summ_works_and_materials: data.summ_works_and_materials || 0
+        };
+
+        if (data.id) {
+          // Обновляем существующую запись
+          const { error } = await supabase
+            .from('object_costs')
+            .update(saveData)
+            .eq('id', data.id);
+
+          if (error) {
+            console.error('Ошибка обновления:', error);
+            hasError = true;
+          }
+        } else {
+          // Создаем новую запись
+          const { data: newData, error } = await supabase
+            .from('object_costs')
+            .insert(saveData)
+            .select()
+            .single();
+
+          if (error) {
+            console.error('Ошибка создания:', error);
+            hasError = true;
+          } else if (newData) {
+            setCostsData(prev => ({
+              ...prev,
+              [costTypeId]: { ...prev[costTypeId], id: newData.id }
+            }));
+          }
+        }
+      }
+
+      if (hasError) {
+        alert('Произошла ошибка при сохранении. Проверьте консоль.');
+      } else {
+        alert('Данные сохранены!');
+        setHasChanges(false);
+      }
+    } catch (err) {
+      console.error('Ошибка:', err);
+      alert('Произошла ошибка: ' + err.message);
+    }
+
+    setSaving(false);
   };
 
-  const calcDiff = (fact, tender) => {
-    const f = parseFloat(fact) || 0;
-    const t = parseFloat(tender) || 0;
-    return f - t;
-  };
-
-  const getDiffClass = (value) => {
-    if (value > 0) return 'diff-negative';
-    if (value < 0) return 'diff-positive';
-    return '';
-  };
-
-  const formatDiff = (value) => {
-    if (value === 0) return '0';
-    const formatted = formatPrice(Math.abs(value));
-    return value > 0 ? `+${formatted}` : `-${formatted}`;
+  const formatNumber = (value) => {
+    if (value === null || value === undefined || value === 0) return '—';
+    return new Intl.NumberFormat('ru-RU', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(value);
   };
 
   if (loading) {
     return (
-      <main className="sub-page">
-        <div className="sub-page-container">
+      <main className="object-info-page">
+        <div className="object-info-container">
           <p>Загрузка...</p>
         </div>
       </main>
@@ -78,71 +165,95 @@ function ObjectInfoPage() {
   }
 
   return (
-    <main className="sub-page">
-      <div className="sub-page-container">
-        <div className="sub-page-header">
+    <main className="object-info-page">
+      <div className="object-info-container">
+        <div className="object-info-header">
           <Link to={`/objects/${id}`} className="back-btn">
             &larr; Назад к объекту
           </Link>
-          <div className="sub-page-breadcrumb">
+          <div className="object-info-breadcrumb">
             <span className="breadcrumb-object">{object?.name}</span>
             <span className="breadcrumb-separator">/</span>
             <span className="breadcrumb-current">Информация об объекте</span>
           </div>
         </div>
 
-        <h1 className="sub-page-title">Информация об объекте</h1>
+        <div className="object-info-title-row">
+          <h1 className="object-info-title">Анализ цен материалов и работ</h1>
+          <button
+            className={`save-btn ${hasChanges ? 'has-changes' : ''}`}
+            onClick={handleSave}
+            disabled={saving || !hasChanges}
+          >
+            {saving ? 'Сохранение...' : 'Сохранить'}
+          </button>
+        </div>
 
-        <div className="sub-page-content">
-          <div className="info-table-wrapper">
-            <table className="info-table">
+        <div className="object-info-content">
+          <div className="costs-table-wrapper">
+            <table className="costs-table">
               <thead>
                 <tr>
-                  <th rowSpan="2">Вид работ</th>
-                  <th rowSpan="2">Объем</th>
-                  <th rowSpan="2">Ед. изм.</th>
-                  <th colSpan="3" className="group-header tender">Тендер</th>
-                  <th colSpan="3" className="group-header fact">Факт</th>
-                  <th colSpan="3" className="group-header difference">Разница</th>
-                </tr>
-                <tr>
-                  <th className="sub-header">Работы</th>
-                  <th className="sub-header">Материалы</th>
-                  <th className="sub-header">Итого</th>
-                  <th className="sub-header">Работы</th>
-                  <th className="sub-header">Материалы</th>
-                  <th className="sub-header">Итого</th>
-                  <th className="sub-header">Работы</th>
-                  <th className="sub-header">Материалы</th>
-                  <th className="sub-header">Итого</th>
+                  <th>Вид затрат</th>
+                  <th>Объем</th>
+                  <th>Работы за ед.</th>
+                  <th>Материалы за ед.</th>
+                  <th>Итого за ед.</th>
+                  <th>Итого работы</th>
+                  <th>Итого материалы</th>
+                  <th>Итого</th>
                 </tr>
               </thead>
               <tbody>
-                {WORK_TYPES.map((workType) => {
-                  const data = getWorkData(workType.id);
-                  const tenderTotal = calcTotal(data.tender_works, data.tender_materials);
-                  const factTotal = calcTotal(data.fact_works, data.fact_materials);
-                  const diffWorks = calcDiff(data.fact_works, data.tender_works);
-                  const diffMaterials = calcDiff(data.fact_materials, data.tender_materials);
-                  const diffTotal = calcDiff(factTotal, tenderTotal);
+                {costTypes.length === 0 ? (
+                  <tr>
+                    <td colSpan="8" className="empty-row">Нет видов затрат</td>
+                  </tr>
+                ) : (
+                  costTypes.map((costType) => {
+                    const data = costsData[costType.id] || {};
 
-                  return (
-                    <tr key={workType.id}>
-                      <td>{workType.id}. {workType.name}</td>
-                      <td>{data.volume ? formatPrice(data.volume) : '—'}</td>
-                      <td>{workType.unit}</td>
-                      <td>{data.tender_works ? formatPrice(data.tender_works) : '—'}</td>
-                      <td>{data.tender_materials ? formatPrice(data.tender_materials) : '—'}</td>
-                      <td>{tenderTotal ? formatPrice(tenderTotal) : '—'}</td>
-                      <td>{data.fact_works ? formatPrice(data.fact_works) : '—'}</td>
-                      <td>{data.fact_materials ? formatPrice(data.fact_materials) : '—'}</td>
-                      <td>{factTotal ? formatPrice(factTotal) : '—'}</td>
-                      <td className={getDiffClass(diffWorks)}>{diffWorks !== 0 ? formatDiff(diffWorks) : '—'}</td>
-                      <td className={getDiffClass(diffMaterials)}>{diffMaterials !== 0 ? formatDiff(diffMaterials) : '—'}</td>
-                      <td className={getDiffClass(diffTotal)}>{diffTotal !== 0 ? formatDiff(diffTotal) : '—'}</td>
-                    </tr>
-                  );
-                })}
+                    return (
+                      <tr key={costType.id}>
+                        <td className="name-cell">{costType.name}</td>
+                        <td>
+                          <input
+                            type="number"
+                            className="cost-input"
+                            value={getCostValue(costType.id, 'volume')}
+                            onChange={(e) => handleInputChange(costType.id, 'volume', e.target.value)}
+                            placeholder="0"
+                            step="0.01"
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            className="cost-input"
+                            value={getCostValue(costType.id, 'works_per_unit')}
+                            onChange={(e) => handleInputChange(costType.id, 'works_per_unit', e.target.value)}
+                            placeholder="0"
+                            step="0.01"
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            className="cost-input"
+                            value={getCostValue(costType.id, 'materials_per_unit')}
+                            onChange={(e) => handleInputChange(costType.id, 'materials_per_unit', e.target.value)}
+                            placeholder="0"
+                            step="0.01"
+                          />
+                        </td>
+                        <td className="calc-cell">{formatNumber(data.summ_per_unit)}</td>
+                        <td className="calc-cell">{formatNumber(data.works_summ)}</td>
+                        <td className="calc-cell">{formatNumber(data.materials_summ)}</td>
+                        <td className="total-cell">{formatNumber(data.summ_works_and_materials)}</td>
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
             </table>
           </div>

@@ -1,0 +1,219 @@
+.object-info-page {
+  flex: 1;
+  background-color: var(--color-bg);
+  padding: 2rem;
+}
+
+.object-info-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.object-info-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.back-btn {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.back-btn:hover {
+  color: var(--color-text);
+}
+
+.object-info-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.breadcrumb-object {
+  color: var(--color-text-secondary);
+}
+
+.breadcrumb-separator {
+  color: var(--color-border);
+}
+
+.breadcrumb-current {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.object-info-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.object-info-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.save-btn {
+  padding: 0.75rem 1.5rem;
+  background: var(--color-border);
+  color: var(--color-text-secondary);
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: not-allowed;
+  transition: all 0.2s ease;
+}
+
+.save-btn.has-changes {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  cursor: pointer;
+}
+
+.save-btn.has-changes:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.save-btn:disabled {
+  opacity: 0.6;
+}
+
+.object-info-content {
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.costs-table-wrapper {
+  overflow-x: auto;
+}
+
+.costs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.costs-table th {
+  background-color: var(--color-bg);
+  padding: 1rem 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: var(--color-text);
+  border-bottom: 2px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.costs-table td {
+  padding: 0.875rem 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.costs-table tbody tr:hover {
+  background-color: var(--color-bg);
+}
+
+.costs-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.empty-row {
+  text-align: center;
+  color: var(--color-text-secondary);
+  padding: 3rem 1rem !important;
+}
+
+.name-cell {
+  font-weight: 500;
+  min-width: 200px;
+}
+
+.cost-input {
+  width: 100%;
+  min-width: 80px;
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  background: var(--color-bg);
+  color: var(--color-text);
+  text-align: right;
+}
+
+.cost-input:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+}
+
+.cost-input::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 0.5;
+}
+
+/* Убираем стрелки у number input */
+.cost-input::-webkit-outer-spin-button,
+.cost-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.cost-input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.calc-cell {
+  background-color: var(--color-bg);
+  color: var(--color-text-secondary);
+  text-align: right;
+}
+
+.total-cell {
+  font-weight: 600;
+  color: #667eea;
+  text-align: right;
+  background-color: rgba(102, 126, 234, 0.05);
+}
+
+.costs-table tbody tr.saving {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .object-info-page {
+    padding: 1rem;
+  }
+
+  .object-info-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .object-info-title {
+    font-size: 1.5rem;
+  }
+
+  .costs-table {
+    font-size: 0.8rem;
+  }
+
+  .costs-table th,
+  .costs-table td {
+    padding: 0.625rem 0.5rem;
+  }
+}
