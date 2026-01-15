@@ -15,6 +15,7 @@ import PromptsPage from './pages/PromptsPage';
 import ContractorsPage from './pages/ContractorsPage';
 import WorkAnalysisPage from './pages/WorkAnalysisPage';
 import MaterialsAnalysisPage from './pages/MaterialsAnalysisPage';
+import AdminPage from './pages/AdminPage';
 import './index.css';
 
 function HomePage() {
@@ -55,6 +56,7 @@ function App() {
         <Route path="/contractors" element={<InnerLayout><ContractorsPage /></InnerLayout>} />
         <Route path="/work-analysis" element={<InnerLayout><WorkAnalysisPage /></InnerLayout>} />
         <Route path="/materials-analysis" element={<InnerLayout><MaterialsAnalysisPage /></InnerLayout>} />
+        <Route path="/admin" element={<InnerLayout><AdminPage /></InnerLayout>} />
       </Routes>
     </BrowserRouter>
   );
