@@ -302,9 +302,11 @@ function ObjectInfoPage() {
                 options={{
                   responsive: true,
                   maintainAspectRatio: false,
+                  barPercentage: 0.6,
+                  categoryPercentage: 0.37,
                   layout: {
                     padding: {
-                      bottom: 60,
+                      bottom: 0,
                       left: 20,
                       right: 20,
                       top: 20
@@ -336,9 +338,19 @@ function ObjectInfoPage() {
                       },
                       ticks: {
                         color: '#6b7280',
-                        maxRotation: 45,
-                        minRotation: 45,
-                        padding: 10
+                        maxRotation: 0,
+                        minRotation: 0,
+                        autoSkip: false,
+                        padding: 15,
+                        font: {
+                          size: 10
+                        },
+                        callback: function(value) {
+                          const label = this.getLabelForValue(value);
+                          if (!label) return '';
+                          const words = label.split(' ');
+                          return words.length > 1 ? words : label;
+                        }
                       }
                     },
                     y: {
