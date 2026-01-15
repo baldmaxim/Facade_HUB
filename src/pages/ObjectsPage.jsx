@@ -190,7 +190,7 @@ function ObjectsPage() {
       <section className="objects-section">
         <div className="objects-section-container">
           <div className="objects-section-header">
-            <h2 className="objects-section-title">Тендер</h2>
+            <h2 className="objects-section-title">Текущие тендеры</h2>
             <button
               className="add-object-btn"
               onClick={() => openModalForCategory(CATEGORIES.TENDER)}

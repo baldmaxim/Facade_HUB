@@ -16,7 +16,13 @@ function ObjectsPreview() {
         .order('created_at', { ascending: false });
 
       if (data) {
-        setObjects(data);
+        // Получаем категории из localStorage
+        const savedCategories = localStorage.getItem('objectCategories');
+        const categories = savedCategories ? JSON.parse(savedCategories) : {};
+
+        // Фильтруем только объекты с категорией "tender"
+        const tenderObjects = data.filter(obj => categories[obj.id] === 'tender');
+        setObjects(tenderObjects);
       }
       setLoading(false);
     }
@@ -37,7 +43,7 @@ function ObjectsPreview() {
     return (
       <section className="objects-preview">
         <div className="objects-preview-container">
-          <p className="objects-loading">Загрузка объектов...</p>
+          <p className="objects-loading">Загрузка тендеров...</p>
         </div>
       </section>
     );
@@ -47,7 +53,7 @@ function ObjectsPreview() {
     <section className="objects-preview">
       <div className="objects-preview-container">
         <div className="objects-preview-header">
-          <h2 className="objects-preview-title">Объекты</h2>
+          <h2 className="objects-preview-title">Текущие тендеры</h2>
           <Link to="/objects" className="objects-view-all">
             Перейти ко всем
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -58,9 +64,9 @@ function ObjectsPreview() {
 
         {objects.length === 0 ? (
           <div className="objects-empty">
-            <p>Объекты пока не добавлены</p>
+            <p>Нет активных тендеров</p>
             <Link to="/objects" className="objects-add-btn">
-              Добавить первый объект
+              Перейти к объектам
             </Link>
           </div>
         ) : (
