@@ -15,6 +15,13 @@ function AdminPage() {
   const [newCostType, setNewCostType] = useState('');
   const [loadingCostTypes, setLoadingCostTypes] = useState(false);
 
+  // Works state
+  const [showWorksModal, setShowWorksModal] = useState(false);
+  const [works, setWorks] = useState([]);
+  const [newWork, setNewWork] = useState({ name: '', unit_id: '' });
+  const [loadingWorks, setLoadingWorks] = useState(false);
+  const [editingWork, setEditingWork] = useState(null);
+
   // Fetch units
   const fetchUnits = async () => {
     const { data, error } = await supabase
@@ -37,8 +44,19 @@ function AdminPage() {
     if (error) {
       console.error('Ошибка загрузки видов затрат:', error.message, error.code, error);
     } else {
-      console.log('Загружено видов затрат:', data?.length || 0);
       setCostTypes(data || []);
+    }
+  };
+
+  // Fetch works
+  const fetchWorks = async () => {
+    const { data, error } = await supabase
+      .from('work_types')
+      .select('*, unit:unit_id(name)')
+      .order('name');
+
+    if (!error && data) {
+      setWorks(data);
     }
   };
 
@@ -54,6 +72,13 @@ function AdminPage() {
       fetchCostTypes();
     }
   }, [showCostTypesModal]);
+
+  useEffect(() => {
+    if (showWorksModal) {
+      fetchUnits();
+      fetchWorks();
+    }
+  }, [showWorksModal]);
 
   // Units handlers
   const handleAddUnit = async (e) => {
@@ -111,6 +136,59 @@ function AdminPage() {
     }
   };
 
+  // Works handlers
+  const handleAddWork = async (e) => {
+    e.preventDefault();
+    if (!newWork.name.trim()) return;
+
+    setLoadingWorks(true);
+    const { error } = await supabase
+      .from('work_types')
+      .insert({
+        name: newWork.name.trim(),
+        unit_id: newWork.unit_id || null
+      });
+
+    if (!error) {
+      setNewWork({ name: '', unit_id: '' });
+      fetchWorks();
+    }
+    setLoadingWorks(false);
+  };
+
+  const handleUpdateWork = async (e) => {
+    e.preventDefault();
+    if (!editingWork || !editingWork.name.trim()) return;
+
+    setLoadingWorks(true);
+    const { error } = await supabase
+      .from('work_types')
+      .update({
+        name: editingWork.name.trim(),
+        unit_id: editingWork.unit_id || null
+      })
+      .eq('id', editingWork.id);
+
+    if (!error) {
+      setEditingWork(null);
+      fetchWorks();
+    }
+    setLoadingWorks(false);
+  };
+
+  const handleDeleteWork = async (id) => {
+    if (!confirm('Удалить этот вид работ?')) return;
+
+    const { error } = await supabase
+      .from('work_types')
+      .delete()
+      .eq('id', id);
+
+    if (!error) {
+      fetchWorks();
+    }
+  };
+
   return (
     <main className="admin-page">
       <div className="admin-container">
@@ -136,12 +214,12 @@ function AdminPage() {
             <p className="admin-card-description">Управление видами затрат на строительство</p>
           </div>
 
-          <div className="admin-card">
+          <div className="admin-card" onClick={() => setShowWorksModal(true)}>
             <div className="admin-card-icon">
-              <span>👥</span>
+              <span>🔧</span>
             </div>
-            <h3 className="admin-card-title">Пользователи</h3>
-            <p className="admin-card-description">Управление пользователями и ролями</p>
+            <h3 className="admin-card-title">Виды работ</h3>
+            <p className="admin-card-description">Управление справочником видов работ</p>
           </div>
 
           <div className="admin-card">
@@ -252,6 +330,96 @@ function AdminPage() {
                     >
                       &times;
                     </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Works Modal */}
+      {showWorksModal && (
+        <div className="admin-modal-overlay" onClick={() => setShowWorksModal(false)}>
+          <div className="admin-modal admin-modal-wide" onClick={(e) => e.stopPropagation()}>
+            <div className="admin-modal-header">
+              <h2 className="admin-modal-title">Виды работ</h2>
+              <button
+                className="admin-modal-close"
+                onClick={() => setShowWorksModal(false)}
+              >
+                &times;
+              </button>
+            </div>
+
+            <form className="admin-form admin-form-work" onSubmit={editingWork ? handleUpdateWork : handleAddWork}>
+              <input
+                type="text"
+                className="admin-input admin-input-wide"
+                placeholder="Название вида работ..."
+                value={editingWork ? editingWork.name : newWork.name}
+                onChange={(e) => editingWork
+                  ? setEditingWork({ ...editingWork, name: e.target.value })
+                  : setNewWork({ ...newWork, name: e.target.value })
+                }
+              />
+              <select
+                className="admin-select"
+                value={editingWork ? (editingWork.unit_id || '') : newWork.unit_id}
+                onChange={(e) => editingWork
+                  ? setEditingWork({ ...editingWork, unit_id: e.target.value })
+                  : setNewWork({ ...newWork, unit_id: e.target.value })
+                }
+              >
+                <option value="">Без ед. изм.</option>
+                {units.map((unit) => (
+                  <option key={unit.id} value={unit.id}>{unit.name}</option>
+                ))}
+              </select>
+              <button
+                type="submit"
+                className="admin-add-btn"
+                disabled={loadingWorks || !(editingWork ? editingWork.name.trim() : newWork.name.trim())}
+              >
+                {editingWork ? 'Сохранить' : 'Добавить'}
+              </button>
+              {editingWork && (
+                <button
+                  type="button"
+                  className="admin-cancel-btn"
+                  onClick={() => setEditingWork(null)}
+                >
+                  Отмена
+                </button>
+              )}
+            </form>
+
+            <div className="admin-list">
+              {works.length === 0 ? (
+                <p className="admin-list-empty">Нет видов работ</p>
+              ) : (
+                works.map((work) => (
+                  <div key={work.id} className={`admin-list-item ${editingWork?.id === work.id ? 'editing' : ''}`}>
+                    <div className="admin-list-item-info">
+                      <span className="admin-list-item-name">{work.name}</span>
+                      <span className="admin-list-item-unit">{work.unit?.name || '—'}</span>
+                    </div>
+                    <div className="admin-list-item-actions">
+                      <button
+                        className="admin-list-item-edit"
+                        onClick={() => setEditingWork({ id: work.id, name: work.name, unit_id: work.unit_id || '' })}
+                        title="Редактировать"
+                      >
+                        &#9998;
+                      </button>
+                      <button
+                        className="admin-list-item-delete"
+                        onClick={() => handleDeleteWork(work.id)}
+                        title="Удалить"
+                      >
+                        &times;
+                      </button>
+                    </div>
                   </div>
                 ))
               )}

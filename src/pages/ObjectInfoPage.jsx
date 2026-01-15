@@ -1,7 +1,26 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
 import './ObjectInfoPage.css';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 function ObjectInfoPage() {
   const { id } = useParams();
@@ -256,6 +275,91 @@ function ObjectInfoPage() {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* График затрат */}
+          <div className="costs-chart-wrapper">
+            <h2 className="costs-chart-title">График затрат</h2>
+            <div className="costs-chart">
+              <Bar
+                data={{
+                  labels: costTypes
+                    .filter(ct => costsData[ct.id]?.summ_works_and_materials > 0)
+                    .map(ct => ct.name),
+                  datasets: [
+                    {
+                      label: 'Итого стоимость',
+                      data: costTypes
+                        .filter(ct => costsData[ct.id]?.summ_works_and_materials > 0)
+                        .map(ct => costsData[ct.id]?.summ_works_and_materials || 0),
+                      backgroundColor: 'rgba(102, 126, 234, 0.7)',
+                      borderColor: 'rgba(102, 126, 234, 1)',
+                      borderWidth: 1,
+                      borderRadius: 4,
+                    }
+                  ]
+                }}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  layout: {
+                    padding: {
+                      bottom: 60,
+                      left: 20,
+                      right: 20,
+                      top: 20
+                    }
+                  },
+                  plugins: {
+                    legend: {
+                      display: false
+                    },
+                    title: {
+                      display: false
+                    },
+                    tooltip: {
+                      callbacks: {
+                        label: function(context) {
+                          const value = context.parsed.y;
+                          return new Intl.NumberFormat('ru-RU', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                          }).format(value) + ' ₽';
+                        }
+                      }
+                    }
+                  },
+                  scales: {
+                    x: {
+                      grid: {
+                        display: false
+                      },
+                      ticks: {
+                        color: '#6b7280',
+                        maxRotation: 45,
+                        minRotation: 45,
+                        padding: 10
+                      }
+                    },
+                    y: {
+                      beginAtZero: true,
+                      grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                      },
+                      ticks: {
+                        color: '#6b7280',
+                        callback: function(value) {
+                          return new Intl.NumberFormat('ru-RU', {
+                            notation: 'compact',
+                            compactDisplay: 'short'
+                          }).format(value);
+                        }
+                      }
+                    }
+                  }
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
