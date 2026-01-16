@@ -22,6 +22,20 @@ function AdminPage() {
   const [loadingWorks, setLoadingWorks] = useState(false);
   const [editingWork, setEditingWork] = useState(null);
 
+  // Facade elements state
+  const [showFacadeElementsModal, setShowFacadeElementsModal] = useState(false);
+  const [facadeElements, setFacadeElements] = useState([]);
+  const [newFacadeElement, setNewFacadeElement] = useState('');
+  const [loadingFacadeElements, setLoadingFacadeElements] = useState(false);
+  const [editingFacadeElement, setEditingFacadeElement] = useState(null);
+
+  // Status state
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [statuses, setStatuses] = useState([]);
+  const [newStatus, setNewStatus] = useState('');
+  const [loadingStatus, setLoadingStatus] = useState(false);
+  const [editingStatus, setEditingStatus] = useState(null);
+
   // Fetch units
   const fetchUnits = async () => {
     const { data, error } = await supabase
@@ -60,6 +74,30 @@ function AdminPage() {
     }
   };
 
+  // Fetch facade elements
+  const fetchFacadeElements = async () => {
+    const { data, error } = await supabase
+      .from('facade_element')
+      .select('*')
+      .order('name');
+
+    if (!error && data) {
+      setFacadeElements(data);
+    }
+  };
+
+  // Fetch statuses
+  const fetchStatuses = async () => {
+    const { data, error } = await supabase
+      .from('status')
+      .select('*')
+      .order('name');
+
+    if (!error && data) {
+      setStatuses(data);
+    }
+  };
+
   useEffect(() => {
     if (showUnitsModal) {
       fetchUnits();
@@ -79,6 +117,18 @@ function AdminPage() {
       fetchWorks();
     }
   }, [showWorksModal]);
+
+  useEffect(() => {
+    if (showFacadeElementsModal) {
+      fetchFacadeElements();
+    }
+  }, [showFacadeElementsModal]);
+
+  useEffect(() => {
+    if (showStatusModal) {
+      fetchStatuses();
+    }
+  }, [showStatusModal]);
 
   // Units handlers
   const handleAddUnit = async (e) => {
@@ -189,6 +239,100 @@ function AdminPage() {
     }
   };
 
+  // Facade elements handlers
+  const handleAddFacadeElement = async (e) => {
+    e.preventDefault();
+    if (!newFacadeElement.trim()) return;
+
+    setLoadingFacadeElements(true);
+    const { error } = await supabase
+      .from('facade_element')
+      .insert({ name: newFacadeElement.trim() });
+
+    if (!error) {
+      setNewFacadeElement('');
+      fetchFacadeElements();
+    }
+    setLoadingFacadeElements(false);
+  };
+
+  const handleUpdateFacadeElement = async (e) => {
+    e.preventDefault();
+    if (!editingFacadeElement || !editingFacadeElement.name.trim()) return;
+
+    setLoadingFacadeElements(true);
+    const { error } = await supabase
+      .from('facade_element')
+      .update({ name: editingFacadeElement.name.trim() })
+      .eq('id', editingFacadeElement.id);
+
+    if (!error) {
+      setEditingFacadeElement(null);
+      fetchFacadeElements();
+    }
+    setLoadingFacadeElements(false);
+  };
+
+  const handleDeleteFacadeElement = async (id) => {
+    if (!confirm('Удалить этот элемент фасада?')) return;
+
+    const { error } = await supabase
+      .from('facade_element')
+      .delete()
+      .eq('id', id);
+
+    if (!error) {
+      fetchFacadeElements();
+    }
+  };
+
+  // Status handlers
+  const handleAddStatus = async (e) => {
+    e.preventDefault();
+    if (!newStatus.trim()) return;
+
+    setLoadingStatus(true);
+    const { error } = await supabase
+      .from('status')
+      .insert({ name: newStatus.trim() });
+
+    if (!error) {
+      setNewStatus('');
+      fetchStatuses();
+    }
+    setLoadingStatus(false);
+  };
+
+  const handleUpdateStatus = async (e) => {
+    e.preventDefault();
+    if (!editingStatus || !editingStatus.name.trim()) return;
+
+    setLoadingStatus(true);
+    const { error } = await supabase
+      .from('status')
+      .update({ name: editingStatus.name.trim() })
+      .eq('id', editingStatus.id);
+
+    if (!error) {
+      setEditingStatus(null);
+      fetchStatuses();
+    }
+    setLoadingStatus(false);
+  };
+
+  const handleDeleteStatus = async (id) => {
+    if (!confirm('Удалить этот статус?')) return;
+
+    const { error } = await supabase
+      .from('status')
+      .delete()
+      .eq('id', id);
+
+    if (!error) {
+      fetchStatuses();
+    }
+  };
+
   return (
     <main className="admin-page">
       <div className="admin-container">
@@ -220,6 +364,22 @@ function AdminPage() {
             </div>
             <h3 className="admin-card-title">Виды работ</h3>
             <p className="admin-card-description">Управление справочником видов работ</p>
+          </div>
+
+          <div className="admin-card" onClick={() => setShowFacadeElementsModal(true)}>
+            <div className="admin-card-icon">
+              <span>🏗️</span>
+            </div>
+            <h3 className="admin-card-title">Элементы фасада</h3>
+            <p className="admin-card-description">Управление элементами фасада для чек-листа</p>
+          </div>
+
+          <div className="admin-card" onClick={() => setShowStatusModal(true)}>
+            <div className="admin-card-icon">
+              <span>📋</span>
+            </div>
+            <h3 className="admin-card-title">Статусы</h3>
+            <p className="admin-card-description">Управление статусами для чек-листа</p>
           </div>
 
           <div className="admin-card">
@@ -415,6 +575,154 @@ function AdminPage() {
                       <button
                         className="admin-list-item-delete"
                         onClick={() => handleDeleteWork(work.id)}
+                        title="Удалить"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Facade Elements Modal */}
+      {showFacadeElementsModal && (
+        <div className="admin-modal-overlay" onClick={() => setShowFacadeElementsModal(false)}>
+          <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="admin-modal-header">
+              <h2 className="admin-modal-title">Элементы фасада</h2>
+              <button
+                className="admin-modal-close"
+                onClick={() => setShowFacadeElementsModal(false)}
+              >
+                &times;
+              </button>
+            </div>
+
+            <form className="admin-form" onSubmit={editingFacadeElement ? handleUpdateFacadeElement : handleAddFacadeElement}>
+              <input
+                type="text"
+                className="admin-input"
+                placeholder="Название элемента фасада..."
+                value={editingFacadeElement ? editingFacadeElement.name : newFacadeElement}
+                onChange={(e) => editingFacadeElement
+                  ? setEditingFacadeElement({ ...editingFacadeElement, name: e.target.value })
+                  : setNewFacadeElement(e.target.value)
+                }
+              />
+              <button
+                type="submit"
+                className="admin-add-btn"
+                disabled={loadingFacadeElements || !(editingFacadeElement ? editingFacadeElement.name.trim() : newFacadeElement.trim())}
+              >
+                {editingFacadeElement ? 'Сохранить' : 'Добавить'}
+              </button>
+              {editingFacadeElement && (
+                <button
+                  type="button"
+                  className="admin-cancel-btn"
+                  onClick={() => setEditingFacadeElement(null)}
+                >
+                  Отмена
+                </button>
+              )}
+            </form>
+
+            <div className="admin-list">
+              {facadeElements.length === 0 ? (
+                <p className="admin-list-empty">Нет элементов фасада</p>
+              ) : (
+                facadeElements.map((element) => (
+                  <div key={element.id} className={`admin-list-item ${editingFacadeElement?.id === element.id ? 'editing' : ''}`}>
+                    <span className="admin-list-item-name">{element.name}</span>
+                    <div className="admin-list-item-actions">
+                      <button
+                        className="admin-list-item-edit"
+                        onClick={() => setEditingFacadeElement({ id: element.id, name: element.name })}
+                        title="Редактировать"
+                      >
+                        &#9998;
+                      </button>
+                      <button
+                        className="admin-list-item-delete"
+                        onClick={() => handleDeleteFacadeElement(element.id)}
+                        title="Удалить"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Status Modal */}
+      {showStatusModal && (
+        <div className="admin-modal-overlay" onClick={() => setShowStatusModal(false)}>
+          <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="admin-modal-header">
+              <h2 className="admin-modal-title">Статусы</h2>
+              <button
+                className="admin-modal-close"
+                onClick={() => setShowStatusModal(false)}
+              >
+                &times;
+              </button>
+            </div>
+
+            <form className="admin-form" onSubmit={editingStatus ? handleUpdateStatus : handleAddStatus}>
+              <input
+                type="text"
+                className="admin-input"
+                placeholder="Название статуса..."
+                value={editingStatus ? editingStatus.name : newStatus}
+                onChange={(e) => editingStatus
+                  ? setEditingStatus({ ...editingStatus, name: e.target.value })
+                  : setNewStatus(e.target.value)
+                }
+              />
+              <button
+                type="submit"
+                className="admin-add-btn"
+                disabled={loadingStatus || !(editingStatus ? editingStatus.name.trim() : newStatus.trim())}
+              >
+                {editingStatus ? 'Сохранить' : 'Добавить'}
+              </button>
+              {editingStatus && (
+                <button
+                  type="button"
+                  className="admin-cancel-btn"
+                  onClick={() => setEditingStatus(null)}
+                >
+                  Отмена
+                </button>
+              )}
+            </form>
+
+            <div className="admin-list">
+              {statuses.length === 0 ? (
+                <p className="admin-list-empty">Нет статусов</p>
+              ) : (
+                statuses.map((status) => (
+                  <div key={status.id} className={`admin-list-item ${editingStatus?.id === status.id ? 'editing' : ''}`}>
+                    <span className="admin-list-item-name">{status.name}</span>
+                    <div className="admin-list-item-actions">
+                      <button
+                        className="admin-list-item-edit"
+                        onClick={() => setEditingStatus({ id: status.id, name: status.name })}
+                        title="Редактировать"
+                      >
+                        &#9998;
+                      </button>
+                      <button
+                        className="admin-list-item-delete"
+                        onClick={() => handleDeleteStatus(status.id)}
                         title="Удалить"
                       >
                         &times;

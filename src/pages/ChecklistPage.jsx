@@ -1,47 +1,57 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { fetchObjectName } from '../api/objects';
-import { fetchChecklist, upsertChecklistItems } from '../api/checklists';
-import {
-  CHECKLIST_STATUS,
-  STATUS_CONFIG,
-  DEFAULT_CHECKLIST_ITEMS,
-  createInitialChecklist
-} from '../data/checklistItems';
+import { supabase } from '../lib/supabase';
 import './SubPage.css';
 import './ChecklistPage.css';
 
 function ChecklistPage() {
   const { id } = useParams();
   const [object, setObject] = useState(null);
-  const [checklist, setChecklist] = useState([]);
+  const [facadeElements, setFacadeElements] = useState([]);
+  const [statuses, setStatuses] = useState([]);
+  const [checklistData, setChecklistData] = useState({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
     async function loadData() {
       try {
-        const [objectData, checklistData] = await Promise.all([
-          fetchObjectName(id),
-          fetchChecklist(id)
-        ]);
+        // Fetch object info
+        const { data: objectData } = await supabase
+          .from('objects')
+          .select('id, name')
+          .eq('id', id)
+          .single();
         setObject(objectData);
 
-        if (checklistData && checklistData.length > 0) {
-          const mappedChecklist = DEFAULT_CHECKLIST_ITEMS.map(item => {
-            const dbItem = checklistData.find(d => d.item_id === item.id);
-            return {
-              ...item,
-              status: dbItem?.status || null,
-              note: dbItem?.note || '',
-              customValue: dbItem?.custom_value || ''
-            };
-          });
-          setChecklist(mappedChecklist);
-        } else {
-          setChecklist(createInitialChecklist(id));
-        }
+        // Fetch facade elements
+        const { data: elementsData } = await supabase
+          .from('facade_element')
+          .select('*')
+          .order('name');
+        setFacadeElements(elementsData || []);
+
+        // Fetch statuses
+        const { data: statusesData } = await supabase
+          .from('status')
+          .select('*')
+          .order('name');
+        setStatuses(statusesData || []);
+
+        // Fetch existing checklist entries for this object
+        const { data: existingData } = await supabase
+          .from('checklist')
+          .select('*')
+          .eq('object_id', id);
+
+        // Convert to map by facade_element_id
+        const dataMap = {};
+        (existingData || []).forEach(item => {
+          dataMap[item.facade_element_id] = item;
+        });
+        setChecklistData(dataMap);
+
       } finally {
         setLoading(false);
       }
@@ -49,69 +59,107 @@ function ChecklistPage() {
     loadData();
   }, [id]);
 
-  const saveChecklist = useCallback(async (items) => {
-    setSaving(true);
-    setSaved(false);
+  // Get value for a facade element
+  const getValue = (elementId, field) => {
+    return checklistData[elementId]?.[field] || '';
+  };
 
-    const upsertData = items
-      .filter(item => item.status || item.note || item.customValue)
-      .map(item => ({
-        object_id: id,
-        item_id: item.id,
-        status: item.status,
-        note: item.note,
-        custom_value: item.customValue
-      }));
-
-    if (upsertData.length > 0) {
-      try {
-        await upsertChecklistItems(upsertData);
-      } catch (error) {
-        alert('Ошибка сохранения: ' + error.message);
+  // Handle status change
+  const handleStatusChange = (elementId, statusId) => {
+    setChecklistData(prev => ({
+      ...prev,
+      [elementId]: {
+        ...prev[elementId],
+        facade_element_id: elementId,
+        status_id: statusId || null
       }
+    }));
+    setHasChanges(true);
+  };
+
+  // Handle note change
+  const handleNoteChange = (elementId, note) => {
+    setChecklistData(prev => ({
+      ...prev,
+      [elementId]: {
+        ...prev[elementId],
+        facade_element_id: elementId,
+        note: note
+      }
+    }));
+    setHasChanges(true);
+  };
+
+  // Save all changes
+  const handleSave = async () => {
+    setSaving(true);
+
+    try {
+      for (const elementId of Object.keys(checklistData)) {
+        const data = checklistData[elementId];
+
+        // Skip if no status and no note
+        if (!data.status_id && !data.note) {
+          continue;
+        }
+
+        const saveData = {
+          object_id: id,
+          facade_element_id: elementId,
+          status_id: data.status_id || null,
+          note: data.note || ''
+        };
+
+        if (data.id) {
+          // Update existing
+          await supabase
+            .from('checklist')
+            .update(saveData)
+            .eq('id', data.id);
+        } else {
+          // Insert new
+          const { data: newData } = await supabase
+            .from('checklist')
+            .insert(saveData)
+            .select()
+            .single();
+
+          if (newData) {
+            setChecklistData(prev => ({
+              ...prev,
+              [elementId]: { ...prev[elementId], id: newData.id }
+            }));
+          }
+        }
+      }
+
+      setHasChanges(false);
+      alert('Сохранено!');
+    } catch (error) {
+      alert('Ошибка сохранения: ' + error.message);
     }
 
     setSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
-  }, [id]);
-
-  const handleStatusChange = (itemId, newStatus) => {
-    const updated = checklist.map(item =>
-      item.id === itemId ? { ...item, status: newStatus || null } : item
-    );
-    setChecklist(updated);
-    saveChecklist(updated);
   };
 
-  const handleNoteChange = (itemId, newNote) => {
-    const updated = checklist.map(item =>
-      item.id === itemId ? { ...item, note: newNote } : item
-    );
-    setChecklist(updated);
-  };
-
-  const handleNoteBlur = () => {
-    saveChecklist(checklist);
-  };
-
-  const getStatusClass = (status) => {
+  // Get status color class
+  const getStatusClass = (statusId) => {
+    if (!statusId) return '';
+    const status = statuses.find(s => s.id === statusId);
     if (!status) return '';
-    const classMap = {
-      [CHECKLIST_STATUS.ACCOUNTED]: 'status-accounted',
-      [CHECKLIST_STATUS.NOT_ACCOUNTED]: 'status-not-accounted',
-      [CHECKLIST_STATUS.MISSING_NOT_ACCOUNTED]: 'status-missing-not-accounted',
-      [CHECKLIST_STATUS.MISSING_BUT_ACCOUNTED]: 'status-missing-but-accounted',
-      [CHECKLIST_STATUS.INSUFFICIENT_INFO]: 'status-insufficient-info'
-    };
-    return classMap[status] || '';
+
+    const name = status.name.toLowerCase();
+    if (name.includes('учтено') && !name.includes('не')) return 'status-accounted';
+    if (name.includes('не учтено')) return 'status-not-accounted';
+    if (name.includes('отсутствует')) return 'status-missing';
+    return '';
   };
 
+  // Stats
   const stats = {
-    total: checklist.length,
-    accounted: checklist.filter(i => i.status === CHECKLIST_STATUS.ACCOUNTED).length,
-    notAccounted: checklist.filter(i => i.status === CHECKLIST_STATUS.NOT_ACCOUNTED).length,
-    pending: checklist.filter(i => !i.status).length
+    total: facadeElements.length,
+    withStatus: facadeElements.filter(el => checklistData[el.id]?.status_id).length,
+    withoutStatus: facadeElements.filter(el => !checklistData[el.id]?.status_id).length
   };
 
   if (loading) {
@@ -138,19 +186,24 @@ function ChecklistPage() {
           </div>
         </div>
 
-        <h1 className="sub-page-title">Чеклист фасадного расчёта</h1>
+        <div className="checklist-title-row">
+          <h1 className="sub-page-title">Чеклист фасадного расчёта</h1>
+          <button
+            className={`save-btn ${hasChanges ? 'has-changes' : ''}`}
+            onClick={handleSave}
+            disabled={saving || !hasChanges}
+          >
+            {saving ? 'Сохранение...' : 'Сохранить'}
+          </button>
+        </div>
 
         <div className="checklist-stats">
           <div className="stat-card accounted">
-            <div className="stat-value">{stats.accounted}</div>
-            <div className="stat-label">Учтено</div>
-          </div>
-          <div className="stat-card not-accounted">
-            <div className="stat-value">{stats.notAccounted}</div>
-            <div className="stat-label">Не учтено</div>
+            <div className="stat-value">{stats.withStatus}</div>
+            <div className="stat-label">Заполнено</div>
           </div>
           <div className="stat-card pending">
-            <div className="stat-value">{stats.pending}</div>
+            <div className="stat-value">{stats.withoutStatus}</div>
             <div className="stat-label">Не заполнено</div>
           </div>
           <div className="stat-card">
@@ -160,40 +213,6 @@ function ChecklistPage() {
         </div>
 
         <div className="sub-page-content">
-          <div className="checklist-toolbar">
-            <div className="toolbar-right">
-              {saving && (
-                <span className="saving-indicator">Сохранение...</span>
-              )}
-              {saved && (
-                <span className="saving-indicator saved">Сохранено</span>
-              )}
-            </div>
-          </div>
-
-          <div className="status-legend">
-            <div className="legend-item">
-              <span className="legend-dot accounted"></span>
-              <span>Учтено</span>
-            </div>
-            <div className="legend-item">
-              <span className="legend-dot not-accounted"></span>
-              <span>Не учтено</span>
-            </div>
-            <div className="legend-item">
-              <span className="legend-dot missing-not-accounted"></span>
-              <span>Отсутствует в проекте</span>
-            </div>
-            <div className="legend-item">
-              <span className="legend-dot missing-but-accounted"></span>
-              <span>Отсутствует, но учтено</span>
-            </div>
-            <div className="legend-item">
-              <span className="legend-dot insufficient-info"></span>
-              <span>Недостаточно информации</span>
-            </div>
-          </div>
-
           <div className="checklist-table-wrapper">
             <table className="checklist-table">
               <thead>
@@ -205,41 +224,43 @@ function ChecklistPage() {
                 </tr>
               </thead>
               <tbody>
-                {checklist.map((item) => (
-                  <tr key={item.id}>
-                    <td>{item.id}</td>
-                    <td>
-                      <span className="item-name">{item.name}</span>
-                      {item.hint && (
-                        <span className="item-hint">{item.hint}</span>
-                      )}
-                    </td>
-                    <td>
-                      <select
-                        className={`status-select ${getStatusClass(item.status)}`}
-                        value={item.status || ''}
-                        onChange={(e) => handleStatusChange(item.id, e.target.value)}
-                      >
-                        <option value="">Выберите...</option>
-                        {Object.entries(STATUS_CONFIG).map(([key, config]) => (
-                          <option key={key} value={key}>
-                            {config.label}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        className="note-input"
-                        placeholder="Добавить примечание..."
-                        value={item.note}
-                        onChange={(e) => handleNoteChange(item.id, e.target.value)}
-                        onBlur={handleNoteBlur}
-                      />
+                {facadeElements.length === 0 ? (
+                  <tr>
+                    <td colSpan="4" className="empty-row">
+                      Нет элементов фасада. Добавьте их в разделе Управление.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  facadeElements.map((element, index) => (
+                    <tr key={element.id}>
+                      <td>{index + 1}</td>
+                      <td>
+                        <span className="item-name">{element.name}</span>
+                      </td>
+                      <td>
+                        <select
+                          className={`status-select ${getStatusClass(getValue(element.id, 'status_id'))}`}
+                          value={getValue(element.id, 'status_id')}
+                          onChange={(e) => handleStatusChange(element.id, e.target.value)}
+                        >
+                          <option value="">Выберите...</option>
+                          {statuses.map(s => (
+                            <option key={s.id} value={s.id}>{s.name}</option>
+                          ))}
+                        </select>
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          className="note-input"
+                          placeholder="Добавить примечание..."
+                          value={getValue(element.id, 'note')}
+                          onChange={(e) => handleNoteChange(element.id, e.target.value)}
+                        />
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
