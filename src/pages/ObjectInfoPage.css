@@ -143,6 +143,33 @@
   min-width: 200px;
 }
 
+.unit-cell {
+  color: var(--color-text-secondary);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.unit-select {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  background: var(--color-bg);
+  color: var(--color-text);
+  cursor: pointer;
+  min-width: 80px;
+}
+
+.unit-select:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+}
+
+.unit-select:hover {
+  border-color: #667eea;
+}
+
 .cost-input {
   width: 100%;
   min-width: 80px;

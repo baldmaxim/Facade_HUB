@@ -17,6 +17,8 @@ npm run preview  # Preview production build locally
 - **Vite 7** for bundling and dev server
 - **React Router DOM 7** for client-side routing
 - **Supabase** for backend database and storage
+- **xlsx** for Excel file parsing and import
+- **Chart.js + react-chartjs-2** for data visualization
 - **ESLint 9** with React hooks plugin
 - CSS files with CSS variables for theming
 
@@ -27,12 +29,19 @@ FacadeHub is an SPA for analyzing facade costs in residential construction proje
 ### Routing Structure
 
 ```
-/                           → HomePage (Hero + ProjectsTable)
+/                           → HomePage (landing with ObjectsPreview, StatsPreview, LandingCharts)
 /objects                    → ObjectsPage (list of objects from Supabase)
 /objects/:id                → ObjectPage (object profile with tabs)
 /objects/:id/checklist      → ChecklistPage
 /objects/:id/info           → ObjectInfoPage
 /objects/:id/calculation    → CalculationPage (editable table with image upload)
+/about                      → AboutPage
+/questions                  → QuestionsPage
+/prompts                    → PromptsPage
+/contractors                → ContractorsPage
+/suppliers                  → SuppliersPage
+/work-analysis              → WorkAnalysisPage
+/materials-analysis         → MaterialsAnalysisPage
 ```
 
 ### Directory Structure
@@ -43,13 +52,13 @@ src/
 ├── components/     # Reusable UI components (Header, Footer, ProjectCard, modals)
 ├── pages/          # Route page components (ObjectsPage, ObjectPage, etc.)
 ├── data/           # Static data and constants (projects.js, workTypes.js, checklistItems.js)
-├── lib/            # External service clients (supabase.js, checklistParser.js)
+├── lib/            # External service clients (supabase.js, checklistParser.js, excelParser.js)
 └── index.css       # Global styles and CSS variables
 ```
 
 ### Component Layout
 
-- **HomePage**: Standalone layout with Hero
+- **HomePage**: Uses Header + landing sections (ObjectsPreview, StatsPreview, LandingCharts) + Footer
 - **Inner pages**: Wrapped in `InnerLayout` (Header + children + Footer)
 
 ### Key Patterns
@@ -59,7 +68,6 @@ src/
 - **Supabase client**: Initialized in `src/lib/supabase.js`, uses `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` env vars
 - **Local state**: Uses React useState/useEffect hooks for data fetching and state management
 - **Russian localization**: All UI text is in Russian, dates formatted with `toLocaleDateString('ru-RU')`
-- **Layout patterns**: HomePage renders without Header (Hero has its own nav), inner pages use `InnerLayout` wrapper
 
 ### Data Sources
 
@@ -75,7 +83,7 @@ src/
 - `calculation_items`: `id`, `object_id`, `svor_code`, `work_type`, `note`, `image_url`, `created_at`
 - `checklists`: `id`, `object_id`, `item_id`, `status`, `note`, `custom_value`
 - `work_types`: `id`, `name`, `unit`
-- `object_works`: `id`, `object_id`, `work_type_id`, `quantity`, `unit_price`, `total_price`, `note`
+- `object_works`: `id`, `object_id`, `work_type_id`, `volume`, `work_per_unit`, `materials_per_unit`, `note`
 
 ## Environment Variables
 

@@ -27,6 +27,7 @@ function ObjectInfoPage() {
   const [object, setObject] = useState(null);
   const [costTypes, setCostTypes] = useState([]);
   const [costsData, setCostsData] = useState({});
+  const [units, setUnits] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
@@ -47,6 +48,14 @@ function ObjectInfoPage() {
         .order('id');
 
       setCostTypes(costTypesData || []);
+
+      // Загружаем единицы измерения
+      const { data: unitsData } = await supabase
+        .from('unit')
+        .select('*')
+        .order('name');
+
+      setUnits(unitsData || []);
 
       const { data: objectCostsData } = await supabase
         .from('object_costs')
@@ -95,6 +104,25 @@ function ObjectInfoPage() {
     setHasChanges(true);
   };
 
+  const handleUnitChange = (costTypeId, unitId) => {
+    setCostsData(prev => ({
+      ...prev,
+      [costTypeId]: {
+        ...prev[costTypeId],
+        unit_id: unitId || null
+      }
+    }));
+    setHasChanges(true);
+  };
+
+  // Безопасное преобразование числа для БД (max 10^13 - 1)
+  const safeNumber = (val) => {
+    const num = parseFloat(val) || 0;
+    if (!isFinite(num)) return 0;
+    const maxVal = 9999999999999.99;
+    return Math.min(Math.max(num, -maxVal), maxVal);
+  };
+
   const handleSave = async () => {
     setSaving(true);
     let hasError = false;
@@ -111,13 +139,14 @@ function ObjectInfoPage() {
         const saveData = {
           object_id: id,
           cost_type_id: parseInt(costTypeId),
-          volume: data.volume || 0,
-          works_per_unit: data.works_per_unit || 0,
-          materials_per_unit: data.materials_per_unit || 0,
-          summ_per_unit: data.summ_per_unit || 0,
-          works_summ: data.works_summ || 0,
-          materials_summ: data.materials_summ || 0,
-          summ_works_and_materials: data.summ_works_and_materials || 0
+          unit_id: data.unit_id || null,
+          volume: safeNumber(data.volume),
+          works_per_unit: safeNumber(data.works_per_unit),
+          materials_per_unit: safeNumber(data.materials_per_unit),
+          summ_per_unit: safeNumber(data.summ_per_unit),
+          works_summ: safeNumber(data.works_summ),
+          materials_summ: safeNumber(data.materials_summ),
+          summ_works_and_materials: safeNumber(data.summ_works_and_materials)
         };
 
         if (data.id) {
@@ -215,6 +244,7 @@ function ObjectInfoPage() {
                 <tr>
                   <th>Вид затрат</th>
                   <th>Объем</th>
+                  <th>Ед. изм.</th>
                   <th>Работы за ед.</th>
                   <th>Материалы за ед.</th>
                   <th>Итого за ед.</th>
@@ -226,7 +256,7 @@ function ObjectInfoPage() {
               <tbody>
                 {costTypes.length === 0 ? (
                   <tr>
-                    <td colSpan="8" className="empty-row">Нет видов затрат</td>
+                    <td colSpan="9" className="empty-row">Нет видов затрат</td>
                   </tr>
                 ) : (
                   costTypes.map((costType) => {
@@ -244,6 +274,18 @@ function ObjectInfoPage() {
                             placeholder="0"
                             step="0.01"
                           />
+                        </td>
+                        <td className="unit-cell">
+                          <select
+                            className="unit-select"
+                            value={data.unit_id || ''}
+                            onChange={(e) => handleUnitChange(costType.id, e.target.value)}
+                          >
+                            <option value="">—</option>
+                            {units.map(unit => (
+                              <option key={unit.id} value={unit.id}>{unit.name}</option>
+                            ))}
+                          </select>
                         </td>
                         <td>
                           <input
