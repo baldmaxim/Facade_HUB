@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import {
@@ -31,6 +31,7 @@ function ObjectInfoPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const inputRefs = useRef({});
 
   useEffect(() => {
     async function fetchData() {
@@ -113,6 +114,72 @@ function ObjectInfoPage() {
       }
     }));
     setHasChanges(true);
+  };
+
+  // Навигация по таблице с помощью клавиатуры
+  const handleKeyDown = (e, rowIndex, columnName) => {
+    const columns = ['volume', 'unit', 'works_per_unit', 'materials_per_unit'];
+    const colIndex = columns.indexOf(columnName);
+    const isSelect = e.target.tagName === 'SELECT';
+
+    let nextRowIndex = rowIndex;
+    let nextColIndex = colIndex;
+
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      nextRowIndex = rowIndex + 1;
+    } else if (e.key === 'ArrowDown' && !isSelect) {
+      e.preventDefault();
+      nextRowIndex = rowIndex + 1;
+    } else if (e.key === 'ArrowUp' && !isSelect) {
+      e.preventDefault();
+      nextRowIndex = rowIndex - 1;
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      nextColIndex = colIndex + 1;
+      if (nextColIndex >= columns.length) {
+        nextColIndex = 0;
+        nextRowIndex = rowIndex + 1;
+      }
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      nextColIndex = colIndex - 1;
+      if (nextColIndex < 0) {
+        nextColIndex = columns.length - 1;
+        nextRowIndex = rowIndex - 1;
+      }
+    } else if (e.key === 'Tab') {
+      // Tab - переход на следующий столбец, Shift+Tab - на предыдущий
+      e.preventDefault();
+      if (e.shiftKey) {
+        nextColIndex = colIndex - 1;
+        if (nextColIndex < 0) {
+          nextColIndex = columns.length - 1;
+          nextRowIndex = rowIndex - 1;
+        }
+      } else {
+        nextColIndex = colIndex + 1;
+        if (nextColIndex >= columns.length) {
+          nextColIndex = 0;
+          nextRowIndex = rowIndex + 1;
+        }
+      }
+    } else {
+      return;
+    }
+
+    // Проверяем границы
+    if (nextRowIndex < 0 || nextRowIndex >= costTypes.length) {
+      return;
+    }
+
+    const nextCostTypeId = costTypes[nextRowIndex].id;
+    const nextColumn = columns[nextColIndex];
+    const refKey = `${nextCostTypeId}-${nextColumn}`;
+
+    if (inputRefs.current[refKey]) {
+      inputRefs.current[refKey].focus();
+    }
   };
 
   // Безопасное преобразование числа для БД (max 10^13 - 1)
@@ -259,7 +326,7 @@ function ObjectInfoPage() {
                     <td colSpan="9" className="empty-row">Нет видов затрат</td>
                   </tr>
                 ) : (
-                  costTypes.map((costType) => {
+                  costTypes.map((costType, rowIndex) => {
                     const data = costsData[costType.id] || {};
 
                     return (
@@ -267,19 +334,23 @@ function ObjectInfoPage() {
                         <td className="name-cell">{costType.name}</td>
                         <td>
                           <input
+                            ref={el => inputRefs.current[`${costType.id}-volume`] = el}
                             type="number"
                             className="cost-input"
                             value={getCostValue(costType.id, 'volume')}
                             onChange={(e) => handleInputChange(costType.id, 'volume', e.target.value)}
+                            onKeyDown={(e) => handleKeyDown(e, rowIndex, 'volume')}
                             placeholder="0"
                             step="0.01"
                           />
                         </td>
                         <td className="unit-cell">
                           <select
+                            ref={el => inputRefs.current[`${costType.id}-unit`] = el}
                             className="unit-select"
                             value={data.unit_id || ''}
                             onChange={(e) => handleUnitChange(costType.id, e.target.value)}
+                            onKeyDown={(e) => handleKeyDown(e, rowIndex, 'unit')}
                           >
                             <option value="">—</option>
                             {units.map(unit => (
@@ -289,20 +360,24 @@ function ObjectInfoPage() {
                         </td>
                         <td>
                           <input
+                            ref={el => inputRefs.current[`${costType.id}-works_per_unit`] = el}
                             type="number"
                             className="cost-input"
                             value={getCostValue(costType.id, 'works_per_unit')}
                             onChange={(e) => handleInputChange(costType.id, 'works_per_unit', e.target.value)}
+                            onKeyDown={(e) => handleKeyDown(e, rowIndex, 'works_per_unit')}
                             placeholder="0"
                             step="0.01"
                           />
                         </td>
                         <td>
                           <input
+                            ref={el => inputRefs.current[`${costType.id}-materials_per_unit`] = el}
                             type="number"
                             className="cost-input"
                             value={getCostValue(costType.id, 'materials_per_unit')}
                             onChange={(e) => handleInputChange(costType.id, 'materials_per_unit', e.target.value)}
+                            onKeyDown={(e) => handleKeyDown(e, rowIndex, 'materials_per_unit')}
                             placeholder="0"
                             step="0.01"
                           />
