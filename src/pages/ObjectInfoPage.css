@@ -224,26 +224,24 @@
 
 /* График затрат */
 .costs-chart-wrapper {
-  padding: 2.5rem 3rem 10rem 3rem;
+  padding: 2rem 2rem 1rem 2rem;
   border-top: 1px solid var(--color-border);
   margin-top: 1rem;
-  margin-bottom: 6rem;
-  overflow: visible;
+  margin-bottom: 0;
+  overflow-x: auto;
 }
 
 .costs-chart-title {
   font-size: 1.25rem;
   font-weight: 600;
   color: var(--color-text);
-  margin: 0 0 2rem 0;
+  margin: 0 0 1.5rem 0;
 }
 
 .costs-chart {
-  height: 550px;
+  height: 400px;
+  min-width: 100%;
   position: relative;
-  padding: 1rem 2rem 8rem 2rem;
-  overflow: visible;
-  margin-bottom: 4rem;
 }
 
 @media (max-width: 768px) {
