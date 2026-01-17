@@ -103,6 +103,10 @@
   background-color: rgba(102, 126, 234, 0.05);
 }
 
+.col-date {
+  width: 100px;
+}
+
 .col-code {
   width: 140px;
 }
@@ -250,6 +254,12 @@
   padding: 2rem;
   color: var(--color-text-secondary);
   font-size: 0.95rem;
+}
+
+.td-date {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
 }
 
 .td-image {
@@ -448,6 +458,10 @@
   .calculation-table th,
   .calculation-table td {
     padding: 0.5rem;
+  }
+
+  .col-date {
+    width: 80px;
   }
 
   .col-code {

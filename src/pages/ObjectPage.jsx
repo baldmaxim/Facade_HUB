@@ -1,17 +1,14 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { fetchObjectById } from '../api/objects';
 import { supabase } from '../lib/supabase';
 import './ObjectPage.css';
 
 function ObjectPage() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [object, setObject] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [deleting, setDeleting] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editForm, setEditForm] = useState({
@@ -64,27 +61,6 @@ function ObjectPage() {
       month: 'long',
       year: 'numeric'
     });
-  };
-
-  const handleDelete = async () => {
-    setDeleting(true);
-    try {
-      // Удаляем связанные данные
-      await supabase.from('checklist_items').delete().eq('object_id', id);
-      await supabase.from('object_info').delete().eq('object_id', id);
-      await supabase.from('calculations').delete().eq('object_id', id);
-
-      // Удаляем сам объект
-      const { error } = await supabase.from('objects').delete().eq('id', id);
-
-      if (error) throw error;
-
-      navigate('/objects');
-    } catch (err) {
-      console.error('Ошибка удаления:', err);
-      setDeleting(false);
-      setShowDeleteModal(false);
-    }
   };
 
   const openEditModal = () => {
@@ -242,51 +218,8 @@ function ObjectPage() {
               Назад к объектам
             </Link>
           </div>
-
-          <div className="danger-zone">
-            <button
-              className="delete-btn"
-              onClick={() => setShowDeleteModal(true)}
-            >
-              удалить объект
-            </button>
-          </div>
         </div>
       </div>
-
-      {showDeleteModal && (
-        <div className="delete-modal-overlay" onClick={() => setShowDeleteModal(false)}>
-          <div className="delete-modal" onClick={e => e.stopPropagation()}>
-            <div className="delete-modal-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="12"></line>
-                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-              </svg>
-            </div>
-            <h3 className="delete-modal-title">Удалить объект?</h3>
-            <p className="delete-modal-text">
-              Объект «{object.name}» и все связанные данные (чеклист, информация, расчёты) будут удалены безвозвратно.
-            </p>
-            <div className="delete-modal-actions">
-              <button
-                className="delete-modal-btn cancel"
-                onClick={() => setShowDeleteModal(false)}
-                disabled={deleting}
-              >
-                Отмена
-              </button>
-              <button
-                className="delete-modal-btn confirm"
-                onClick={handleDelete}
-                disabled={deleting}
-              >
-                {deleting ? 'Удаление...' : 'Удалить'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {showEditModal && (
         <div className="edit-modal-overlay" onClick={() => setShowEditModal(false)}>

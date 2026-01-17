@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { fetchObjectName } from '../api/objects';
 import {
   fetchCalculationItems,
+  fetchCostTypes,
   createCalculationItem,
   updateCalculationItem,
   deleteCalculationItem,
@@ -10,30 +11,11 @@ import {
 } from '../api/calculations';
 import './CalculationPage.css';
 
-const WORK_TYPES = [
-  '11.01. Устройство мокрого фасада',
-  '11.02. Облицовка НВФ',
-  '11.03. Подсистема НВФ + утеплитель',
-  '11.04. Светопрозрачные конструкции',
-  '11.05. Фурнитура',
-  '11.06. Профиль алюминиевый',
-  '11.07. Профиль ПВХ',
-  '11.08. Тамбура (1-ые этажи и БКФН)',
-  '11.09. Двери наружные по фасаду (входные и БКФН, тамбурные двери)',
-  '11.10. Защита светопрозрачных конструкций',
-  '11.11. СОФ',
-  '11.12. Леса и люльки',
-  '11.13. Ограждения, козырьки, маркизы',
-  '1.1.11. Финишный клининг (фасада, светопрозрачки, отделки, покрытий благоустройства)',
-  '12.09.06. МОКАП',
-  '19.1. Разработка РД (включая КМД на фасады) и авторский надзор',
-  '19.6. Научно-техническое сопровождение строительства'
-];
-
 function CalculationPage() {
   const { id } = useParams();
   const [object, setObject] = useState(null);
   const [items, setItems] = useState([]);
+  const [costTypes, setCostTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingId, setUploadingId] = useState(null);
@@ -41,7 +23,7 @@ function CalculationPage() {
 
   const [newItem, setNewItem] = useState({
     svor_code: '',
-    work_type: '',
+    cost_type_id: '',
     note: ''
   });
   const [newItemImage, setNewItemImage] = useState(null);
@@ -57,12 +39,14 @@ function CalculationPage() {
   useEffect(() => {
     async function loadData() {
       try {
-        const [objectData, itemsData] = await Promise.all([
+        const [objectData, itemsData, costTypesData] = await Promise.all([
           fetchObjectName(id),
-          fetchCalculationItems(id)
+          fetchCalculationItems(id),
+          fetchCostTypes()
         ]);
         setObject(objectData);
         setItems(itemsData);
+        setCostTypes(costTypesData);
       } finally {
         setLoading(false);
       }
@@ -71,7 +55,7 @@ function CalculationPage() {
   }, [id]);
 
   const handleAddItem = async () => {
-    if (!newItem.work_type && !newItem.note && !newItem.svor_code && !newItemImage) return;
+    if (!newItem.cost_type_id && !newItem.note && !newItem.svor_code && !newItemImage) return;
 
     setSaving(true);
     try {
@@ -84,13 +68,13 @@ function CalculationPage() {
       const data = await createCalculationItem({
         object_id: id,
         svor_code: newItem.svor_code || null,
-        work_type: newItem.work_type || null,
+        cost_type_id: newItem.cost_type_id ? parseInt(newItem.cost_type_id) : null,
         note: newItem.note || null,
         image_url: imageUrl
       });
 
       setItems([...items, data]);
-      setNewItem({ svor_code: '', work_type: '', note: '' });
+      setNewItem({ svor_code: '', cost_type_id: '', note: '' });
       setNewItemImage(null);
       setNewItemImagePreview(null);
     } catch (error) {
@@ -224,16 +208,95 @@ function CalculationPage() {
             <table className="calculation-table">
               <thead>
                 <tr>
+                  <th className="col-date">Дата</th>
                   <th className="col-code">Код СВОР</th>
-                  <th className="col-work">Вид работ</th>
+                  <th className="col-work">Вид затрат</th>
                   <th className="col-note">Примечание</th>
                   <th className="col-image">Фото</th>
                   <th className="col-actions"></th>
                 </tr>
               </thead>
               <tbody>
+                <tr className="new-row">
+                  <td className="td-date"></td>
+                  <td className="td-code">
+                    <textarea
+                      value={newItem.svor_code}
+                      onChange={(e) => setNewItem({ ...newItem, svor_code: e.target.value })}
+                      className="table-textarea table-textarea-code"
+                      placeholder="Код"
+                      rows={1}
+                    />
+                  </td>
+                  <td className="td-work">
+                    <select
+                      value={newItem.cost_type_id}
+                      onChange={(e) => setNewItem({ ...newItem, cost_type_id: e.target.value })}
+                      className="table-select"
+                    >
+                      <option value="">Выберите вид затрат...</option>
+                      {costTypes.map(type => (
+                        <option key={type.id} value={type.id}>{type.name}</option>
+                      ))}
+                    </select>
+                  </td>
+                  <td className="td-note">
+                    <textarea
+                      value={newItem.note}
+                      onChange={(e) => setNewItem({ ...newItem, note: e.target.value })}
+                      className="table-textarea table-textarea-note"
+                      placeholder="Примечание"
+                      rows={3}
+                    />
+                  </td>
+                  <td className="td-image">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={newItemFileRef}
+                      style={{ display: 'none' }}
+                      onChange={(e) => handleNewItemImageSelect(e.target.files[0])}
+                    />
+                    <div className="image-buttons">
+                      <button
+                        className="view-image-btn"
+                        onClick={() => newItemImagePreview && openImage(newItemImagePreview)}
+                        title={newItemImagePreview ? "Просмотреть" : "Нет изображения"}
+                        disabled={!newItemImagePreview}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                          <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                      </button>
+                      <button
+                        className="upload-image-btn"
+                        onClick={() => newItemFileRef.current?.click()}
+                        title={newItemImagePreview ? "Заменить изображение" : "Добавить изображение"}
+                      >
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                          <polyline points="17 8 12 3 7 8"></polyline>
+                          <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                  <td className="td-actions">
+                    <button
+                      className="save-btn"
+                      onClick={handleAddItem}
+                      disabled={(!newItem.cost_type_id && !newItem.note && !newItem.svor_code && !newItemImage) || saving}
+                    >
+                      {saving ? 'Сохранение...' : 'Сохранить'}
+                    </button>
+                  </td>
+                </tr>
                 {items.map(item => (
                   <tr key={item.id}>
+                    <td className="td-date">
+                      {new Date(item.created_at).toLocaleDateString('ru-RU')}
+                    </td>
                     <td className="td-code">
                       <textarea
                         value={item.svor_code || ''}
@@ -245,13 +308,13 @@ function CalculationPage() {
                     </td>
                     <td className="td-work">
                       <select
-                        value={item.work_type || ''}
-                        onChange={(e) => handleUpdateItem(item.id, 'work_type', e.target.value || null)}
+                        value={item.cost_type_id || ''}
+                        onChange={(e) => handleUpdateItem(item.id, 'cost_type_id', e.target.value ? parseInt(e.target.value) : null)}
                         className="table-select"
                       >
                         <option value="">—</option>
-                        {WORK_TYPES.map(type => (
-                          <option key={type} value={type}>{type}</option>
+                        {costTypes.map(type => (
+                          <option key={type.id} value={type.id}>{type.name}</option>
                         ))}
                       </select>
                     </td>
@@ -313,87 +376,13 @@ function CalculationPage() {
                     </td>
                   </tr>
                 ))}
-                <tr className="new-row">
-                  <td className="td-code">
-                    <textarea
-                      value={newItem.svor_code}
-                      onChange={(e) => setNewItem({ ...newItem, svor_code: e.target.value })}
-                      className="table-textarea table-textarea-code"
-                      placeholder="Код"
-                      rows={1}
-                    />
-                  </td>
-                  <td className="td-work">
-                    <select
-                      value={newItem.work_type}
-                      onChange={(e) => setNewItem({ ...newItem, work_type: e.target.value })}
-                      className="table-select"
-                    >
-                      <option value="">Выберите вид работ...</option>
-                      {WORK_TYPES.map(type => (
-                        <option key={type} value={type}>{type}</option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className="td-note">
-                    <textarea
-                      value={newItem.note}
-                      onChange={(e) => setNewItem({ ...newItem, note: e.target.value })}
-                      className="table-textarea table-textarea-note"
-                      placeholder="Примечание"
-                      rows={3}
-                    />
-                  </td>
-                  <td className="td-image">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      ref={newItemFileRef}
-                      style={{ display: 'none' }}
-                      onChange={(e) => handleNewItemImageSelect(e.target.files[0])}
-                    />
-                    <div className="image-buttons">
-                      <button
-                        className="view-image-btn"
-                        onClick={() => newItemImagePreview && openImage(newItemImagePreview)}
-                        title={newItemImagePreview ? "Просмотреть" : "Нет изображения"}
-                        disabled={!newItemImagePreview}
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                          <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                      </button>
-                      <button
-                        className="upload-image-btn"
-                        onClick={() => newItemFileRef.current?.click()}
-                        title={newItemImagePreview ? "Заменить изображение" : "Добавить изображение"}
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                          <polyline points="17 8 12 3 7 8"></polyline>
-                          <line x1="12" y1="3" x2="12" y2="15"></line>
-                        </svg>
-                      </button>
-                    </div>
-                  </td>
-                  <td className="td-actions">
-                    <button
-                      className="save-btn"
-                      onClick={handleAddItem}
-                      disabled={(!newItem.work_type && !newItem.note && !newItem.svor_code && !newItemImage) || saving}
-                    >
-                      {saving ? 'Сохранение...' : 'Сохранить'}
-                    </button>
-                  </td>
-                </tr>
               </tbody>
             </table>
           </div>
 
           {items.length === 0 && (
             <p className="empty-text">
-              Нет записей. Добавьте первую запись, выбрав вид работ.
+              Нет записей. Добавьте первую запись, выбрав вид затрат.
             </p>
           )}
         </div>

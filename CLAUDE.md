@@ -39,9 +39,9 @@ FacadeHub is an SPA for analyzing facade costs in residential construction proje
 /questions                  → QuestionsPage
 /prompts                    → PromptsPage
 /contractors                → ContractorsPage
-/suppliers                  → SuppliersPage
 /work-analysis              → WorkAnalysisPage
 /materials-analysis         → MaterialsAnalysisPage
+/admin                      → AdminPage
 ```
 
 ### Directory Structure
@@ -133,3 +133,4 @@ Defined in `src/index.css`:
 - `--color-bg`, `--color-bg-secondary` for backgrounds
 - `--color-business` (blue), `--color-premium` (purple) for class badges
 - `--color-text`, `--color-text-secondary`, `--color-border`, `--color-accent`
+- `--font-family` for typography (Inter font with system fallbacks)

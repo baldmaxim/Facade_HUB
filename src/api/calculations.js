@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 export async function fetchCalculationItems(objectId) {
   const { data, error } = await supabase
     .from('calculation_items')
-    .select('*')
+    .select('*, cost_types(id, name)')
     .eq('object_id', objectId)
     .order('created_at');
 
@@ -11,11 +11,21 @@ export async function fetchCalculationItems(objectId) {
   return data || [];
 }
 
-export async function createCalculationItem({ object_id, svor_code, work_type, note, image_url }) {
+export async function fetchCostTypes() {
+  const { data, error } = await supabase
+    .from('cost_types')
+    .select('*')
+    .order('id');
+
+  if (error) throw error;
+  return data || [];
+}
+
+export async function createCalculationItem({ object_id, svor_code, cost_type_id, note, image_url }) {
   const { data, error } = await supabase
     .from('calculation_items')
-    .insert([{ object_id, svor_code, work_type, note, image_url }])
-    .select()
+    .insert([{ object_id, svor_code, cost_type_id, note, image_url }])
+    .select('*, cost_types(id, name)')
     .single();
 
   if (error) throw error;
