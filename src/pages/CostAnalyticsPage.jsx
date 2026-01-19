@@ -27,6 +27,7 @@ function CostAnalyticsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
   const [chartData, setChartData] = useState(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   useEffect(() => {
     async function fetchCostTypes() {
@@ -164,25 +165,71 @@ function CostAnalyticsPage() {
     { title: 'Итого', data: chartData.totalSumm, color: 'rgba(16, 185, 129, 0.8)' }
   ] : [];
 
+  const selectedCostTypeName = costTypes.find(ct => ct.id === Number(selectedCostType))?.name;
+
+  const handleSelectCostType = (costTypeId) => {
+    setSelectedCostType(costTypeId);
+    setIsDropdownOpen(false);
+  };
+
+  // Закрытие dropdown при клике вне его
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isDropdownOpen && !event.target.closest('.custom-select')) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isDropdownOpen]);
+
   return (
     <div className="cost-analytics-page">
       <h1 className="cost-analytics-title">Анализ по затратам</h1>
       <p className="cost-analytics-subtitle">Детальный анализ затрат по объектам</p>
 
       <div className="cost-analytics-controls">
-        <select
-          className="cost-type-select"
-          value={selectedCostType}
-          onChange={(e) => setSelectedCostType(e.target.value)}
-          disabled={isLoading}
-        >
-          <option value="">Выберите вид затрат</option>
-          {costTypes.map((type) => (
-            <option key={type.id} value={type.id}>
-              {type.name}
-            </option>
-          ))}
-        </select>
+        <div className="custom-select">
+          <div
+            className="custom-select-trigger"
+            onClick={() => !isLoading && setIsDropdownOpen(!isDropdownOpen)}
+          >
+            <span className="custom-select-value">
+              {selectedCostTypeName || 'Выберите вид затрат'}
+            </span>
+            <svg
+              className={`custom-select-arrow ${isDropdownOpen ? 'open' : ''}`}
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </div>
+          {isDropdownOpen && (
+            <div className="custom-select-dropdown">
+              <div
+                className="custom-select-option"
+                onClick={() => handleSelectCostType('')}
+              >
+                Выберите вид затрат
+              </div>
+              {costTypes.map((type) => (
+                <div
+                  key={type.id}
+                  className={`custom-select-option ${type.id === Number(selectedCostType) ? 'selected' : ''}`}
+                  onClick={() => handleSelectCostType(String(type.id))}
+                >
+                  {type.name}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
         <button
           className="generate-btn"
           onClick={handleGenerate}

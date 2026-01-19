@@ -19,6 +19,7 @@ import AdminPage from './pages/AdminPage';
 import LoginPage from './pages/LoginPage';
 import WorkPricesPage from './pages/WorkPricesPage';
 import CostAnalyticsPage from './pages/CostAnalyticsPage';
+import WorkTypeAnalyticsPage from './pages/WorkTypeAnalyticsPage';
 import './index.css';
 
 function HomePage() {
@@ -58,7 +59,7 @@ function App() {
         <Route path="/questions" element={<InnerLayout><QuestionsPage /></InnerLayout>} />
         <Route path="/prompts" element={<InnerLayout><PromptsPage /></InnerLayout>} />
         <Route path="/contractors" element={<InnerLayout><ContractorsPage /></InnerLayout>} />
-        <Route path="/work-analysis" element={<InnerLayout><WorkAnalysisPage /></InnerLayout>} />
+        <Route path="/work-analysis" element={<InnerLayout><WorkTypeAnalyticsPage /></InnerLayout>} />
         <Route path="/materials-analysis" element={<InnerLayout><MaterialsAnalysisPage /></InnerLayout>} />
         <Route path="/analytics/total" element={<InnerLayout><CostAnalyticsPage /></InnerLayout>} />
         <Route path="/login" element={<LoginPage />} />

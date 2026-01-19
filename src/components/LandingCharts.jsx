@@ -196,18 +196,27 @@ function LandingCharts() {
     ? displayTotalCosts.reduce((a, b) => a + b, 0) / displayTotalCosts.length
     : 0;
   const minTotalCost = displayTotalCosts.length > 0 ? Math.min(...displayTotalCosts) : 0;
+  const sumTotalCost = displayTotalCosts.length > 0
+    ? displayTotalCosts.reduce((a, b) => a + b, 0)
+    : 0;
 
   const maxWorkCost = displayWorkCosts.length > 0 ? Math.max(...displayWorkCosts) : 0;
   const avgWorkCost = displayWorkCosts.length > 0
     ? displayWorkCosts.reduce((a, b) => a + b, 0) / displayWorkCosts.length
     : 0;
   const minWorkCost = displayWorkCosts.length > 0 ? Math.min(...displayWorkCosts) : 0;
+  const sumWorkCost = displayWorkCosts.length > 0
+    ? displayWorkCosts.reduce((a, b) => a + b, 0)
+    : 0;
 
   const maxMaterialCost = displayMaterialCosts.length > 0 ? Math.max(...displayMaterialCosts) : 0;
   const avgMaterialCost = displayMaterialCosts.length > 0
     ? displayMaterialCosts.reduce((a, b) => a + b, 0) / displayMaterialCosts.length
     : 0;
   const minMaterialCost = displayMaterialCosts.length > 0 ? Math.min(...displayMaterialCosts) : 0;
+  const sumMaterialCost = displayMaterialCosts.length > 0
+    ? displayMaterialCosts.reduce((a, b) => a + b, 0)
+    : 0;
 
   const totalCostData = {
     labels: displayObjectNames,
@@ -304,7 +313,7 @@ function LandingCharts() {
         <div className="chart-container">
           <div className="chart-header">
             <div className="chart-info">
-              <h2 className="chart-title">Общая стоимость фасадов по затратам</h2>
+              <h2 className="chart-title">Общая стоимость фасадов</h2>
               <p className="chart-subtitle">Сравнение стоимости по объектам</p>
             </div>
             <Link to="/analytics/total" className="chart-link">
@@ -329,6 +338,10 @@ function LandingCharts() {
             <div className="chart-stat">
               <span className="chart-stat-value green">{(minTotalCost / 1000).toFixed(2)} млрд</span>
               <span className="chart-stat-label">Минимум</span>
+            </div>
+            <div className="chart-stat">
+              <span className="chart-stat-value green">{(sumTotalCost / 1000).toFixed(2)} млрд</span>
+              <span className="chart-stat-label">Всего</span>
             </div>
           </div>
         </div>
@@ -365,6 +378,10 @@ function LandingCharts() {
               <span className="chart-stat-value purple">{(minWorkCost / 1000).toFixed(2)} млрд</span>
               <span className="chart-stat-label">Минимум</span>
             </div>
+            <div className="chart-stat">
+              <span className="chart-stat-value purple">{(sumWorkCost / 1000).toFixed(2)} млрд</span>
+              <span className="chart-stat-label">Всего</span>
+            </div>
           </div>
         </div>
       </section>
@@ -399,6 +416,10 @@ function LandingCharts() {
             <div className="chart-stat">
               <span className="chart-stat-value orange">{(minMaterialCost / 1000).toFixed(2)} млрд</span>
               <span className="chart-stat-label">Минимум</span>
+            </div>
+            <div className="chart-stat">
+              <span className="chart-stat-value orange">{(sumMaterialCost / 1000).toFixed(2)} млрд</span>
+              <span className="chart-stat-label">Всего</span>
             </div>
           </div>
         </div>
