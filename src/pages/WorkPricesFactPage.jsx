@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { fetchAllWorkTypes, fetchWorkPrices, upsertWorkPrice } from '../api/workPrices';
+import { fetchAllWorkTypes, fetchWorkPricesFact, upsertWorkPriceFact } from '../api/workPricesFact';
 import { fetchObjectById } from '../api/objects';
 import './WorkPricesPage.css';
 
-function WorkPricesPage() {
+function WorkPricesFactPage() {
   const { id } = useParams();
   const [object, setObject] = useState(null);
   const [workTypes, setWorkTypes] = useState([]);
@@ -23,7 +23,7 @@ function WorkPricesPage() {
       const [objectData, workTypesData, workPricesData] = await Promise.all([
         fetchObjectById(id),
         fetchAllWorkTypes(),
-        fetchWorkPrices(id)
+        fetchWorkPricesFact(id)
       ]);
 
       setObject(objectData);
@@ -52,7 +52,7 @@ function WorkPricesPage() {
     // Сохраняем в базу данных
     try {
       const price = parseFloat(value) || 0;
-      await upsertWorkPrice(id, workTypeId, price);
+      await upsertWorkPriceFact(id, workTypeId, price);
     } catch (err) {
       console.error('Ошибка сохранения цены:', err);
       setError('Ошибка сохранения цены');
@@ -124,7 +124,7 @@ function WorkPricesPage() {
               </svg>
             </Link>
             <div className="header-text">
-              <h1 className="page-title">Цены работ на тендере</h1>
+              <h1 className="page-title">Фактическая цена работ</h1>
               <p className="page-subtitle">{object.name}</p>
             </div>
           </div>
@@ -186,4 +186,4 @@ function WorkPricesPage() {
   );
 }
 
-export default WorkPricesPage;
+export default WorkPricesFactPage;

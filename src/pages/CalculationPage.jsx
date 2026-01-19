@@ -212,7 +212,7 @@ function CalculationPage() {
                   <th className="col-code">Код СВОР</th>
                   <th className="col-work">Вид затрат</th>
                   <th className="col-note">Примечание</th>
-                  <th className="col-image">Фото</th>
+                  <th className="col-image">Изображение</th>
                   <th className="col-actions"></th>
                 </tr>
               </thead>
@@ -234,7 +234,7 @@ function CalculationPage() {
                       onChange={(e) => setNewItem({ ...newItem, cost_type_id: e.target.value })}
                       className="table-select"
                     >
-                      <option value="">Выберите вид затрат...</option>
+                      <option value="">Выберите вид затрат</option>
                       {costTypes.map(type => (
                         <option key={type.id} value={type.id}>{type.name}</option>
                       ))}

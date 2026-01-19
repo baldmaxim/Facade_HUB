@@ -1,13 +1,13 @@
 import { supabase } from '../lib/supabase';
 
 /**
- * Получить цены работ для объекта вместе с информацией о видах работ и единицах измерения
+ * Получить фактические цены работ для объекта вместе с информацией о видах работ и единицах измерения
  * @param {string} objectId - ID объекта
- * @returns {Promise<Array>} Массив цен работ с информацией о работах
+ * @returns {Promise<Array>} Массив фактических цен работ с информацией о работах
  */
-export async function fetchWorkPrices(objectId) {
+export async function fetchWorkPricesFact(objectId) {
   const { data, error } = await supabase
-    .from('work_price_tender')
+    .from('work_price_fact')
     .select(`
       id,
       object_id,
@@ -73,15 +73,15 @@ export async function fetchAllWorkTypes() {
 }
 
 /**
- * Обновить или создать цену работы для объекта
+ * Обновить или создать фактическую цену работы для объекта
  * @param {string} objectId - ID объекта
  * @param {string} workTypeId - ID вида работ
  * @param {number} price - Цена
  * @returns {Promise<void>}
  */
-export async function upsertWorkPrice(objectId, workTypeId, price) {
+export async function upsertWorkPriceFact(objectId, workTypeId, price) {
   const { error } = await supabase
-    .from('work_price_tender')
+    .from('work_price_fact')
     .upsert({
       object_id: objectId,
       work_type_id: workTypeId,
@@ -94,13 +94,13 @@ export async function upsertWorkPrice(objectId, workTypeId, price) {
 }
 
 /**
- * Удалить цену работы
- * @param {string} workPriceId - ID записи work_price_tender
+ * Удалить фактическую цену работы
+ * @param {string} workPriceId - ID записи work_price_fact
  * @returns {Promise<void>}
  */
-export async function deleteWorkPrice(workPriceId) {
+export async function deleteWorkPriceFact(workPriceId) {
   const { error } = await supabase
-    .from('work_price_tender')
+    .from('work_price_fact')
     .delete()
     .eq('id', workPriceId);
 

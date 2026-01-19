@@ -64,7 +64,7 @@ function WorkTypeAnalyticsPage() {
 
         // Получаем все цены для выбранного вида работ
         const { data: prices, error: pricesError } = await supabase
-          .from('work_price')
+          .from('work_price_tender')
           .select(`
             id,
             price,
@@ -231,7 +231,7 @@ function WorkTypeAnalyticsPage() {
       <div className="analytics-container">
         <div className="analytics-header">
           <div>
-            <h1 className="analytics-title">Анализ цен по видам работ</h1>
+            <h1 className="analytics-title">Анализ тендерных цен по видам работ</h1>
             <p className="analytics-subtitle">Сравнение цен на работы между объектами</p>
           </div>
         </div>

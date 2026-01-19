@@ -176,81 +176,106 @@ function ObjectPage() {
             </p>
           </div>
 
-          <div className="profile-details">
-            <div className="detail-card">
-              <div className="detail-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                  <circle cx="12" cy="10" r="3"></circle>
-                </svg>
-              </div>
-              <div className="detail-content">
-                <span className="detail-label">Адрес</span>
-                <span className="detail-value">{object.address}</span>
-              </div>
-            </div>
-
-            <div className="detail-card">
-              <div className="detail-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
-                </svg>
-              </div>
-              <div className="detail-content">
-                <span className="detail-label">Застройщик</span>
-                <span className="detail-value">{object.developer}</span>
-              </div>
-            </div>
-
-            {object.object_status && (
+          <div className="profile-section">
+            <h2 className="section-title">Информация об объекте</h2>
+            <div className="profile-details">
               <div className="detail-card">
                 <div className="detail-icon">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <polyline points="12 6 12 12 16 14"></polyline>
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
                   </svg>
                 </div>
                 <div className="detail-content">
-                  <span className="detail-label">Статус</span>
-                  <span className="detail-value">{object.object_status.name}</span>
+                  <span className="detail-label">Адрес</span>
+                  <span className="detail-value">{object.address}</span>
                 </div>
               </div>
-            )}
+
+              <div className="detail-card">
+                <div className="detail-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                  </svg>
+                </div>
+                <div className="detail-content">
+                  <span className="detail-label">Застройщик</span>
+                  <span className="detail-value">{object.developer}</span>
+                </div>
+              </div>
+
+              {object.object_status && (
+                <div className="detail-card">
+                  <div className="detail-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                  </div>
+                  <div className="detail-content">
+                    <span className="detail-label">Статус</span>
+                    <span className="detail-value">{object.object_status.name}</span>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="profile-tabs">
-            <Link to={`/objects/${id}/checklist`} className="tab-btn">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9 11l3 3L22 4"></path>
-                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-              </svg>
-              <span>Чеклист</span>
-            </Link>
-            <Link to={`/objects/${id}/info`} className="tab-btn">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="16" x2="12" y2="12"></line>
-                <line x1="12" y1="8" x2="12.01" y2="8"></line>
-              </svg>
-              <span>Информация об объекте</span>
-            </Link>
-            <Link to={`/objects/${id}/calculation`} className="tab-btn">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="4" y="2" width="16" height="20" rx="2"></rect>
-                <line x1="8" y1="6" x2="16" y2="6"></line>
-                <line x1="8" y1="10" x2="16" y2="10"></line>
-                <line x1="8" y1="14" x2="12" y2="14"></line>
-              </svg>
-              <span>Нюансы расчёта</span>
-            </Link>
-            <Link to={`/objects/${id}/work-prices`} className="tab-btn">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="12" y1="1" x2="12" y2="23"></line>
-                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-              </svg>
-              <span>Цены работ</span>
-            </Link>
+          <div className="profile-section">
+            <h2 className="section-title">Тендерный расчет</h2>
+            <div className="profile-tabs">
+              <Link to={`/objects/${id}/checklist`} className="tab-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M9 11l3 3L22 4"></path>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                </svg>
+                <span>Чеклист</span>
+              </Link>
+              <Link to={`/objects/${id}/info`} className="tab-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="12" y1="16" x2="12" y2="12"></line>
+                  <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <span>Затраты на строительство</span>
+              </Link>
+              <Link to={`/objects/${id}/calculation`} className="tab-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="4" y="2" width="16" height="20" rx="2"></rect>
+                  <line x1="8" y1="6" x2="16" y2="6"></line>
+                  <line x1="8" y1="10" x2="16" y2="10"></line>
+                  <line x1="8" y1="14" x2="12" y2="14"></line>
+                </svg>
+                <span>Нюансы расчёта</span>
+              </Link>
+              <Link to={`/objects/${id}/work-prices`} className="tab-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="12" y1="1" x2="12" y2="23"></line>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                <span>Цены работ на тендере</span>
+              </Link>
+            </div>
+          </div>
+
+          <div className="profile-section">
+            <h2 className="section-title">Фактическая стоимость</h2>
+            {object.object_status?.name === 'Объекты СУ-10' ? (
+              <div className="profile-tabs">
+                <Link to={`/objects/${id}/work-prices-fact`} className="tab-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                  </svg>
+                  <span>Фактическая цена работ</span>
+                </Link>
+              </div>
+            ) : (
+              <div className="empty-section">
+                <p className="empty-section-text">Доступно только для объектов со статусом "Объекты СУ-10"</p>
+              </div>
+            )}
           </div>
 
           <div className="profile-actions">

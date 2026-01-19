@@ -18,8 +18,10 @@ import MaterialsAnalysisPage from './pages/MaterialsAnalysisPage';
 import AdminPage from './pages/AdminPage';
 import LoginPage from './pages/LoginPage';
 import WorkPricesPage from './pages/WorkPricesPage';
+import WorkPricesFactPage from './pages/WorkPricesFactPage';
 import CostAnalyticsPage from './pages/CostAnalyticsPage';
 import WorkTypeAnalyticsPage from './pages/WorkTypeAnalyticsPage';
+import PlanFactAnalysisPage from './pages/PlanFactAnalysisPage';
 import './index.css';
 
 function HomePage() {
@@ -55,6 +57,7 @@ function App() {
         <Route path="/objects/:id/info" element={<InnerLayout><ObjectInfoPage /></InnerLayout>} />
         <Route path="/objects/:id/calculation" element={<InnerLayout><CalculationPage /></InnerLayout>} />
         <Route path="/objects/:id/work-prices" element={<InnerLayout><WorkPricesPage /></InnerLayout>} />
+        <Route path="/objects/:id/work-prices-fact" element={<InnerLayout><WorkPricesFactPage /></InnerLayout>} />
         <Route path="/about" element={<InnerLayout><AboutPage /></InnerLayout>} />
         <Route path="/questions" element={<InnerLayout><QuestionsPage /></InnerLayout>} />
         <Route path="/prompts" element={<InnerLayout><PromptsPage /></InnerLayout>} />
@@ -62,6 +65,7 @@ function App() {
         <Route path="/work-analysis" element={<InnerLayout><WorkTypeAnalyticsPage /></InnerLayout>} />
         <Route path="/materials-analysis" element={<InnerLayout><MaterialsAnalysisPage /></InnerLayout>} />
         <Route path="/analytics/total" element={<InnerLayout><CostAnalyticsPage /></InnerLayout>} />
+        <Route path="/analytics/plan-fact" element={<InnerLayout><PlanFactAnalysisPage /></InnerLayout>} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/admin" element={<InnerLayout><AdminPage /></InnerLayout>} />
       </Routes>
