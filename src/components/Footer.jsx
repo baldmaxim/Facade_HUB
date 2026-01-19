@@ -17,7 +17,7 @@ function Footer() {
         <nav className="footer-nav">
           <Link to="/objects" className="footer-link">Объекты</Link>
           <a href="#analytics" className="footer-link">Аналитика</a>
-          <Link to="/about" className="footer-link">О сервисе</Link>
+          <Link to="/about" className="footer-link">Наша команда</Link>
         </nav>
 
         <div className="footer-bottom">
