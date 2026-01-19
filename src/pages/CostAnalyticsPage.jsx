@@ -193,19 +193,126 @@ function CostAnalyticsPage() {
       </div>
 
       {chartData && (
-        <div className="charts-grid">
-          {charts.map((chart, index) => (
-            <div key={index} className="chart-card">
-              <h3 className="chart-card-title">{chart.title}</h3>
-              <div className="chart-card-wrapper">
-                <Bar
-                  data={createChartData(chart.data, chart.title, chart.color)}
-                  options={chartOptions}
-                />
-              </div>
+        <>
+          {/* Сводная таблица */}
+          <div className="summary-table-container">
+            <h2 className="summary-table-title">Сводная таблица</h2>
+            <div className="summary-table-wrapper">
+              <table className="summary-table">
+                <thead>
+                  <tr>
+                    <th>№</th>
+                    <th>Объект</th>
+                    <th>Работа за ед., ₽</th>
+                    <th>Материалы за ед., ₽</th>
+                    <th>Итого за ед., ₽</th>
+                    <th>Итого работы, млн ₽</th>
+                    <th>Итого материалы, млн ₽</th>
+                    <th>Итого, млн ₽</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {chartData.labels.map((label, index) => (
+                    <tr key={index}>
+                      <td className="summary-table-number">{index + 1}</td>
+                      <td className="summary-table-object">{label}</td>
+                      <td className="summary-table-value">
+                        {chartData.workPerUnit[index].toLocaleString('ru-RU', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2
+                        })}
+                      </td>
+                      <td className="summary-table-value">
+                        {chartData.materialsPerUnit[index].toLocaleString('ru-RU', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2
+                        })}
+                      </td>
+                      <td className="summary-table-value summary-table-total">
+                        {chartData.totalPerUnit[index].toLocaleString('ru-RU', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2
+                        })}
+                      </td>
+                      <td className="summary-table-value">
+                        {(chartData.worksSumm[index] / 1000000).toLocaleString('ru-RU', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2
+                        })}
+                      </td>
+                      <td className="summary-table-value">
+                        {(chartData.materialsSumm[index] / 1000000).toLocaleString('ru-RU', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2
+                        })}
+                      </td>
+                      <td className="summary-table-value summary-table-total">
+                        {(chartData.totalSumm[index] / 1000000).toLocaleString('ru-RU', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2
+                        })}
+                      </td>
+                    </tr>
+                  ))}
+                  <tr className="summary-table-average">
+                    <td colSpan="2" className="summary-table-avg-label">Среднее</td>
+                    <td className="summary-table-value">
+                      {(chartData.workPerUnit.reduce((a, b) => a + b, 0) / chartData.workPerUnit.length).toLocaleString('ru-RU', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      })}
+                    </td>
+                    <td className="summary-table-value">
+                      {(chartData.materialsPerUnit.reduce((a, b) => a + b, 0) / chartData.materialsPerUnit.length).toLocaleString('ru-RU', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      })}
+                    </td>
+                    <td className="summary-table-value summary-table-total">
+                      {(chartData.totalPerUnit.reduce((a, b) => a + b, 0) / chartData.totalPerUnit.length).toLocaleString('ru-RU', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      })}
+                    </td>
+                    <td className="summary-table-value">
+                      {(chartData.worksSumm.reduce((a, b) => a + b, 0) / chartData.worksSumm.length / 1000000).toLocaleString('ru-RU', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      })}
+                    </td>
+                    <td className="summary-table-value">
+                      {(chartData.materialsSumm.reduce((a, b) => a + b, 0) / chartData.materialsSumm.length / 1000000).toLocaleString('ru-RU', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      })}
+                    </td>
+                    <td className="summary-table-value summary-table-total">
+                      {(chartData.totalSumm.reduce((a, b) => a + b, 0) / chartData.totalSumm.length / 1000000).toLocaleString('ru-RU', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      })}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-          ))}
-        </div>
+          </div>
+
+          {/* Графики */}
+          <div className="charts-grid">
+            {charts.map((chart, index) => (
+              <div key={index} className="chart-card">
+                <h3 className="chart-card-title">{chart.title}</h3>
+                <div className="chart-card-wrapper">
+                  <Bar
+                    data={createChartData(chart.data, chart.title, chart.color)}
+                    options={chartOptions}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       {chartData === null && !isGenerating && selectedCostType && (

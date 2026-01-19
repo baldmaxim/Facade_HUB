@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchAllWorkTypes, fetchWorkPrices, upsertWorkPrice } from '../api/workPrices';
 import { fetchObjectById } from '../api/objects';
@@ -99,7 +99,6 @@ function WorkPricesPage() {
     'Утепление и изоляция',
     'Профили и элементы',
     'Доборные элементы',
-    'Монтажные работы',
     'Прочие работы'
   ];
 
@@ -143,8 +142,8 @@ function WorkPricesPage() {
             </thead>
             <tbody>
               {sortedCategories.map((category) => (
-                <>
-                  <tr key={`category-${category}`} className="category-row">
+                <React.Fragment key={`category-${category}`}>
+                  <tr className="category-row">
                     <td colSpan="4" className="category-cell">
                       {category}
                     </td>
@@ -170,7 +169,7 @@ function WorkPricesPage() {
                       </tr>
                     );
                   })}
-                </>
+                </React.Fragment>
               ))}
             </tbody>
           </table>
