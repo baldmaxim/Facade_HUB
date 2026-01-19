@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { fetchObjectById } from '../api/objects';
+import { fetchObjectById, updateObject } from '../api/objects';
+import { fetchAllObjectStatuses } from '../api/objectStatus';
 import { supabase } from '../lib/supabase';
 import './ObjectPage.css';
 
@@ -15,9 +16,11 @@ function ObjectPage() {
     name: '',
     address: '',
     developer: '',
+    status_id: '',
     image: null
   });
   const [imagePreview, setImagePreview] = useState(null);
+  const [objectStatuses, setObjectStatuses] = useState([]);
 
   useEffect(() => {
     async function loadObject() {
@@ -31,7 +34,17 @@ function ObjectPage() {
       }
     }
 
+    async function loadStatuses() {
+      try {
+        const statuses = await fetchAllObjectStatuses();
+        setObjectStatuses(statuses);
+      } catch (err) {
+        console.error('Ошибка загрузки статусов:', err);
+      }
+    }
+
     loadObject();
+    loadStatuses();
   }, [id]);
 
   if (loading) {
@@ -68,6 +81,7 @@ function ObjectPage() {
       name: object.name,
       address: object.address,
       developer: object.developer,
+      status_id: object.status_id || '',
       image: null
     });
     setImagePreview(object.image_url);
@@ -105,20 +119,24 @@ function ObjectPage() {
         imageUrl = urlData.publicUrl;
       }
 
-      // Обновляем объект
-      const { data, error } = await supabase
-        .from('objects')
-        .update({
-          name: editForm.name,
-          address: editForm.address,
-          developer: editForm.developer,
-          image_url: imageUrl
-        })
-        .eq('id', id)
-        .select()
-        .single();
+      // Обновляем объект через API
+      const data = await updateObject(id, {
+        name: editForm.name,
+        address: editForm.address,
+        developer: editForm.developer,
+        status_id: editForm.status_id
+      });
 
-      if (error) throw error;
+      // Если изображение изменилось, обновляем его отдельно
+      if (editForm.image && imageUrl !== object.image_url) {
+        const { error } = await supabase
+          .from('objects')
+          .update({ image_url: imageUrl })
+          .eq('id', id);
+
+        if (error) throw error;
+        data.image_url = imageUrl;
+      }
 
       setObject(data);
       setShowEditModal(false);
@@ -184,6 +202,21 @@ function ObjectPage() {
                 <span className="detail-value">{object.developer}</span>
               </div>
             </div>
+
+            {object.object_status && (
+              <div className="detail-card">
+                <div className="detail-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
+                </div>
+                <div className="detail-content">
+                  <span className="detail-label">Статус</span>
+                  <span className="detail-value">{object.object_status.name}</span>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="profile-tabs">
@@ -259,6 +292,21 @@ function ObjectPage() {
                   value={editForm.developer}
                   onChange={e => setEditForm({ ...editForm, developer: e.target.value })}
                 />
+              </div>
+
+              <div className="edit-field">
+                <label>Статус объекта</label>
+                <select
+                  value={editForm.status_id}
+                  onChange={e => setEditForm({ ...editForm, status_id: e.target.value })}
+                >
+                  <option value="">Без статуса</option>
+                  {objectStatuses.map((status) => (
+                    <option key={status.id} value={status.id}>
+                      {status.name}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="edit-field">

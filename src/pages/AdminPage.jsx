@@ -37,6 +37,13 @@ function AdminPage() {
   const [loadingStatus, setLoadingStatus] = useState(false);
   const [editingStatus, setEditingStatus] = useState(null);
 
+  // Object status state
+  const [showObjectStatusModal, setShowObjectStatusModal] = useState(false);
+  const [objectStatuses, setObjectStatuses] = useState([]);
+  const [newObjectStatus, setNewObjectStatus] = useState('');
+  const [loadingObjectStatus, setLoadingObjectStatus] = useState(false);
+  const [editingObjectStatus, setEditingObjectStatus] = useState(null);
+
   // Fetch units
   const fetchUnits = async () => {
     const { data, error } = await supabase
@@ -99,6 +106,18 @@ function AdminPage() {
     }
   };
 
+  // Fetch object statuses
+  const fetchObjectStatuses = async () => {
+    const { data, error } = await supabase
+      .from('object_status')
+      .select('*')
+      .order('created_at');
+
+    if (!error && data) {
+      setObjectStatuses(data);
+    }
+  };
+
   useEffect(() => {
     if (showUnitsModal) {
       fetchUnits();
@@ -130,6 +149,12 @@ function AdminPage() {
       fetchStatuses();
     }
   }, [showStatusModal]);
+
+  useEffect(() => {
+    if (showObjectStatusModal) {
+      fetchObjectStatuses();
+    }
+  }, [showObjectStatusModal]);
 
   // Units handlers
   const handleAddUnit = async (e) => {
@@ -356,6 +381,53 @@ function AdminPage() {
     }
   };
 
+  // Object Status handlers
+  const handleAddObjectStatus = async (e) => {
+    e.preventDefault();
+    if (!newObjectStatus.trim()) return;
+
+    setLoadingObjectStatus(true);
+    const { error } = await supabase
+      .from('object_status')
+      .insert({ name: newObjectStatus.trim() });
+
+    if (!error) {
+      setNewObjectStatus('');
+      fetchObjectStatuses();
+    }
+    setLoadingObjectStatus(false);
+  };
+
+  const handleUpdateObjectStatus = async (e) => {
+    e.preventDefault();
+    if (!editingObjectStatus || !editingObjectStatus.name.trim()) return;
+
+    setLoadingObjectStatus(true);
+    const { error } = await supabase
+      .from('object_status')
+      .update({ name: editingObjectStatus.name.trim() })
+      .eq('id', editingObjectStatus.id);
+
+    if (!error) {
+      setEditingObjectStatus(null);
+      fetchObjectStatuses();
+    }
+    setLoadingObjectStatus(false);
+  };
+
+  const handleDeleteObjectStatus = async (id) => {
+    if (!confirm('Удалить этот статус объекта?')) return;
+
+    const { error } = await supabase
+      .from('object_status')
+      .delete()
+      .eq('id', id);
+
+    if (!error) {
+      fetchObjectStatuses();
+    }
+  };
+
   return (
     <main className="admin-page">
       <div className="admin-container">
@@ -403,6 +475,14 @@ function AdminPage() {
             </div>
             <h3 className="admin-card-title">Статусы</h3>
             <p className="admin-card-description">Управление статусами для чек-листа</p>
+          </div>
+
+          <div className="admin-card" onClick={() => setShowObjectStatusModal(true)}>
+            <div className="admin-card-icon">
+              <span>🏢</span>
+            </div>
+            <h3 className="admin-card-title">Статусы объектов</h3>
+            <p className="admin-card-description">Управление статусами объектов (Тендер, СУ-10, Проиграли)</p>
           </div>
 
           <div className="admin-card">
@@ -794,6 +874,80 @@ function AdminPage() {
                       <button
                         className="admin-list-item-delete"
                         onClick={() => handleDeleteStatus(status.id)}
+                        title="Удалить"
+                      >
+                        &times;
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Object Status Modal */}
+      {showObjectStatusModal && (
+        <div className="admin-modal-overlay" onClick={() => setShowObjectStatusModal(false)}>
+          <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="admin-modal-header">
+              <h2 className="admin-modal-title">Статусы объектов</h2>
+              <button
+                className="admin-modal-close"
+                onClick={() => setShowObjectStatusModal(false)}
+              >
+                &times;
+              </button>
+            </div>
+
+            <form className="admin-form" onSubmit={editingObjectStatus ? handleUpdateObjectStatus : handleAddObjectStatus}>
+              <input
+                type="text"
+                className="admin-input"
+                placeholder="Название статуса (например: Тендер, Объекты СУ-10, Проиграли)..."
+                value={editingObjectStatus ? editingObjectStatus.name : newObjectStatus}
+                onChange={(e) => editingObjectStatus
+                  ? setEditingObjectStatus({ ...editingObjectStatus, name: e.target.value })
+                  : setNewObjectStatus(e.target.value)
+                }
+              />
+              <button
+                type="submit"
+                className="admin-add-btn"
+                disabled={loadingObjectStatus || !(editingObjectStatus ? editingObjectStatus.name.trim() : newObjectStatus.trim())}
+              >
+                {editingObjectStatus ? 'Сохранить' : 'Добавить'}
+              </button>
+              {editingObjectStatus && (
+                <button
+                  type="button"
+                  className="admin-cancel-btn"
+                  onClick={() => setEditingObjectStatus(null)}
+                >
+                  Отмена
+                </button>
+              )}
+            </form>
+
+            <div className="admin-list">
+              {objectStatuses.length === 0 ? (
+                <p className="admin-list-empty">Нет статусов объектов</p>
+              ) : (
+                objectStatuses.map((status) => (
+                  <div key={status.id} className={`admin-list-item ${editingObjectStatus?.id === status.id ? 'editing' : ''}`}>
+                    <span className="admin-list-item-name">{status.name}</span>
+                    <div className="admin-list-item-actions">
+                      <button
+                        className="admin-list-item-edit"
+                        onClick={() => setEditingObjectStatus({ id: status.id, name: status.name })}
+                        title="Редактировать"
+                      >
+                        &#9998;
+                      </button>
+                      <button
+                        className="admin-list-item-delete"
+                        onClick={() => handleDeleteObjectStatus(status.id)}
                         title="Удалить"
                       >
                         &times;

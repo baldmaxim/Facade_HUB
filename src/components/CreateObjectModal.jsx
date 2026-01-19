@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createObject } from '../api/objects';
 import { uploadObjectImage } from '../api/storage';
+import { fetchAllObjectStatuses } from '../api/objectStatus';
 import './CreateObjectModal.css';
 
 function CreateObjectModal({ isOpen, onClose, onSuccess }) {
@@ -11,10 +12,31 @@ function CreateObjectModal({ isOpen, onClose, onSuccess }) {
   const [formData, setFormData] = useState({
     name: '',
     address: '',
-    developer: ''
+    developer: '',
+    status_id: ''
   });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [objectStatuses, setObjectStatuses] = useState([]);
+
+  useEffect(() => {
+    async function loadStatuses() {
+      try {
+        const statuses = await fetchAllObjectStatuses();
+        setObjectStatuses(statuses);
+        // Устанавливаем первый статус по умолчанию
+        if (statuses.length > 0 && !formData.status_id) {
+          setFormData(prev => ({ ...prev, status_id: statuses[0].id }));
+        }
+      } catch (err) {
+        console.error('Ошибка загрузки статусов:', err);
+      }
+    }
+
+    if (isOpen) {
+      loadStatuses();
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -51,7 +73,8 @@ function CreateObjectModal({ isOpen, onClose, onSuccess }) {
         name: formData.name,
         address: formData.address,
         developer: formData.developer,
-        image_url: imageUrl
+        image_url: imageUrl,
+        status_id: formData.status_id
       });
 
       onSuccess?.();
@@ -116,6 +139,24 @@ function CreateObjectModal({ isOpen, onClose, onSuccess }) {
               placeholder="Название компании"
               required
             />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Статус объекта</label>
+            <select
+              name="status_id"
+              value={formData.status_id}
+              onChange={handleInputChange}
+              className="form-input"
+              required
+            >
+              <option value="">Выберите статус</option>
+              {objectStatuses.map((status) => (
+                <option key={status.id} value={status.id}>
+                  {status.name}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="form-group">
