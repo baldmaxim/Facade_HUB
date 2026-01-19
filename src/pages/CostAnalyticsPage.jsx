@@ -1,0 +1,218 @@
+import { useState, useEffect } from 'react';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
+import { supabase } from '../lib/supabase';
+import './CostAnalyticsPage.css';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+function CostAnalyticsPage() {
+  const [costTypes, setCostTypes] = useState([]);
+  const [selectedCostType, setSelectedCostType] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [chartData, setChartData] = useState(null);
+
+  useEffect(() => {
+    async function fetchCostTypes() {
+      try {
+        const { data, error } = await supabase
+          .from('cost_types')
+          .select('id, name')
+          .order('id');
+
+        if (error) throw error;
+        setCostTypes(data || []);
+      } catch (error) {
+        console.error('Ошибка загрузки видов затрат:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchCostTypes();
+  }, []);
+
+  const handleGenerate = async () => {
+    if (!selectedCostType) return;
+
+    setIsGenerating(true);
+    try {
+      // Получаем данные из object_costs с именами объектов
+      const { data, error } = await supabase
+        .from('object_costs')
+        .select('*, objects(name)')
+        .eq('cost_type_id', selectedCostType)
+        .order('object_id');
+
+      if (error) throw error;
+
+      if (!data || data.length === 0) {
+        setChartData(null);
+        return;
+      }
+
+      // Подготавливаем данные для графиков
+      const labels = data.map(item => item.objects?.name || 'Без названия');
+      const workPerUnit = data.map(item => item.works_per_unit || 0);
+      const materialsPerUnit = data.map(item => item.materials_per_unit || 0);
+      const totalPerUnit = data.map(item => (item.works_per_unit || 0) + (item.materials_per_unit || 0));
+      const worksSumm = data.map(item => item.works_summ || 0);
+      const materialsSumm = data.map(item => item.materials_summ || 0);
+      const totalSumm = data.map(item => item.summ_works_and_materials || 0);
+
+      setChartData({
+        labels,
+        workPerUnit,
+        materialsPerUnit,
+        totalPerUnit,
+        worksSumm,
+        materialsSumm,
+        totalSumm
+      });
+    } catch (error) {
+      console.error('Ошибка загрузки данных:', error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const createChartData = (data, label, color) => ({
+    labels: chartData.labels,
+    datasets: [{
+      label,
+      data,
+      backgroundColor: color,
+      borderRadius: 4
+    }]
+  });
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        padding: 12,
+        callbacks: {
+          label: function(context) {
+            const value = context.parsed.y;
+            if (value >= 1000000) {
+              return `${(value / 1000000).toFixed(2)} млн руб.`;
+            } else if (value >= 1000) {
+              return `${(value / 1000).toFixed(2)} тыс. руб.`;
+            }
+            return `${value.toFixed(2)} руб.`;
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        grid: {
+          display: false
+        },
+        ticks: {
+          font: { size: 11 },
+          color: '#888'
+        }
+      },
+      y: {
+        grid: {
+          color: 'rgba(0, 0, 0, 0.05)'
+        },
+        ticks: {
+          font: { size: 11 },
+          color: '#888',
+          callback: function(value) {
+            if (value >= 1000000) {
+              return (value / 1000000).toFixed(1) + ' млн';
+            } else if (value >= 1000) {
+              return (value / 1000).toFixed(0) + ' тыс';
+            }
+            return value;
+          }
+        }
+      }
+    }
+  };
+
+  const charts = chartData ? [
+    { title: 'Работа за ед.', data: chartData.workPerUnit, color: 'rgba(102, 126, 234, 0.8)' },
+    { title: 'Материалы за ед.', data: chartData.materialsPerUnit, color: 'rgba(245, 158, 11, 0.8)' },
+    { title: 'Итого за ед.', data: chartData.totalPerUnit, color: 'rgba(16, 185, 129, 0.8)' },
+    { title: 'Итого работы', data: chartData.worksSumm, color: 'rgba(102, 126, 234, 0.8)' },
+    { title: 'Итого материалы', data: chartData.materialsSumm, color: 'rgba(245, 158, 11, 0.8)' },
+    { title: 'Итого', data: chartData.totalSumm, color: 'rgba(16, 185, 129, 0.8)' }
+  ] : [];
+
+  return (
+    <div className="cost-analytics-page">
+      <h1 className="cost-analytics-title">Анализ по затратам</h1>
+      <p className="cost-analytics-subtitle">Детальный анализ затрат по объектам</p>
+
+      <div className="cost-analytics-controls">
+        <select
+          className="cost-type-select"
+          value={selectedCostType}
+          onChange={(e) => setSelectedCostType(e.target.value)}
+          disabled={isLoading}
+        >
+          <option value="">Выберите вид затрат</option>
+          {costTypes.map((type) => (
+            <option key={type.id} value={type.id}>
+              {type.name}
+            </option>
+          ))}
+        </select>
+        <button
+          className="generate-btn"
+          onClick={handleGenerate}
+          disabled={!selectedCostType || isGenerating}
+        >
+          {isGenerating ? 'Загрузка...' : 'Сгенерировать'}
+        </button>
+      </div>
+
+      {chartData && (
+        <div className="charts-grid">
+          {charts.map((chart, index) => (
+            <div key={index} className="chart-card">
+              <h3 className="chart-card-title">{chart.title}</h3>
+              <div className="chart-card-wrapper">
+                <Bar
+                  data={createChartData(chart.data, chart.title, chart.color)}
+                  options={chartOptions}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {chartData === null && !isGenerating && selectedCostType && (
+        <p className="no-data-message">Нет данных для выбранного вида затрат</p>
+      )}
+    </div>
+  );
+}
+
+export default CostAnalyticsPage;
