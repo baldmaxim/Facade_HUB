@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Chart as ChartJS,
@@ -12,6 +13,7 @@ import {
   Filler
 } from 'chart.js';
 import { Line, Bar } from 'react-chartjs-2';
+import { supabase } from '../lib/supabase';
 import './LandingCharts.css';
 
 ChartJS.register(
@@ -77,11 +79,113 @@ const chartOptions = {
 };
 
 function LandingCharts() {
+  const [objectNames, setObjectNames] = useState([]);
+  const [totalCosts, setTotalCosts] = useState([]);
+  const [workCosts, setWorkCosts] = useState([]);
+  const [materialCosts, setMaterialCosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchChartData() {
+      try {
+        // Получаем все объекты
+        const { data: objects, error: objectsError } = await supabase
+          .from('objects')
+          .select('id, name')
+          .order('created_at', { ascending: false });
+
+        if (objectsError) throw objectsError;
+
+        if (!objects || objects.length === 0) {
+          setIsLoading(false);
+          return;
+        }
+
+        // Получаем ID вида затрат "Общая стоимость"
+        const { data: costTypes, error: costTypesError } = await supabase
+          .from('cost_types')
+          .select('id, name')
+          .eq('name', 'Общая стоимость')
+          .single();
+
+        if (costTypesError) throw costTypesError;
+
+        const totalCostTypeId = costTypes?.id;
+
+        // Получаем данные по затратам для каждого объекта
+        const names = [];
+        const totals = [];
+        const works = [];
+        const materials = [];
+
+        for (const obj of objects) {
+          // Получаем общую стоимость для объекта
+          const { data: costData, error: costError } = await supabase
+            .from('object_costs')
+            .select('summ_works_and_materials, works_summ, materials_summ')
+            .eq('object_id', obj.id)
+            .eq('cost_type_id', totalCostTypeId)
+            .maybeSingle();
+
+          if (costError) {
+            console.error('Ошибка получения затрат для объекта:', obj.name, costError);
+            continue;
+          }
+
+          // Добавляем только объекты с данными
+          if (costData && costData.summ_works_and_materials > 0) {
+            names.push(obj.name);
+            // Конвертируем в миллионы
+            totals.push(Number((costData.summ_works_and_materials / 1000000).toFixed(2)));
+            works.push(Number((costData.works_summ / 1000000).toFixed(2)));
+            materials.push(Number((costData.materials_summ / 1000000).toFixed(2)));
+          }
+        }
+
+        setObjectNames(names);
+        setTotalCosts(totals);
+        setWorkCosts(works);
+        setMaterialCosts(materials);
+      } catch (error) {
+        console.error('Ошибка загрузки данных для графиков:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchChartData();
+  }, []);
+
+  // Используем реальные данные или демо-данные если загрузка
+  const displayObjectNames = isLoading || objectNames.length === 0 ? DEMO_OBJECTS : objectNames;
+  const displayTotalCosts = isLoading || totalCosts.length === 0 ? DEMO_TOTAL_COSTS : totalCosts;
+  const displayWorkCosts = isLoading || workCosts.length === 0 ? DEMO_WORK_COSTS : workCosts;
+  const displayMaterialCosts = isLoading || materialCosts.length === 0 ? DEMO_MATERIAL_COSTS : materialCosts;
+
+  // Вычисляем статистику
+  const maxTotalCost = displayTotalCosts.length > 0 ? Math.max(...displayTotalCosts) : 0;
+  const avgTotalCost = displayTotalCosts.length > 0
+    ? displayTotalCosts.reduce((a, b) => a + b, 0) / displayTotalCosts.length
+    : 0;
+  const minTotalCost = displayTotalCosts.length > 0 ? Math.min(...displayTotalCosts) : 0;
+
+  const maxWorkCost = displayWorkCosts.length > 0 ? Math.max(...displayWorkCosts) : 0;
+  const avgWorkCost = displayWorkCosts.length > 0
+    ? displayWorkCosts.reduce((a, b) => a + b, 0) / displayWorkCosts.length
+    : 0;
+  const minWorkCost = displayWorkCosts.length > 0 ? Math.min(...displayWorkCosts) : 0;
+
+  const maxMaterialCost = displayMaterialCosts.length > 0 ? Math.max(...displayMaterialCosts) : 0;
+  const avgMaterialCost = displayMaterialCosts.length > 0
+    ? displayMaterialCosts.reduce((a, b) => a + b, 0) / displayMaterialCosts.length
+    : 0;
+  const minMaterialCost = displayMaterialCosts.length > 0 ? Math.min(...displayMaterialCosts) : 0;
+
   const totalCostData = {
-    labels: DEMO_OBJECTS,
+    labels: displayObjectNames,
     datasets: [{
       label: 'Общая стоимость',
-      data: DEMO_TOTAL_COSTS,
+      data: displayTotalCosts,
       borderColor: '#10b981',
       backgroundColor: 'rgba(16, 185, 129, 0.1)',
       borderWidth: 3,
@@ -96,10 +200,10 @@ function LandingCharts() {
   };
 
   const workCostData = {
-    labels: DEMO_OBJECTS,
+    labels: displayObjectNames,
     datasets: [{
       label: 'Стоимость работ',
-      data: DEMO_WORK_COSTS,
+      data: displayWorkCosts,
       borderColor: '#667eea',
       backgroundColor: 'rgba(102, 126, 234, 0.1)',
       borderWidth: 3,
@@ -114,10 +218,10 @@ function LandingCharts() {
   };
 
   const materialCostData = {
-    labels: DEMO_OBJECTS,
+    labels: displayObjectNames,
     datasets: [{
       label: 'Стоимость материалов',
-      data: DEMO_MATERIAL_COSTS,
+      data: displayMaterialCosts,
       borderColor: '#f59e0b',
       backgroundColor: 'rgba(245, 158, 11, 0.1)',
       borderWidth: 3,
@@ -132,17 +236,17 @@ function LandingCharts() {
   };
 
   const comparisonData = {
-    labels: DEMO_OBJECTS,
+    labels: displayObjectNames,
     datasets: [
       {
         label: 'Работы',
-        data: DEMO_WORK_COSTS,
+        data: displayWorkCosts,
         backgroundColor: 'rgba(102, 126, 234, 0.8)',
         borderRadius: 4
       },
       {
         label: 'Материалы',
-        data: DEMO_MATERIAL_COSTS,
+        data: displayMaterialCosts,
         backgroundColor: 'rgba(245, 158, 11, 0.8)',
         borderRadius: 4
       }
@@ -187,15 +291,15 @@ function LandingCharts() {
           </div>
           <div className="chart-stats">
             <div className="chart-stat">
-              <span className="chart-stat-value green">55.7 млн</span>
+              <span className="chart-stat-value green">{(maxTotalCost / 1000).toFixed(2)} млрд</span>
               <span className="chart-stat-label">Максимум</span>
             </div>
             <div className="chart-stat">
-              <span className="chart-stat-value green">49.3 млн</span>
+              <span className="chart-stat-value green">{(avgTotalCost / 1000).toFixed(2)} млрд</span>
               <span className="chart-stat-label">Среднее</span>
             </div>
             <div className="chart-stat">
-              <span className="chart-stat-value green">38.5 млн</span>
+              <span className="chart-stat-value green">{(minTotalCost / 1000).toFixed(2)} млрд</span>
               <span className="chart-stat-label">Минимум</span>
             </div>
           </div>
@@ -222,15 +326,15 @@ function LandingCharts() {
           </div>
           <div className="chart-stats">
             <div className="chart-stat">
-              <span className="chart-stat-value purple">25.8 млн</span>
+              <span className="chart-stat-value purple">{maxWorkCost.toFixed(1)} млн</span>
               <span className="chart-stat-label">Максимум</span>
             </div>
             <div className="chart-stat">
-              <span className="chart-stat-value purple">20.4 млн</span>
+              <span className="chart-stat-value purple">{avgWorkCost.toFixed(1)} млн</span>
               <span className="chart-stat-label">Среднее</span>
             </div>
             <div className="chart-stat">
-              <span className="chart-stat-value purple">15.2 млн</span>
+              <span className="chart-stat-value purple">{minWorkCost.toFixed(1)} млн</span>
               <span className="chart-stat-label">Минимум</span>
             </div>
           </div>
@@ -257,15 +361,15 @@ function LandingCharts() {
           </div>
           <div className="chart-stats">
             <div className="chart-stat">
-              <span className="chart-stat-value orange">35.5 млн</span>
+              <span className="chart-stat-value orange">{maxMaterialCost.toFixed(1)} млн</span>
               <span className="chart-stat-label">Максимум</span>
             </div>
             <div className="chart-stat">
-              <span className="chart-stat-value orange">28.9 млн</span>
+              <span className="chart-stat-value orange">{avgMaterialCost.toFixed(1)} млн</span>
               <span className="chart-stat-label">Среднее</span>
             </div>
             <div className="chart-stat">
-              <span className="chart-stat-value orange">23.3 млн</span>
+              <span className="chart-stat-value orange">{minMaterialCost.toFixed(1)} млн</span>
               <span className="chart-stat-label">Минимум</span>
             </div>
           </div>

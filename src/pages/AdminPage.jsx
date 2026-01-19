@@ -14,6 +14,7 @@ function AdminPage() {
   const [costTypes, setCostTypes] = useState([]);
   const [newCostType, setNewCostType] = useState('');
   const [loadingCostTypes, setLoadingCostTypes] = useState(false);
+  const [editingCostType, setEditingCostType] = useState(null);
 
   // Works state
   const [showWorksModal, setShowWorksModal] = useState(false);
@@ -184,6 +185,28 @@ function AdminPage() {
     if (!error) {
       fetchCostTypes();
     }
+  };
+
+  const handleEditCostType = (costType) => {
+    setEditingCostType(costType);
+  };
+
+  const handleSaveCostType = async () => {
+    if (!editingCostType?.name.trim()) return;
+
+    const { error } = await supabase
+      .from('cost_types')
+      .update({ name: editingCostType.name.trim() })
+      .eq('id', editingCostType.id);
+
+    if (!error) {
+      setEditingCostType(null);
+      fetchCostTypes();
+    }
+  };
+
+  const handleCancelEditCostType = () => {
+    setEditingCostType(null);
   };
 
   // Works handlers
@@ -482,14 +505,62 @@ function AdminPage() {
               ) : (
                 costTypes.map((costType) => (
                   <div key={costType.id} className="admin-list-item">
-                    <span className="admin-list-item-name">{costType.name}</span>
-                    <button
-                      className="admin-list-item-delete"
-                      onClick={() => handleDeleteCostType(costType.id)}
-                      title="Удалить"
-                    >
-                      &times;
-                    </button>
+                    {editingCostType?.id === costType.id ? (
+                      <>
+                        <input
+                          type="text"
+                          className="admin-edit-input"
+                          value={editingCostType.name}
+                          onChange={(e) => setEditingCostType({ ...editingCostType, name: e.target.value })}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleSaveCostType();
+                            if (e.key === 'Escape') handleCancelEditCostType();
+                          }}
+                          autoFocus
+                        />
+                        <button
+                          className="admin-list-item-save"
+                          onClick={handleSaveCostType}
+                          title="Сохранить"
+                        >
+                          ✓
+                        </button>
+                        <button
+                          className="admin-list-item-cancel"
+                          onClick={handleCancelEditCostType}
+                          title="Отмена"
+                        >
+                          ✕
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <span
+                          className="admin-list-item-name"
+                          onDoubleClick={() => handleEditCostType(costType)}
+                          style={{ cursor: 'pointer' }}
+                          title="Двойной клик для редактирования"
+                        >
+                          {costType.name}
+                        </span>
+                        <div className="admin-list-item-actions">
+                          <button
+                            className="admin-list-item-edit"
+                            onClick={() => handleEditCostType(costType)}
+                            title="Редактировать"
+                          >
+                            ✎
+                          </button>
+                          <button
+                            className="admin-list-item-delete"
+                            onClick={() => handleDeleteCostType(costType.id)}
+                            title="Удалить"
+                          >
+                            &times;
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 ))
               )}

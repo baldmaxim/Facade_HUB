@@ -48,7 +48,26 @@ function ObjectInfoPage() {
         .select('*')
         .order('id');
 
-      setCostTypes(costTypesData || []);
+      // Сортируем затраты по номерам
+      const sortedCostTypes = (costTypesData || []).sort((a, b) => {
+        // Общая стоимость всегда первая
+        if (a.name === 'Общая стоимость') return -1;
+        if (b.name === 'Общая стоимость') return 1;
+
+        // Извлекаем номера из названий (например, "11.06" из "11.06. Профиль алюминиевый")
+        const getNumber = (name) => {
+          const match = name.match(/^(\d+\.\d+)/);
+          return match ? parseFloat(match[1]) : 999;
+        };
+
+        const numA = getNumber(a.name);
+        const numB = getNumber(b.name);
+
+        // Сортируем по номерам
+        return numA - numB;
+      });
+
+      setCostTypes(sortedCostTypes);
 
       // Загружаем единицы измерения
       const { data: unitsData } = await supabase

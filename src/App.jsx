@@ -16,6 +16,8 @@ import ContractorsPage from './pages/ContractorsPage';
 import WorkAnalysisPage from './pages/WorkAnalysisPage';
 import MaterialsAnalysisPage from './pages/MaterialsAnalysisPage';
 import AdminPage from './pages/AdminPage';
+import LoginPage from './pages/LoginPage';
+import WorkPricesPage from './pages/WorkPricesPage';
 import './index.css';
 
 function HomePage() {
@@ -50,12 +52,14 @@ function App() {
         <Route path="/objects/:id/checklist" element={<InnerLayout><ChecklistPage /></InnerLayout>} />
         <Route path="/objects/:id/info" element={<InnerLayout><ObjectInfoPage /></InnerLayout>} />
         <Route path="/objects/:id/calculation" element={<InnerLayout><CalculationPage /></InnerLayout>} />
+        <Route path="/objects/:id/work-prices" element={<InnerLayout><WorkPricesPage /></InnerLayout>} />
         <Route path="/about" element={<InnerLayout><AboutPage /></InnerLayout>} />
         <Route path="/questions" element={<InnerLayout><QuestionsPage /></InnerLayout>} />
         <Route path="/prompts" element={<InnerLayout><PromptsPage /></InnerLayout>} />
         <Route path="/contractors" element={<InnerLayout><ContractorsPage /></InnerLayout>} />
         <Route path="/work-analysis" element={<InnerLayout><WorkAnalysisPage /></InnerLayout>} />
         <Route path="/materials-analysis" element={<InnerLayout><MaterialsAnalysisPage /></InnerLayout>} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/admin" element={<InnerLayout><AdminPage /></InnerLayout>} />
       </Routes>
     </BrowserRouter>

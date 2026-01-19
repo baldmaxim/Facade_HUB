@@ -35,12 +35,14 @@ FacadeHub is an SPA for analyzing facade costs in residential construction proje
 /objects/:id/checklist      → ChecklistPage
 /objects/:id/info           → ObjectInfoPage
 /objects/:id/calculation    → CalculationPage (editable table with image upload)
+/objects/:id/work-prices    → WorkPricesPage (prices for work types)
 /about                      → AboutPage
 /questions                  → QuestionsPage
 /prompts                    → PromptsPage
 /contractors                → ContractorsPage
 /work-analysis              → WorkAnalysisPage
 /materials-analysis         → MaterialsAnalysisPage
+/login                      → LoginPage (no InnerLayout wrapper)
 /admin                      → AdminPage
 ```
 
@@ -48,7 +50,7 @@ FacadeHub is an SPA for analyzing facade costs in residential construction proje
 
 ```
 src/
-├── api/            # API layer for Supabase calls (objects.js, calculations.js, checklists.js, works.js, storage.js)
+├── api/            # API layer for Supabase calls (objects.js, calculations.js, checklists.js, works.js, workPrices.js, storage.js)
 ├── components/     # Reusable UI components (Header, Footer, ProjectCard, modals)
 ├── pages/          # Route page components (ObjectsPage, ObjectPage, etc.)
 ├── data/           # Static data and constants (projects.js, workTypes.js, checklistItems.js)
@@ -72,7 +74,7 @@ src/
 ### Data Sources
 
 - **Static data**: Sample project data in `src/data/projects.js`, work types in `src/data/workTypes.js`, checklist items in `src/data/checklistItems.js`
-- **Database tables**: `objects`, `calculation_items`, `checklists`, `work_types`, `object_works` (fetched via Supabase)
+- **Database tables**: `objects`, `calculation_items`, `checklists`, `work_types`, `object_works`, `work_price`, `unit` (fetched via Supabase)
 
 ### Data Models
 
@@ -82,8 +84,10 @@ src/
 - `objects`: `id`, `name`, `address`, `developer`, `image_url`, `created_at`
 - `calculation_items`: `id`, `object_id`, `svor_code`, `work_type`, `note`, `image_url`, `created_at`
 - `checklists`: `id`, `object_id`, `item_id`, `status`, `note`, `custom_value`
-- `work_types`: `id`, `name`, `unit`
+- `work_types`: `id`, `name`, `unit_id` (references `unit`)
 - `object_works`: `id`, `object_id`, `work_type_id`, `volume`, `work_per_unit`, `materials_per_unit`, `note`
+- `work_price`: `id`, `object_id`, `work_type_id`, `price`, `created_at`, `updated_at`
+- `unit`: `id`, `name`
 
 ## Environment Variables
 
