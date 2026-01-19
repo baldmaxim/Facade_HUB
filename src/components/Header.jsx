@@ -23,6 +23,8 @@ function Header() {
           <Link to="/contractors" className="nav-btn">База подрядчиков</Link>
           <Link to="/work-analysis" className="nav-btn">Анализ работ</Link>
           <Link to="/materials-analysis" className="nav-btn">Анализ материалов</Link>
+          <Link to="/analytics/total" className="nav-btn">Анализ по затратам</Link>
+          <Link to="/admin" className="nav-btn">Панель управления</Link>
         </div>
       </nav>
     </header>

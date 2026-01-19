@@ -12,16 +12,15 @@ function ObjectsPreview() {
     async function fetchObjects() {
       const { data } = await supabase
         .from('objects')
-        .select('*')
+        .select(`
+          *,
+          object_status(id, name)
+        `)
         .order('created_at', { ascending: false });
 
       if (data) {
-        // Получаем категории из localStorage
-        const savedCategories = localStorage.getItem('objectCategories');
-        const categories = savedCategories ? JSON.parse(savedCategories) : {};
-
-        // Фильтруем только объекты с категорией "tender"
-        const tenderObjects = data.filter(obj => categories[obj.id] === 'tender');
+        // Фильтруем только объекты со статусом "Тендер"
+        const tenderObjects = data.filter(obj => obj.object_status?.name === 'Тендер');
         setObjects(tenderObjects);
       }
       setLoading(false);

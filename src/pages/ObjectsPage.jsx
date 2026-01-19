@@ -4,34 +4,11 @@ import { fetchObjects as fetchObjectsApi } from '../api/objects';
 import CreateObjectModal from '../components/CreateObjectModal';
 import './ObjectsPage.css';
 
-const CATEGORIES = {
-  SU10: 'su10',
-  TENDER: 'tender',
-  LOST: 'lost'
-};
-
 function ObjectsPage() {
   const [objects, setObjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalCategory, setModalCategory] = useState(CATEGORIES.SU10);
-  const [objectCategories, setObjectCategories] = useState({});
-
-  // Загрузка категорий из localStorage
-  useEffect(() => {
-    const saved = localStorage.getItem('objectCategories');
-    if (saved) {
-      setObjectCategories(JSON.parse(saved));
-    }
-  }, []);
-
-  // Сохранение категорий в localStorage
-  useEffect(() => {
-    if (Object.keys(objectCategories).length > 0) {
-      localStorage.setItem('objectCategories', JSON.stringify(objectCategories));
-    }
-  }, [objectCategories]);
 
   const loadObjects = async () => {
     try {
@@ -48,24 +25,8 @@ function ObjectsPage() {
     loadObjects();
   }, []);
 
-  const getObjectCategory = (objectId) => {
-    return objectCategories[objectId] || CATEGORIES.SU10;
-  };
-
-  const moveObject = (objectId, newCategory) => {
-    setObjectCategories(prev => ({
-      ...prev,
-      [objectId]: newCategory
-    }));
-  };
-
-  const openModalForCategory = (category) => {
-    setModalCategory(category);
-    setIsModalOpen(true);
-  };
-
-  const filterByCategory = (category) => {
-    return objects.filter(obj => getObjectCategory(obj.id) === category);
+  const filterByStatus = (statusName) => {
+    return objects.filter(obj => obj.object_status?.name === statusName);
   };
 
   if (loading) {
@@ -88,54 +49,23 @@ function ObjectsPage() {
     );
   }
 
-  const ObjectCard = ({ obj, currentCategory }) => (
-    <div className="object-card-wrapper">
-      <Link to={`/objects/${obj.id}`} className="object-card">
-        <div className="object-card-image">
-          {obj.image_url ? (
-            <img src={obj.image_url} alt={obj.name} />
-          ) : (
-            <div className="image-placeholder">
-              <span>{obj.name.charAt(0)}</span>
-            </div>
-          )}
-        </div>
-        <div className="object-card-content">
-          <h3 className="object-card-title">{obj.name}</h3>
-          <p className="object-card-address">{obj.address}</p>
-          <p className="object-card-developer">{obj.developer}</p>
-        </div>
-      </Link>
-      <div className="object-card-actions">
-        {currentCategory !== CATEGORIES.SU10 && (
-          <button
-            className="move-btn"
-            onClick={() => moveObject(obj.id, CATEGORIES.SU10)}
-            title="В СУ-10"
-          >
-            СУ-10
-          </button>
-        )}
-        {currentCategory !== CATEGORIES.TENDER && (
-          <button
-            className="move-btn"
-            onClick={() => moveObject(obj.id, CATEGORIES.TENDER)}
-            title="В Тендер"
-          >
-            Тендер
-          </button>
-        )}
-        {currentCategory !== CATEGORIES.LOST && (
-          <button
-            className="move-btn"
-            onClick={() => moveObject(obj.id, CATEGORIES.LOST)}
-            title="В Проиграли"
-          >
-            Проиграли
-          </button>
+  const ObjectCard = ({ obj }) => (
+    <Link to={`/objects/${obj.id}`} className="object-card">
+      <div className="object-card-image">
+        {obj.image_url ? (
+          <img src={obj.image_url} alt={obj.name} />
+        ) : (
+          <div className="image-placeholder">
+            <span>{obj.name.charAt(0)}</span>
+          </div>
         )}
       </div>
-    </div>
+      <div className="object-card-content">
+        <h3 className="object-card-title">{obj.name}</h3>
+        <p className="object-card-address">{obj.address}</p>
+        <p className="object-card-developer">{obj.developer}</p>
+      </div>
+    </Link>
   );
 
   return (
@@ -147,15 +77,15 @@ function ObjectsPage() {
             <h2 className="objects-section-title">Объекты СУ-10</h2>
             <button
               className="add-object-btn"
-              onClick={() => openModalForCategory(CATEGORIES.SU10)}
+              onClick={() => setIsModalOpen(true)}
             >
               + Добавить объект
             </button>
           </div>
-          {filterByCategory(CATEGORIES.SU10).length > 0 ? (
+          {filterByStatus('Объекты СУ-10').length > 0 ? (
             <div className="objects-row">
-              {filterByCategory(CATEGORIES.SU10).map(obj => (
-                <ObjectCard key={obj.id} obj={obj} currentCategory={CATEGORIES.SU10} />
+              {filterByStatus('Объекты СУ-10').map(obj => (
+                <ObjectCard key={obj.id} obj={obj} />
               ))}
             </div>
           ) : (
@@ -173,15 +103,15 @@ function ObjectsPage() {
             <h2 className="objects-section-title">Текущие тендеры</h2>
             <button
               className="add-object-btn"
-              onClick={() => openModalForCategory(CATEGORIES.TENDER)}
+              onClick={() => setIsModalOpen(true)}
             >
               + Добавить объект
             </button>
           </div>
-          {filterByCategory(CATEGORIES.TENDER).length > 0 ? (
+          {filterByStatus('Тендер').length > 0 ? (
             <div className="objects-row">
-              {filterByCategory(CATEGORIES.TENDER).map(obj => (
-                <ObjectCard key={obj.id} obj={obj} currentCategory={CATEGORIES.TENDER} />
+              {filterByStatus('Тендер').map(obj => (
+                <ObjectCard key={obj.id} obj={obj} />
               ))}
             </div>
           ) : (
@@ -198,10 +128,10 @@ function ObjectsPage() {
           <div className="objects-section-header">
             <h2 className="objects-section-title">Проиграли</h2>
           </div>
-          {filterByCategory(CATEGORIES.LOST).length > 0 ? (
+          {filterByStatus('Проиграли').length > 0 ? (
             <div className="objects-row">
-              {filterByCategory(CATEGORIES.LOST).map(obj => (
-                <ObjectCard key={obj.id} obj={obj} currentCategory={CATEGORIES.LOST} />
+              {filterByStatus('Проиграли').map(obj => (
+                <ObjectCard key={obj.id} obj={obj} />
               ))}
             </div>
           ) : (
