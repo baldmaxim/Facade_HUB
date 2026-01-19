@@ -80,6 +80,40 @@ function WorkPricesPage() {
     );
   }
 
+  // Группируем работы по категориям
+  const groupedWorkTypes = workTypes.reduce((acc, workType) => {
+    const category = workType.category || 'Прочие работы';
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+    acc[category].push(workType);
+    return acc;
+  }, {});
+
+  // Определяем порядок категорий
+  const categoryOrder = [
+    'Подсистема',
+    'Остекление',
+    'СОФ',
+    'Облицовка',
+    'Утепление и изоляция',
+    'Профили и элементы',
+    'Доборные элементы',
+    'Монтажные работы',
+    'Прочие работы'
+  ];
+
+  // Сортируем категории по заданному порядку
+  const sortedCategories = Object.keys(groupedWorkTypes).sort((a, b) => {
+    const indexA = categoryOrder.indexOf(a);
+    const indexB = categoryOrder.indexOf(b);
+    if (indexA === -1) return 1;
+    if (indexB === -1) return -1;
+    return indexA - indexB;
+  });
+
+  let rowNumber = 0;
+
   return (
     <main className="work-prices-page">
       <div className="work-prices-container">
@@ -108,23 +142,35 @@ function WorkPricesPage() {
               </tr>
             </thead>
             <tbody>
-              {workTypes.map((workType, index) => (
-                <tr key={workType.id}>
-                  <td className="work-number">{index + 1}</td>
-                  <td className="work-name">{workType.name}</td>
-                  <td className="work-unit">{workType.unit?.name || '—'}</td>
-                  <td className="work-price-cell">
-                    <input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={workPrices[workType.id] || ''}
-                      onChange={(e) => handlePriceChange(workType.id, e.target.value)}
-                      placeholder="0.00"
-                      className="price-input"
-                    />
-                  </td>
-                </tr>
+              {sortedCategories.map((category) => (
+                <>
+                  <tr key={`category-${category}`} className="category-row">
+                    <td colSpan="4" className="category-cell">
+                      {category}
+                    </td>
+                  </tr>
+                  {groupedWorkTypes[category].map((workType) => {
+                    rowNumber++;
+                    return (
+                      <tr key={workType.id} className="work-row">
+                        <td className="work-number">{rowNumber}</td>
+                        <td className="work-name">{workType.name}</td>
+                        <td className="work-unit">{workType.unit?.name || '—'}</td>
+                        <td className="work-price-cell">
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={workPrices[workType.id] || ''}
+                            onChange={(e) => handlePriceChange(workType.id, e.target.value)}
+                            placeholder="0.00"
+                            className="price-input"
+                          />
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </>
               ))}
             </tbody>
           </table>

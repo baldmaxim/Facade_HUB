@@ -32,21 +32,41 @@ export async function fetchWorkPrices(objectId) {
 }
 
 /**
- * Получить все виды работ с единицами измерения
+ * Получить все виды работ с единицами измерения и категориями
  * @returns {Promise<Array>} Массив видов работ
  */
 export async function fetchAllWorkTypes() {
-  const { data, error } = await supabase
+  // Сначала пробуем получить с category
+  let { data, error } = await supabase
     .from('work_types')
     .select(`
       id,
       name,
+      category,
       unit:unit_id (
         id,
         name
       )
     `)
     .order('name');
+
+  // Если ошибка (столбец category не существует), получаем без него
+  if (error && error.message.includes('category')) {
+    const result = await supabase
+      .from('work_types')
+      .select(`
+        id,
+        name,
+        unit:unit_id (
+          id,
+          name
+        )
+      `)
+      .order('name');
+
+    data = result.data;
+    error = result.error;
+  }
 
   if (error) throw error;
   return data || [];

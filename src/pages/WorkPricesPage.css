@@ -87,12 +87,27 @@
   color: var(--color-text);
 }
 
-.work-prices-table tbody tr {
+.work-prices-table tbody tr.work-row {
   transition: background-color 0.2s;
 }
 
-.work-prices-table tbody tr:hover {
+.work-prices-table tbody tr.work-row:hover {
   background-color: var(--color-bg);
+}
+
+.category-row {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.category-cell {
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: white;
+  text-align: left;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  border: none !important;
 }
 
 .col-number {

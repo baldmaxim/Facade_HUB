@@ -78,6 +78,34 @@ const chartOptions = {
   }
 };
 
+// Настройки для графиков в миллиардах (общая стоимость, работы, материалы)
+const billionChartOptions = {
+  ...chartOptions,
+  plugins: {
+    ...chartOptions.plugins,
+    tooltip: {
+      ...chartOptions.plugins.tooltip,
+      callbacks: {
+        label: function(context) {
+          return `${(context.parsed.y / 1000).toFixed(2)} млрд руб.`;
+        }
+      }
+    }
+  },
+  scales: {
+    ...chartOptions.scales,
+    y: {
+      ...chartOptions.scales.y,
+      ticks: {
+        ...chartOptions.scales.y.ticks,
+        callback: function(value) {
+          return (value / 1000).toFixed(1) + ' млрд';
+        }
+      }
+    }
+  }
+};
+
 function LandingCharts() {
   const [objectNames, setObjectNames] = useState([]);
   const [totalCosts, setTotalCosts] = useState([]);
@@ -254,9 +282,9 @@ function LandingCharts() {
   };
 
   const comparisonOptions = {
-    ...chartOptions,
+    ...billionChartOptions,
     plugins: {
-      ...chartOptions.plugins,
+      ...billionChartOptions.plugins,
       legend: {
         display: true,
         position: 'top',
@@ -287,7 +315,7 @@ function LandingCharts() {
             </Link>
           </div>
           <div className="chart-wrapper">
-            <Line data={totalCostData} options={chartOptions} />
+            <Line data={totalCostData} options={billionChartOptions} />
           </div>
           <div className="chart-stats">
             <div className="chart-stat">
@@ -322,19 +350,19 @@ function LandingCharts() {
             </Link>
           </div>
           <div className="chart-wrapper">
-            <Line data={workCostData} options={chartOptions} />
+            <Line data={workCostData} options={billionChartOptions} />
           </div>
           <div className="chart-stats">
             <div className="chart-stat">
-              <span className="chart-stat-value purple">{maxWorkCost.toFixed(1)} млн</span>
+              <span className="chart-stat-value purple">{(maxWorkCost / 1000).toFixed(2)} млрд</span>
               <span className="chart-stat-label">Максимум</span>
             </div>
             <div className="chart-stat">
-              <span className="chart-stat-value purple">{avgWorkCost.toFixed(1)} млн</span>
+              <span className="chart-stat-value purple">{(avgWorkCost / 1000).toFixed(2)} млрд</span>
               <span className="chart-stat-label">Среднее</span>
             </div>
             <div className="chart-stat">
-              <span className="chart-stat-value purple">{minWorkCost.toFixed(1)} млн</span>
+              <span className="chart-stat-value purple">{(minWorkCost / 1000).toFixed(2)} млрд</span>
               <span className="chart-stat-label">Минимум</span>
             </div>
           </div>
@@ -357,19 +385,19 @@ function LandingCharts() {
             </Link>
           </div>
           <div className="chart-wrapper">
-            <Line data={materialCostData} options={chartOptions} />
+            <Line data={materialCostData} options={billionChartOptions} />
           </div>
           <div className="chart-stats">
             <div className="chart-stat">
-              <span className="chart-stat-value orange">{maxMaterialCost.toFixed(1)} млн</span>
+              <span className="chart-stat-value orange">{(maxMaterialCost / 1000).toFixed(2)} млрд</span>
               <span className="chart-stat-label">Максимум</span>
             </div>
             <div className="chart-stat">
-              <span className="chart-stat-value orange">{avgMaterialCost.toFixed(1)} млн</span>
+              <span className="chart-stat-value orange">{(avgMaterialCost / 1000).toFixed(2)} млрд</span>
               <span className="chart-stat-label">Среднее</span>
             </div>
             <div className="chart-stat">
-              <span className="chart-stat-value orange">{minMaterialCost.toFixed(1)} млн</span>
+              <span className="chart-stat-value orange">{(minMaterialCost / 1000).toFixed(2)} млрд</span>
               <span className="chart-stat-label">Минимум</span>
             </div>
           </div>
