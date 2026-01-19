@@ -304,11 +304,11 @@ function LandingCharts() {
         <div className="chart-container">
           <div className="chart-header">
             <div className="chart-info">
-              <h2 className="chart-title">Общая стоимость фасадов</h2>
+              <h2 className="chart-title">Общая стоимость фасадов по затратам</h2>
               <p className="chart-subtitle">Сравнение стоимости по объектам</p>
             </div>
             <Link to="/analytics/total" className="chart-link">
-              Подробнее
+              Анализ по затратам
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
@@ -342,7 +342,7 @@ function LandingCharts() {
               <h2 className="chart-title">Стоимость работ</h2>
               <p className="chart-subtitle">Затраты на монтаж и установку</p>
             </div>
-            <Link to="/analytics/work" className="chart-link">
+            <Link to="/work-analysis" className="chart-link">
               Подробнее
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -377,7 +377,7 @@ function LandingCharts() {
               <h2 className="chart-title">Стоимость материалов</h2>
               <p className="chart-subtitle">Затраты на фасадные материалы</p>
             </div>
-            <Link to="/analytics/materials" className="chart-link">
+            <Link to="/materials-analysis" className="chart-link">
               Подробнее
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
