@@ -70,32 +70,6 @@ function ObjectsPage() {
 
   return (
     <main className="objects-page">
-      {/* Блок СУ-10 */}
-      <section className="objects-section">
-        <div className="objects-section-container">
-          <div className="objects-section-header">
-            <h2 className="objects-section-title">Объекты СУ-10</h2>
-            <button
-              className="add-object-btn"
-              onClick={() => setIsModalOpen(true)}
-            >
-              + Добавить объект
-            </button>
-          </div>
-          {filterByStatus('Объекты СУ-10').length > 0 ? (
-            <div className="objects-row">
-              {filterByStatus('Объекты СУ-10').map(obj => (
-                <ObjectCard key={obj.id} obj={obj} />
-              ))}
-            </div>
-          ) : (
-            <div className="empty-section">
-              <p>Нет объектов в этой категории</p>
-            </div>
-          )}
-        </div>
-      </section>
-
       {/* Блок Тендер */}
       <section className="objects-section">
         <div className="objects-section-container">
@@ -111,6 +85,32 @@ function ObjectsPage() {
           {filterByStatus('Тендер').length > 0 ? (
             <div className="objects-row">
               {filterByStatus('Тендер').map(obj => (
+                <ObjectCard key={obj.id} obj={obj} />
+              ))}
+            </div>
+          ) : (
+            <div className="empty-section">
+              <p>Нет объектов в этой категории</p>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Блок СУ-10 */}
+      <section className="objects-section">
+        <div className="objects-section-container">
+          <div className="objects-section-header">
+            <h2 className="objects-section-title">Объекты СУ-10</h2>
+            <button
+              className="add-object-btn"
+              onClick={() => setIsModalOpen(true)}
+            >
+              + Добавить объект
+            </button>
+          </div>
+          {filterByStatus('Объекты СУ-10').length > 0 ? (
+            <div className="objects-row">
+              {filterByStatus('Объекты СУ-10').map(obj => (
                 <ObjectCard key={obj.id} obj={obj} />
               ))}
             </div>

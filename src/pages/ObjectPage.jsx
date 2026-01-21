@@ -225,6 +225,13 @@ function ObjectPage() {
           <div className="profile-section">
             <h2 className="section-title">Тендерный расчет</h2>
             <div className="profile-tabs">
+              <Link to={`/objects/${id}/tasks`} className="tab-btn tab-btn-tasks tab-btn-full">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M9 11l3 3L22 4"></path>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                </svg>
+                <span>Задачи</span>
+              </Link>
               <Link to={`/objects/${id}/checklist`} className="tab-btn">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M9 11l3 3L22 4"></path>
@@ -255,13 +262,6 @@ function ObjectPage() {
                   <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                 </svg>
                 <span>Цены работ на тендере</span>
-              </Link>
-              <Link to={`/objects/${id}/tasks`} className="tab-btn tab-btn-tasks">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M9 11l3 3L22 4"></path>
-                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-                </svg>
-                <span>Задачи</span>
               </Link>
             </div>
           </div>

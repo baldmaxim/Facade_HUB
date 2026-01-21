@@ -255,6 +255,11 @@
   color: white;
 }
 
+/* Full-width button spanning 2 columns */
+.tab-btn-full {
+  grid-column: span 2;
+}
+
 .profile-actions {
   display: flex;
   justify-content: center;
