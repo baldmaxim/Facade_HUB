@@ -230,6 +230,42 @@ function TasksPage() {
     return '#6b7280'; // серый по умолчанию
   };
 
+  // Функция для подсчета задач по ответственному
+  const getTaskStats = () => {
+    const stats = {};
+
+    // Подсчитываем задачи для каждого члена команды
+    teamMembers.forEach(member => {
+      const memberTasks = tasks.filter(task => task.team_member_id === member.id);
+      const completed = memberTasks.filter(task => task.is_completed).length;
+      const active = memberTasks.filter(task => !task.is_completed).length;
+
+      if (memberTasks.length > 0) {
+        stats[member.id] = {
+          name: member.name,
+          color: member.color,
+          completed,
+          active,
+          total: memberTasks.length
+        };
+      }
+    });
+
+    // Подсчитываем задачи без ответственного
+    const unassignedTasks = tasks.filter(task => !task.team_member_id);
+    if (unassignedTasks.length > 0) {
+      stats['unassigned'] = {
+        name: 'Не назначен',
+        color: '#6b7280',
+        completed: unassignedTasks.filter(task => task.is_completed).length,
+        active: unassignedTasks.filter(task => !task.is_completed).length,
+        total: unassignedTasks.length
+      };
+    }
+
+    return stats;
+  };
+
   if (loading) {
     return (
       <main className="tasks-page">
@@ -255,6 +291,36 @@ function TasksPage() {
         </div>
 
         <h1 className="tasks-name">Задачи</h1>
+
+        {/* Счетчик задач по ответственным */}
+        <div className="tasks-stats">
+          {Object.entries(getTaskStats()).map(([id, stats]) => (
+            <div
+              key={id}
+              className="task-stat-card"
+            >
+              <div className="task-stat-header">
+                <span className="task-stat-name">
+                  {stats.name}
+                </span>
+                <div
+                  className="task-stat-divider"
+                  style={{ backgroundColor: stats.color }}
+                />
+              </div>
+              <div className="task-stat-details">
+                <div className="task-stat-item active">
+                  <span className="task-stat-label">Активных</span>
+                  <span className="task-stat-value">{stats.active}</span>
+                </div>
+                <div className="task-stat-item completed">
+                  <span className="task-stat-label">Выполнено</span>
+                  <span className="task-stat-value">{stats.completed}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
 
         <div className="tasks-content">
           <div className="tasks-table-wrapper">
