@@ -19,6 +19,7 @@ import AdminPage from './pages/AdminPage';
 import LoginPage from './pages/LoginPage';
 import WorkPricesPage from './pages/WorkPricesPage';
 import WorkPricesFactPage from './pages/WorkPricesFactPage';
+import TasksPage from './pages/TasksPage';
 import CostAnalyticsPage from './pages/CostAnalyticsPage';
 import WorkTypeAnalyticsPage from './pages/WorkTypeAnalyticsPage';
 import PlanFactAnalysisPage from './pages/PlanFactAnalysisPage';
@@ -58,6 +59,7 @@ function App() {
         <Route path="/objects/:id/calculation" element={<InnerLayout><CalculationPage /></InnerLayout>} />
         <Route path="/objects/:id/work-prices" element={<InnerLayout><WorkPricesPage /></InnerLayout>} />
         <Route path="/objects/:id/work-prices-fact" element={<InnerLayout><WorkPricesFactPage /></InnerLayout>} />
+        <Route path="/objects/:id/tasks" element={<InnerLayout><TasksPage /></InnerLayout>} />
         <Route path="/about" element={<InnerLayout><AboutPage /></InnerLayout>} />
         <Route path="/questions" element={<InnerLayout><QuestionsPage /></InnerLayout>} />
         <Route path="/prompts" element={<InnerLayout><PromptsPage /></InnerLayout>} />

@@ -233,6 +233,40 @@
   text-align: center;
 }
 
+/* Tasks Tab - Distinctive Styling */
+.tab-btn-tasks {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.05) 100%);
+  border: 2px solid #667eea;
+  position: relative;
+}
+
+.tab-btn-tasks::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 12px;
+  height: 12px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 0 14px 0 8px;
+}
+
+.tab-btn-tasks:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  color: white;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(102, 126, 234, 0.25);
+}
+
+.tab-btn-tasks svg {
+  color: #667eea;
+}
+
+.tab-btn-tasks:hover svg {
+  color: white;
+}
+
 .profile-actions {
   display: flex;
   justify-content: center;

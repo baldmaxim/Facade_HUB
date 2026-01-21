@@ -1,0 +1,367 @@
+.tasks-page {
+  flex: 1;
+  background-color: var(--color-bg);
+  min-height: calc(100vh - 120px);
+  padding: 2rem;
+}
+
+.tasks-container {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.tasks-header {
+  margin-bottom: 2rem;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.2s;
+  margin-bottom: 1rem;
+}
+
+.back-btn:hover {
+  color: var(--color-text);
+}
+
+.tasks-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.breadcrumb-object {
+  color: var(--color-text-secondary);
+}
+
+.breadcrumb-separator {
+  color: var(--color-border);
+}
+
+.breadcrumb-current {
+  color: #667eea;
+  font-weight: 500;
+}
+
+.tasks-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin-bottom: 1.5rem;
+}
+
+.tasks-content {
+  background-color: var(--color-bg-secondary);
+  border: 2px solid #667eea;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.1);
+}
+
+.tasks-table-wrapper {
+  overflow-x: auto;
+}
+
+.tasks-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tasks-table th {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.1) 100%);
+  padding: 1rem;
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tasks-table .sub-header th {
+  background: rgba(102, 126, 234, 0.08);
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--color-text-secondary);
+}
+
+.tasks-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.tasks-table tbody tr:hover {
+  background-color: rgba(102, 126, 234, 0.03);
+}
+
+.tasks-table .new-row {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.03) 100%);
+}
+
+.tasks-table .new-row:hover {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.12) 0%, rgba(118, 75, 162, 0.06) 100%);
+}
+
+.col-task {
+  width: 45%;
+  min-width: 300px;
+}
+
+.col-responsible {
+  text-align: center !important;
+}
+
+.col-person {
+  width: 140px;
+  text-align: center !important;
+}
+
+/* Person colors */
+.person-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+.person-zinin {
+  color: #3b82f6;
+}
+.person-zinin .person-dot {
+  background-color: #3b82f6;
+}
+
+.person-kovalenko {
+  color: #10b981;
+}
+.person-kovalenko .person-dot {
+  background-color: #10b981;
+}
+
+.person-kuznetsov {
+  color: #8b5cf6;
+}
+.person-kuznetsov .person-dot {
+  background-color: #8b5cf6;
+}
+
+.col-note {
+  width: 25%;
+  min-width: 200px;
+}
+
+.col-actions {
+  width: 50px;
+}
+
+.td-checkbox {
+  text-align: center;
+  width: 120px;
+}
+
+.td-actions {
+  text-align: center;
+}
+
+/* Custom Checkbox */
+.checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.checkbox-label input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  width: 22px;
+  height: 22px;
+  background-color: var(--color-bg);
+  border: 2px solid var(--color-border);
+  border-radius: 4px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkbox-label:hover .checkmark {
+  border-color: #667eea;
+}
+
+.checkbox-label input:checked ~ .checkmark {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+}
+
+/* Colored checkboxes per person */
+.checkbox-zinin:hover .checkmark {
+  border-color: #3b82f6;
+}
+.checkbox-zinin input:checked ~ .checkmark {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  border-color: #3b82f6;
+}
+
+.checkbox-kovalenko:hover .checkmark {
+  border-color: #10b981;
+}
+.checkbox-kovalenko input:checked ~ .checkmark {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-color: #10b981;
+}
+
+.checkbox-kuznetsov:hover .checkmark {
+  border-color: #8b5cf6;
+}
+.checkbox-kuznetsov input:checked ~ .checkmark {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  border-color: #8b5cf6;
+}
+
+.checkbox-label input:checked ~ .checkmark::after {
+  content: '';
+  width: 6px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  margin-bottom: 2px;
+}
+
+/* Inputs */
+.task-input,
+.note-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  transition: border-color 0.2s;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.task-input {
+  min-height: 60px;
+}
+
+.task-input:focus,
+.note-input:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.task-input::placeholder,
+.note-input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+/* Buttons */
+.add-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.25rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.add-btn:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.add-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.delete-btn {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.delete-btn:hover {
+  background-color: #ef4444;
+  border-color: #ef4444;
+  color: white;
+}
+
+.empty-row {
+  text-align: center;
+  color: var(--color-text-secondary);
+  padding: 2rem 1rem !important;
+}
+
+@media (max-width: 768px) {
+  .tasks-page {
+    padding: 1rem;
+  }
+
+  .tasks-title {
+    font-size: 1.5rem;
+  }
+
+  .tasks-table th,
+  .tasks-table td {
+    padding: 0.5rem;
+  }
+
+  .col-person {
+    width: 80px;
+    font-size: 0.65rem;
+  }
+
+  .checkmark {
+    width: 18px;
+    height: 18px;
+  }
+
+  .task-input,
+  .note-input {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.5rem;
+  }
+}
