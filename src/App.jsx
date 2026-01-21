@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import ObjectsPreview from './components/ObjectsPreview';
 import StatsPreview from './components/StatsPreview';
+import TasksPreview from './components/TasksPreview';
 import LandingCharts from './components/LandingCharts';
 import Footer from './components/Footer';
 import ObjectsPage from './pages/ObjectsPage';
@@ -30,6 +31,7 @@ function HomePage() {
     <>
       <Header />
       <ObjectsPreview />
+      <TasksPreview />
       <StatsPreview />
       <LandingCharts />
       <Footer />

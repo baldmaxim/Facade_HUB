@@ -1,0 +1,142 @@
+.tasks-preview {
+  padding: 2.5rem 2rem;
+  background-color: var(--color-bg);
+}
+
+.tasks-preview-container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.tasks-preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.tasks-preview-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.tasks-preview-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #667eea;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: gap 0.2s;
+}
+
+.tasks-preview-link:hover {
+  gap: 0.75rem;
+}
+
+.tasks-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-left: 56px; /* Выравнивание с каруселью объектов (40px стрелка + 16px gap) */
+}
+
+.task-object-card {
+  flex-shrink: 0;
+  width: 320px;
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.task-object-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.15);
+  border-color: #667eea;
+}
+
+.task-object-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.task-count-wrapper {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.task-count {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #667eea;
+  line-height: 1;
+}
+
+.task-count-label {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.loading-text {
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 1rem;
+  padding: 2rem;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  .tasks-preview {
+    padding: 2rem 1rem;
+  }
+
+  .tasks-preview-title {
+    font-size: 1.25rem;
+  }
+
+  .tasks-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .task-object-card {
+    padding: 1.25rem;
+  }
+
+  .task-count {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .tasks-preview {
+    padding: 1.5rem 1rem;
+  }
+
+  .tasks-preview-title {
+    font-size: 1.25rem;
+  }
+
+  .task-object-name {
+    font-size: 1rem;
+  }
+
+  .task-count {
+    font-size: 1.75rem;
+  }
+
+  .task-count-label {
+    font-size: 0.75rem;
+  }
+}
