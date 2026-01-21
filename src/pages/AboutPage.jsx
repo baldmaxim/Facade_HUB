@@ -1,27 +1,30 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 import './AboutPage.css';
 
-const TEAM_MEMBERS = [
-  {
-    name: 'Никита',
-    role: 'Руководитель отдела',
-    description: 'Руководит фасадным отделом, координирует работу команды и взаимодействие с подрядчиками. Обеспечивает соблюдение сроков и стандартов качества на всех этапах проекта.',
-    photo: '/team/nikita.jpg'
-  },
-  {
-    name: 'Валерий',
-    role: 'Ведущий инженер',
-    description: 'Специалист по навесным вентилируемым фасадам с многолетним опытом. Отвечает за техническую экспертизу и контроль качества проектных решений.',
-    photo: '/team/valera.jpg'
-  },
-  {
-    name: 'Вячеслав',
-    role: 'Ведущий инженер',
-    description: 'Эксперт по расчёту стоимости фасадных систем и анализу сметной документации. Занимается оптимизацией бюджетов и технических решений.',
-    photo: '/team/slava.jpg'
-  }
-];
-
 function AboutPage() {
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchTeamMembers() {
+      try {
+        const { data, error } = await supabase
+          .from('team_members')
+          .select('*')
+          .order('sort_order', { ascending: true });
+
+        if (error) throw error;
+        setTeamMembers(data || []);
+      } catch (err) {
+        console.error('Ошибка загрузки команды:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchTeamMembers();
+  }, []);
   return (
     <main className="about-page">
       <div className="about-container">
@@ -47,24 +50,34 @@ function AboutPage() {
             Фасадный отдел — это профессионалы с многолетним опытом в строительстве и проектировании
           </p>
 
-          <div className="team-grid">
-            {TEAM_MEMBERS.map((member, index) => (
-              <div key={index} className="team-card">
-                <div className="team-photo-wrapper">
-                  <img
-                    src={member.photo}
-                    alt={member.name}
-                    className="team-photo"
-                  />
+          {loading ? (
+            <p className="team-loading">Загрузка...</p>
+          ) : teamMembers.length === 0 ? (
+            <p className="team-empty">Информация о команде появится позже</p>
+          ) : (
+            <div className="team-grid">
+              {teamMembers.map((member) => (
+                <div key={member.id} className="team-card">
+                  {member.photo_url && (
+                    <div className="team-photo-wrapper">
+                      <img
+                        src={member.photo_url}
+                        alt={member.name}
+                        className="team-photo"
+                      />
+                    </div>
+                  )}
+                  <div className="team-info">
+                    <h3 className="team-name">{member.name}</h3>
+                    <span className="team-role">{member.role}</span>
+                    {member.description && (
+                      <p className="team-description">{member.description}</p>
+                    )}
+                  </div>
                 </div>
-                <div className="team-info">
-                  <h3 className="team-name">{member.name}</h3>
-                  <span className="team-role">{member.role}</span>
-                  <p className="team-description">{member.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </section>
 
         <section className="about-contact">
