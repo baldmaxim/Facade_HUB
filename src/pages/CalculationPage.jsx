@@ -35,6 +35,7 @@ function CalculationPage() {
   const [imageDrag, setImageDrag] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const updateTimersRef = useRef({});
 
   useEffect(() => {
     async function loadData() {
@@ -97,14 +98,32 @@ function CalculationPage() {
   };
 
   const handleUpdateItem = async (itemId, field, value) => {
-    try {
-      await updateCalculationItem(itemId, field, value);
-      setItems(items.map(item =>
-        item.id === itemId ? { ...item, [field]: value } : item
-      ));
-    } catch (error) {
-      alert('Ошибка сохранения: ' + error.message);
+    // Сначала обновляем локальное состояние для мгновенного отклика
+    setItems(items.map(item =>
+      item.id === itemId ? { ...item, [field]: value } : item
+    ));
+
+    // Создаем ключ для таймера на основе itemId и field
+    const timerKey = `${itemId}-${field}`;
+
+    // Отменяем предыдущий таймер, если он существует
+    if (updateTimersRef.current[timerKey]) {
+      clearTimeout(updateTimersRef.current[timerKey]);
     }
+
+    // Создаем новый таймер для дебаунса (500мс после последнего изменения)
+    updateTimersRef.current[timerKey] = setTimeout(async () => {
+      try {
+        await updateCalculationItem(itemId, field, value);
+      } catch (error) {
+        alert('Ошибка сохранения: ' + error.message);
+        // При ошибке перезагружаем данные
+        const itemsData = await fetchCalculationItems(id);
+        setItems(itemsData);
+      } finally {
+        delete updateTimersRef.current[timerKey];
+      }
+    }, 500);
   };
 
   const handleImageUpload = async (itemId, file) => {
@@ -177,6 +196,20 @@ function CalculationPage() {
     setNewItemImagePreview(URL.createObjectURL(file));
   };
 
+  const handleTextareaAutoResize = (e) => {
+    e.target.style.height = 'auto';
+    e.target.style.height = e.target.scrollHeight + 'px';
+  };
+
+  // Автоматически изменяем высоту всех textarea при загрузке данных
+  useEffect(() => {
+    const textareas = document.querySelectorAll('.table-textarea-note');
+    textareas.forEach(textarea => {
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    });
+  }, [items]);
+
   if (loading) {
     return (
       <main className="calculation-page">
@@ -243,10 +276,14 @@ function CalculationPage() {
                   <td className="td-note">
                     <textarea
                       value={newItem.note}
-                      onChange={(e) => setNewItem({ ...newItem, note: e.target.value })}
+                      onChange={(e) => {
+                        setNewItem({ ...newItem, note: e.target.value });
+                        handleTextareaAutoResize(e);
+                      }}
+                      onInput={handleTextareaAutoResize}
                       className="table-textarea table-textarea-note"
                       placeholder="Примечание"
-                      rows={3}
+                      rows={1}
                     />
                   </td>
                   <td className="td-image">
@@ -321,10 +358,14 @@ function CalculationPage() {
                     <td className="td-note">
                       <textarea
                         value={item.note || ''}
-                        onChange={(e) => handleUpdateItem(item.id, 'note', e.target.value)}
+                        onChange={(e) => {
+                          handleUpdateItem(item.id, 'note', e.target.value);
+                          handleTextareaAutoResize(e);
+                        }}
+                        onInput={handleTextareaAutoResize}
                         className="table-textarea table-textarea-note"
                         placeholder="Введите примечание"
-                        rows={3}
+                        rows={1}
                       />
                     </td>
                     <td className="td-image">

@@ -10,10 +10,16 @@
 
 .header-logo {
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
-  gap: 1rem;
   text-decoration: none;
   margin-bottom: 0.75rem;
+}
+
+.header-logo-main {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
 }
 
 .header-logo-icon {
@@ -62,6 +68,7 @@
   color: #ffffff;
   letter-spacing: 0.05em;
   transition: all 0.3s ease;
+  line-height: 1;
 }
 
 .logo-accent {
@@ -72,8 +79,21 @@
   background-clip: text;
 }
 
+.logo-by {
+  font-size: 0.85rem;
+  font-weight: 200;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.15em;
+  transition: color 0.3s ease;
+  margin-top: 0.25rem;
+}
+
 .header-logo:hover .header-logo-text {
   letter-spacing: 0.1em;
+}
+
+.header-logo:hover .logo-by {
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .header-subtitle {
@@ -241,6 +261,10 @@
 
   .header-logo-text {
     font-size: 1.8rem;
+  }
+
+  .logo-by {
+    font-size: 0.6rem;
   }
 
   .logo-cube {

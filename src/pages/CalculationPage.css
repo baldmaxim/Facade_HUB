@@ -6,7 +6,7 @@
 }
 
 .calculation-container {
-  max-width: 1200px;
+  max-width: 2400px;
   margin: 0 auto;
 }
 
@@ -112,12 +112,11 @@
 }
 
 .col-work {
-  width: 350px;
+  width: 175px;
 }
 
 .col-note {
-  min-width: 350px;
-  width: 45%;
+  width: 70%;
 }
 
 .col-image {
@@ -158,9 +157,10 @@
   font-family: inherit;
   color: var(--color-text);
   background-color: var(--color-bg);
-  resize: vertical;
+  resize: none;
   line-height: 1.5;
   transition: border-color 0.2s, box-shadow 0.2s;
+  overflow: hidden;
 }
 
 .table-textarea:focus {
@@ -181,7 +181,9 @@
 }
 
 .table-textarea-note {
-  min-height: 80px;
+  min-height: 38px;
+  min-width: 800px;
+  width: 800px;
 }
 
 .table-select {

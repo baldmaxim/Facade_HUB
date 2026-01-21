@@ -21,12 +21,17 @@ function Header() {
     <header className="header">
       <div className="header-top">
         <Link to="/" className="header-logo">
-          <div className="header-logo-icon">
-            <span className="logo-cube"></span>
-            <span className="logo-cube"></span>
-            <span className="logo-cube"></span>
+          <div className="header-logo-main">
+            <div className="header-logo-icon">
+              <span className="logo-cube"></span>
+              <span className="logo-cube"></span>
+              <span className="logo-cube"></span>
+            </div>
+            <span className="header-logo-text">
+              Facade<span className="logo-accent">HUB</span>
+            </span>
           </div>
-          <span className="header-logo-text">Facade<span className="logo-accent">HUB</span></span>
+          <span className="logo-by">by SU_10</span>
         </Link>
         <p className="header-subtitle">Профессиональная среда для управления проектами фасадного отдела</p>
       </div>
