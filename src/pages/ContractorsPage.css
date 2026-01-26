@@ -47,23 +47,36 @@
   border-color: var(--color-accent);
 }
 
-.add-btn {
-  display: flex;
+.contractors-actions .add-btn {
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.625rem 1.25rem;
-  background: var(--color-accent);
+  padding: 0.6rem 1.25rem;
+  width: auto;
+  height: auto;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 0.95rem;
+  font-size: 0.875rem;
   font-weight: 500;
+  font-family: inherit;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
-.add-btn:hover {
-  background: #2563eb;
+.contractors-actions .add-btn:hover {
+  background: linear-gradient(135deg, #7c8ff0 0%, #8b5cb8 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.contractors-actions .add-btn svg {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
 }
 
 .contractors-table-wrapper {
@@ -336,24 +349,34 @@
 }
 
 .btn-primary {
-  padding: 0.625rem 1.25rem;
-  background: var(--color-accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.25rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
   border-radius: 8px;
-  font-size: 0.95rem;
+  font-size: 0.875rem;
+  font-family: inherit;
   color: white;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #2563eb;
+  background: linear-gradient(135deg, #7c8ff0 0%, #8b5cb8 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
 }
 
 .btn-primary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 @media (max-width: 1024px) {
@@ -389,7 +412,7 @@
     width: 100%;
   }
 
-  .add-btn {
+  .contractors-actions .add-btn {
     justify-content: center;
   }
 

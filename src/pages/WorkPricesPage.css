@@ -10,13 +10,65 @@
 }
 
 .work-prices-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
   margin-bottom: 2rem;
+  flex-wrap: wrap;
 }
 
 .header-content {
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.table-actions {
+  margin-bottom: 1rem;
+}
+
+.filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: var(--color-bg-secondary);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 400;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.filter-btn:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.filter-btn.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.filter-btn.active:hover {
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.filter-btn svg {
+  flex-shrink: 0;
 }
 
 .back-link-icon {
@@ -227,6 +279,20 @@
 @media (max-width: 768px) {
   .work-prices-page {
     padding: 1rem 0.5rem;
+  }
+
+  .work-prices-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-actions {
+    margin-top: 1rem;
+  }
+
+  .filter-btn {
+    width: 100%;
+    justify-content: center;
   }
 
   .page-title {

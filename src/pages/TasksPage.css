@@ -351,7 +351,8 @@
   line-height: 1.5;
 }
 
-.task-input {
+.task-input,
+.note-input {
   min-height: 38px;
   resize: none;
   overflow: hidden;

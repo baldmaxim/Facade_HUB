@@ -12,6 +12,7 @@ function WorkPricesPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [showOnlyFilled, setShowOnlyFilled] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -80,8 +81,13 @@ function WorkPricesPage() {
     );
   }
 
+  // Фильтруем работы если включен режим "только заполненные"
+  const filteredWorkTypes = showOnlyFilled
+    ? workTypes.filter(wt => workPrices[wt.id] && parseFloat(workPrices[wt.id]) > 0)
+    : workTypes;
+
   // Группируем работы по категориям
-  const groupedWorkTypes = workTypes.reduce((acc, workType) => {
+  const groupedWorkTypes = filteredWorkTypes.reduce((acc, workType) => {
     const category = workType.category || 'Прочие работы';
     if (!acc[category]) {
       acc[category] = [];
@@ -128,6 +134,18 @@ function WorkPricesPage() {
               <p className="page-subtitle">{object.name}</p>
             </div>
           </div>
+        </div>
+
+        <div className="table-actions">
+          <button
+            className={`filter-btn ${!showOnlyFilled ? 'active' : ''}`}
+            onClick={() => setShowOnlyFilled(!showOnlyFilled)}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+            {showOnlyFilled ? 'Показать все' : 'Только заполненные'}
+          </button>
         </div>
 
         <div className="work-prices-table-wrapper">

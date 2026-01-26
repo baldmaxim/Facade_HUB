@@ -29,7 +29,7 @@ FacadeHub is an SPA for analyzing facade costs in residential construction proje
 ### Routing Structure
 
 ```
-/                           → HomePage (landing with ObjectsPreview, StatsPreview, LandingCharts)
+/                           → HomePage (landing with ObjectsPreview, TasksPreview, StatsPreview, LandingCharts)
 /objects                    → ObjectsPage (list of objects from Supabase)
 /objects/:id                → ObjectPage (object profile with tabs)
 /objects/:id/checklist      → ChecklistPage
@@ -37,11 +37,12 @@ FacadeHub is an SPA for analyzing facade costs in residential construction proje
 /objects/:id/calculation    → CalculationPage (editable table with image upload)
 /objects/:id/work-prices    → WorkPricesPage (tender work prices)
 /objects/:id/work-prices-fact → WorkPricesFactPage (actual work prices)
+/objects/:id/tasks          → TasksPage (task management with team assignment)
 /about                      → AboutPage
 /questions                  → QuestionsPage
 /prompts                    → PromptsPage
 /contractors                → ContractorsPage
-/work-analysis              → WorkAnalysisPage
+/work-analysis              → WorkTypeAnalyticsPage (tender price analysis by work types)
 /materials-analysis         → MaterialsAnalysisPage
 /analytics/total            → CostAnalyticsPage
 /analytics/plan-fact        → PlanFactAnalysisPage (plan vs fact analysis)
@@ -73,11 +74,13 @@ src/
 - **Supabase client**: Initialized in `src/lib/supabase.js`, uses `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` env vars
 - **Local state**: Uses React useState/useEffect hooks for data fetching and state management
 - **Russian localization**: All UI text is in Russian, dates formatted with `toLocaleDateString('ru-RU')`
+- **Debounced saves**: Form inputs use debounced updates (500ms) to reduce API calls during typing
+- **Auto-resize textareas**: Use `handleAutoResize` pattern with `overflow: hidden` and `resize: none` CSS
 
 ### Data Sources
 
 - **Static data**: Sample project data in `src/data/projects.js`, work types in `src/data/workTypes.js`, checklist items in `src/data/checklistItems.js`
-- **Database tables**: `objects`, `calculation_items`, `checklists`, `work_types`, `object_works`, `work_price_tender`, `work_price_fact`, `unit` (fetched via Supabase)
+- **Database tables**: `objects`, `calculation_items`, `checklists`, `work_types`, `object_works`, `work_price_tender`, `work_price_fact`, `unit`, `team_members`, `tasks`, `task_statuses` (fetched via Supabase)
 
 ### Data Models
 
@@ -92,6 +95,9 @@ src/
 - `work_price_tender`: `id`, `object_id`, `work_type_id`, `price`, `order_number`, `created_at`, `updated_at`
 - `work_price_fact`: `id`, `object_id`, `work_type_id`, `price`, `order_number`, `created_at`, `updated_at`
 - `unit`: `id`, `name`
+- `team_members`: `id`, `name`, `role`, `color`, `sort_order`, `created_at`
+- `tasks`: `id`, `object_id`, `name`, `team_member_id`, `order_number`, `is_high_priority`, `created_at`, `deadline`, `note`, `status_id`, `is_completed`
+- `task_statuses`: `id`, `status`, `created_at`
 
 ## Environment Variables
 
@@ -142,3 +148,7 @@ Defined in `src/index.css`:
 - `--color-business` (blue), `--color-premium` (purple) for class badges
 - `--color-text`, `--color-text-secondary`, `--color-border`, `--color-accent`
 - `--font-family` for typography (Inter font with system fallbacks)
+
+## SQL Migrations
+
+SQL migration files are stored in `supabase/` directory with numeric prefixes (001_, 002_, etc.). Always include table and column comments in Russian when creating new tables.
