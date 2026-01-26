@@ -30,6 +30,83 @@
   gap: 0.75rem;
 }
 
+.subcontractor-section {
+  background: var(--color-bg-secondary);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.subcontractor-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.subcontractor-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.subcontractor-field label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.subcontractor-input {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: var(--font-family);
+  color: var(--color-text);
+  background: white;
+  transition: all 0.2s;
+}
+
+.subcontractor-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.subcontractor-input::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 0.5;
+}
+
+.kp-url-wrapper {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.kp-url-wrapper .subcontractor-input {
+  flex: 1;
+}
+
+.kp-url-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.kp-url-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
 .table-actions {
   margin-bottom: 1rem;
 }
@@ -221,15 +298,17 @@
   opacity: 0.5;
 }
 
-/* Убираем стрелки у number input для чистого вида */
+/* Убираем стрелки у number input */
 .price-input::-webkit-outer-spin-button,
 .price-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
+  -webkit-appearance: none !important;
+  appearance: none !important;
   margin: 0;
 }
 
 .price-input[type=number] {
-  -moz-appearance: textfield;
+  -moz-appearance: textfield !important;
+  appearance: textfield !important;
 }
 
 .loading-text,
@@ -288,6 +367,10 @@
 
   .header-actions {
     margin-top: 1rem;
+  }
+
+  .subcontractor-fields {
+    grid-template-columns: 1fr;
   }
 
   .filter-btn {

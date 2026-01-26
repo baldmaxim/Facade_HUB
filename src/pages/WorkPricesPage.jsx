@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchAllWorkTypes, fetchWorkPrices, upsertWorkPrice } from '../api/workPrices';
 import { fetchObjectById } from '../api/objects';
+import { fetchSubcontractor, upsertSubcontractor } from '../api/subcontractors';
 import './WorkPricesPage.css';
 
 function WorkPricesPage() {
@@ -13,6 +14,8 @@ function WorkPricesPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [showOnlyFilled, setShowOnlyFilled] = useState(false);
+  const [subcontractor, setSubcontractor] = useState({ name: '', kp_url: '' });
+  const saveTimeoutRef = useRef(null);
 
   useEffect(() => {
     loadData();
@@ -21,10 +24,11 @@ function WorkPricesPage() {
   async function loadData() {
     try {
       setLoading(true);
-      const [objectData, workTypesData, workPricesData] = await Promise.all([
+      const [objectData, workTypesData, workPricesData, subcontractorData] = await Promise.all([
         fetchObjectById(id),
         fetchAllWorkTypes(),
-        fetchWorkPrices(id)
+        fetchWorkPrices(id),
+        fetchSubcontractor(id)
       ]);
 
       setObject(objectData);
@@ -36,6 +40,14 @@ function WorkPricesPage() {
         pricesMap[item.work_type_id] = item.price;
       });
       setWorkPrices(pricesMap);
+
+      // Устанавливаем данные субподрядчика
+      if (subcontractorData) {
+        setSubcontractor({
+          name: subcontractorData.name || '',
+          kp_url: subcontractorData.kp_url || ''
+        });
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -58,6 +70,26 @@ function WorkPricesPage() {
       console.error('Ошибка сохранения цены:', err);
       setError('Ошибка сохранения цены');
     }
+  };
+
+  const handleSubcontractorChange = (field, value) => {
+    setSubcontractor(prev => ({
+      ...prev,
+      [field]: value
+    }));
+
+    // Debounced сохранение
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    saveTimeoutRef.current = setTimeout(async () => {
+      try {
+        const newData = { ...subcontractor, [field]: value };
+        await upsertSubcontractor(id, newData.name, newData.kp_url);
+      } catch (err) {
+        console.error('Ошибка сохранения подрядчика:', err);
+      }
+    }, 500);
   };
 
   if (loading) {
@@ -136,6 +168,48 @@ function WorkPricesPage() {
           </div>
         </div>
 
+        <div className="subcontractor-section">
+          <div className="subcontractor-fields">
+            <div className="subcontractor-field">
+              <label>Подрядчик</label>
+              <input
+                type="text"
+                value={subcontractor.name}
+                onChange={(e) => handleSubcontractorChange('name', e.target.value)}
+                placeholder="Название компании"
+                className="subcontractor-input"
+              />
+            </div>
+            <div className="subcontractor-field">
+              <label>Ссылка на КП</label>
+              <div className="kp-url-wrapper">
+                <input
+                  type="url"
+                  value={subcontractor.kp_url}
+                  onChange={(e) => handleSubcontractorChange('kp_url', e.target.value)}
+                  placeholder="https://..."
+                  className="subcontractor-input"
+                />
+                {subcontractor.kp_url && (
+                  <a
+                    href={subcontractor.kp_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="kp-url-link"
+                    title="Открыть КП"
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                      <polyline points="15 3 21 3 21 9"></polyline>
+                      <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="table-actions">
           <button
             className={`filter-btn ${!showOnlyFilled ? 'active' : ''}`}
@@ -177,10 +251,14 @@ function WorkPricesPage() {
                           <input
                             type="number"
                             min="0"
-                            step="0.01"
                             value={workPrices[workType.id] || ''}
                             onChange={(e) => handlePriceChange(workType.id, e.target.value)}
-                            placeholder="0.00"
+                            onKeyDown={(e) => {
+                              if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                                e.preventDefault();
+                              }
+                            }}
+                            placeholder="0"
                             className="price-input"
                           />
                         </td>
