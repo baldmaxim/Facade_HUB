@@ -10,12 +10,14 @@ function WorkPricesPage() {
   const [object, setObject] = useState(null);
   const [workTypes, setWorkTypes] = useState([]);
   const [workPrices, setWorkPrices] = useState({});
+  const [workNotes, setWorkNotes] = useState({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [showOnlyFilled, setShowOnlyFilled] = useState(false);
   const [subcontractor, setSubcontractor] = useState({ name: '', kp_url: '' });
   const saveTimeoutRef = useRef(null);
+  const noteTimeoutRefs = useRef({});
 
   useEffect(() => {
     loadData();
@@ -34,12 +36,15 @@ function WorkPricesPage() {
       setObject(objectData);
       setWorkTypes(workTypesData);
 
-      // Преобразуем массив цен в объект для удобного доступа
+      // Преобразуем массив цен в объекты для удобного доступа
       const pricesMap = {};
+      const notesMap = {};
       workPricesData.forEach(item => {
         pricesMap[item.work_type_id] = item.price;
+        notesMap[item.work_type_id] = item.note || '';
       });
       setWorkPrices(pricesMap);
+      setWorkNotes(notesMap);
 
       // Устанавливаем данные субподрядчика
       if (subcontractorData) {
@@ -65,11 +70,34 @@ function WorkPricesPage() {
     // Сохраняем в базу данных
     try {
       const price = parseFloat(value) || 0;
-      await upsertWorkPrice(id, workTypeId, price);
+      const note = workNotes[workTypeId] || null;
+      await upsertWorkPrice(id, workTypeId, price, note);
     } catch (err) {
       console.error('Ошибка сохранения цены:', err);
       setError('Ошибка сохранения цены');
     }
+  };
+
+  const handleNoteChange = (workTypeId, value) => {
+    // Обновляем локальное состояние сразу для отзывчивости UI
+    setWorkNotes(prev => ({
+      ...prev,
+      [workTypeId]: value
+    }));
+
+    // Debounced сохранение в базу данных
+    if (noteTimeoutRefs.current[workTypeId]) {
+      clearTimeout(noteTimeoutRefs.current[workTypeId]);
+    }
+    noteTimeoutRefs.current[workTypeId] = setTimeout(async () => {
+      try {
+        const price = parseFloat(workPrices[workTypeId]) || 0;
+        await upsertWorkPrice(id, workTypeId, price, value || null);
+      } catch (err) {
+        console.error('Ошибка сохранения примечания:', err);
+        setError('Ошибка сохранения примечания');
+      }
+    }, 500);
   };
 
   const handleSubcontractorChange = (field, value) => {
@@ -226,17 +254,18 @@ function WorkPricesPage() {
           <table className="work-prices-table">
             <thead>
               <tr>
-                <th className="col-number">№</th>
-                <th className="col-name">Вид работ</th>
-                <th className="col-unit">Единица измерения</th>
-                <th className="col-price">Цена, ₽</th>
+                <th style={{ width: '50px', textAlign: 'center' }}>№</th>
+                <th style={{ width: '450px', textAlign: 'center' }}>Вид работ</th>
+                <th style={{ width: '100px', textAlign: 'center' }}>Ед. изм.</th>
+                <th style={{ width: '120px', textAlign: 'center' }}>Цена, ₽</th>
+                <th style={{ textAlign: 'center' }}>Примечание</th>
               </tr>
             </thead>
             <tbody>
               {sortedCategories.map((category) => (
                 <React.Fragment key={`category-${category}`}>
                   <tr className="category-row">
-                    <td colSpan="4" className="category-cell">
+                    <td colSpan="5" className="category-cell">
                       {category}
                     </td>
                   </tr>
@@ -260,6 +289,15 @@ function WorkPricesPage() {
                             }}
                             placeholder="0"
                             className="price-input"
+                          />
+                        </td>
+                        <td className="work-note-cell">
+                          <input
+                            type="text"
+                            value={workNotes[workType.id] || ''}
+                            onChange={(e) => handleNoteChange(workType.id, e.target.value)}
+                            placeholder="Примечание"
+                            className="note-input"
                           />
                         </td>
                       </tr>

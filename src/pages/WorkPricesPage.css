@@ -5,7 +5,7 @@
 }
 
 .work-prices-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
@@ -194,6 +194,7 @@
 .work-prices-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .work-prices-table thead {
@@ -239,21 +240,9 @@
   border: none !important;
 }
 
-.col-number {
-  width: 5%;
+.work-prices-table th:first-child,
+.work-prices-table td:first-child {
   text-align: center;
-}
-
-.col-name {
-  width: 45%;
-}
-
-.col-unit {
-  width: 25%;
-}
-
-.col-price {
-  width: 25%;
 }
 
 .work-number {
@@ -271,7 +260,8 @@
   font-size: 0.9rem;
 }
 
-.work-price-cell {
+.work-price-cell,
+.work-note-cell {
   padding: 0.5rem 1rem;
 }
 
@@ -293,9 +283,28 @@
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
-.price-input::placeholder {
+.price-input::placeholder,
+.note-input::placeholder {
   color: var(--color-text-secondary);
   opacity: 0.5;
+}
+
+.note-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: var(--font-family);
+  color: var(--color-text);
+  transition: all 0.2s;
+  background: white;
+}
+
+.note-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 /* Убираем стрелки у number input */
@@ -388,23 +397,8 @@
     font-size: 0.875rem;
   }
 
-  .col-number {
-    width: 8%;
-  }
-
-  .col-name {
-    width: 40%;
-  }
-
-  .col-unit {
-    width: 22%;
-  }
-
-  .col-price {
-    width: 30%;
-  }
-
-  .price-input {
+  .price-input,
+  .note-input {
     padding: 0.5rem 0.75rem;
     font-size: 0.9rem;
   }

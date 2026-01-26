@@ -13,6 +13,7 @@ export async function fetchWorkPrices(objectId) {
       object_id,
       work_type_id,
       price,
+      note,
       created_at,
       updated_at,
       work_types:work_type_id (
@@ -77,15 +78,17 @@ export async function fetchAllWorkTypes() {
  * @param {string} objectId - ID объекта
  * @param {string} workTypeId - ID вида работ
  * @param {number} price - Цена
+ * @param {string} note - Примечание (опционально)
  * @returns {Promise<void>}
  */
-export async function upsertWorkPrice(objectId, workTypeId, price) {
+export async function upsertWorkPrice(objectId, workTypeId, price, note = null) {
   const { error } = await supabase
     .from('work_price_tender')
     .upsert({
       object_id: objectId,
       work_type_id: workTypeId,
-      price
+      price,
+      note
     }, {
       onConflict: 'object_id,work_type_id'
     });
