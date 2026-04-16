@@ -1,16 +1,151 @@
-# React + Vite
+# VOR Auto-Pricing Module
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Автоматическая расценка Ведомости Объёмов Работ (ВОР).
 
-Currently, two official plugins are available:
+## Два режима работы
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### MVP (быстрый, детерминированный)
 
-## React Compiler
+Keyword-матчинг ГЭСН, без LLM.  Подходит для черновой оценки.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```python
+from vor.pipeline import VorPipeline
 
-## Expanding the ESLint configuration
+pipeline = VorPipeline(gesn_db_path="data/gesn.db")
+result, excel_bytes = await pipeline.run_and_generate(
+    file_bytes=uploaded_excel,
+    bridge_callback=revit_bridge,
+    on_progress=progress_callback,
+)
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Smart (LLM-powered reasoning)
+
+Четырёхстадийный AI-анализ с цепочкой рассуждений:
+
+```python
+from vor.pipeline import VorPipeline
+
+pipeline = VorPipeline(gesn_db_path="data/gesn.db")
+result, excel_bytes, reasoning_md, findings_md = await pipeline.run_smart_and_generate(
+    file_bytes=uploaded_excel,
+    llm_callback=my_llm_fn,        # async (system, user) -> str
+    bridge_callback=revit_bridge,   # опционально
+    model_passport=passport_data,   # опционально
+)
+
+# reasoning_md — полный отчёт с обоснованием каждой позиции
+# findings_md  — краткий отчёт: замечания, пропуски, противоречия
+```
+
+## Архитектура Smart-режима (v3 — с ресурсной раскладкой)
+
+```
+Стадия A: Понимание ВОР (1 LLM-вызов)
+  LLM читает все позиции + паспорт модели → план анализа
+
+Стадия B: Разведка модели (детерминированная)
+  analyzer.py разбирает паспорт модели:
+  - Многослойные стены → декомпозиция на отдельные позиции
+  - Неявные работы → леса, арматура, гидроизоляция
+  - Классификация разделов → подсказки по сборникам ГЭСН
+
+Стадия C: Подбор работ с рассуждением (1 LLM-вызов на раздел)
+  Для каждого раздела ВОР:
+  - Поиск кандидатов ГЭСН по ключевым словам
+  - LLM подбирает НЕСКОЛЬКО работ на позицию (основная + сопутствующие)
+  - Генерирует допники по разделу (леса, гидроизоляция, армирование)
+
+Стадия E: Ресурсная раскладка (1 LLM-вызов на раздел)
+  Для каждой позиции:
+  - Ресурсы загружаются из БД (542K записей)
+  - Цены из таблицы resource_prices (97% покрытие материалов, 100% машин)
+  - LLM классифицирует: основной / вспомогательный материал
+  - LLM проверяет полноту, пишет комментарий-обоснование
+
+Стадия D: Перепроверка (1 LLM-вызов)
+  LLM проверяет сводку на полноту и непротиворечивость
+```
+
+## Выходной Excel — 1 лист
+
+Единый лист с вложенной структурой:
+```
+РАЗДЕЛ: Стены и перегородки
+  1. Кладка стен из ГСБ D500 | м³ | 245 | 1,247,000₽
+     Р  08-02-001-01 Кладка стен из блоков ячеистого бетона
+        ★ Блоки ГСБ D500 (основной)        | м³  | 249.9 | 299,880₽
+        ○ Раствор цементный М50 (всп.)      | м³  |  58.0 |  69,600₽
+        ○ Сетка кладочная (всп.)            | м²  | 490.0 |  22,050₽
+     Р  07-01-021-01 Перемычки ж/б
+        ★ Перемычки (основной)              | шт  |  86   |  27,520₽
+     ☰  Кран башенный 8т                    | маш-ч| 18   |  19,332₽
+     AI: Расценка для кладки из ячеистобетонных блоков...
+
+  ДОПНИКИ:
+     Д1. Леса строительные (h>4м) — требуется по СП 12-135-2003
+
+  ИТОГО по разделу: 1,305,000₽
+
+ИТОГО ПО ВОР: 12,450,000₽
+```
+
+## Бюджет (50 позиций)
+
+| Стадия | LLM-вызовы | Время | Стоимость |
+|--------|-----------|-------|-----------|
+| A      | 1         | ~3s   | ~$0.02    |
+| B      | 0         | <1s   | $0        |
+| C      | 5-8       | ~20s  | ~$0.15    |
+| E      | 5-8       | ~20s  | ~$0.15    |
+| D      | 1         | ~3s   | ~$0.03    |
+| Итого  | 12-18     | ~50s  | ~$0.35    |
+
+## Структура модуля
+
+```
+vor/
+├── models.py       — Модели данных (v3: ResourceLine, WorkBreakdown, PositionBreakdown)
+├── parser.py       — Парсинг Excel ВОР
+├── matcher.py      — Подбор кодов ГЭСН (keyword + семантика)
+├── planner.py      — Планирование извлечения объёмов
+├── extractor.py    — Генерация C# кода для Revit
+├── pricer.py       — Расчёт стоимости: ФЕР + ресурсные цены из ФССЦ
+├── generator.py    — Генерация Excel (v2: 4 листа, v3: 1 лист с раскладкой)
+├── analyzer.py     — Интеллект модели (многослойность, неявные работы)
+├── reasoning.py    — Движок рассуждений (5 стадий: A/B/C/E/D)
+├── reporter.py     — Генерация отчётов (reasoning.md, findings.md)
+└── pipeline.py     — Оркестратор (Smart: run_smart() → v3 Excel)
+```
+
+## Что замечает AI (а скрипт — нет)
+
+- Многослойные стены → одна стена = несколько позиций ВОР
+- Неявные работы → леса, транспорт, временные сооружения
+- Противоречия → единица ВОР != единица ГЭСН
+- Пропуски → элемент модели не покрыт ВОР
+- Армирование → бетон есть, а арматуры нет
+- Уровни → подземные стены = другая гидроизоляция
+- Проёмы → вычет площади по правилам ГЭСН (>3 м2)
+- Коэффициенты отходов → 3-5% по нормам
+
+## Тесты
+
+```bash
+cd backend && python -m pytest tests/test_vor/ -v
+```
+
+265+ тестов покрывают все модули.
+
+## Ресурсная база
+
+- **542,050** ресурсов в ГЭСН (материалы, машины, труд)
+- **46,549** цен ресурсов в ФССЦ (97% материалов, 100% машин)
+- **34,673** расценок ФЕР (агрегатные цены на работы)
+- Цены в базе 2000 года (ФССЦ на 01.01.2022)
+
+## Ограничения
+
+- Цены только в базе 2000 года (для пересчёта нужны индексы Минстроя)
+- Труд не имеет индивидуальных цен (используются ФЕР-агрегаты)
+- Smart-режим требует LLM callback (Gemini, GPT, Claude)
