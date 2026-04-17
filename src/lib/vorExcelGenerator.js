@@ -101,8 +101,9 @@ export function parseEmptyVor(data) {
 /**
  * Генерирует заполненный Excel ВОР и возвращает Blob для скачивания.
  */
-export function generateFilledVor(parsed) {
+export function generateFilledVor(parsed, options = {}) {
   const { sections } = parsed;
+  const hdrOpts = { priceAllWithQty: options.priceAllWithQty === true };
   const ws = {};
   let R = 0; // текущая строка
   const merges = [];
@@ -178,7 +179,7 @@ export function generateFilledVor(parsed) {
     // Pre-compute roles and matches for cluster detection
     const posInfos = sectionHasAux ? section.positions.map(p => ({
       role: classifyRowRole(p.name),
-      tplKeys: isHeader(p, allPositions) ? [] :
+      tplKeys: isHeader(p, allPositions, hdrOpts) ? [] :
         filterExcluded(matchPosition(p.name, p.noteCustomer)),
     })) : [];
 
@@ -269,7 +270,7 @@ export function generateFilledVor(parsed) {
       R++;
 
       // Заголовки НЕ расцениваются
-      if (isHeader(pos, allPositions)) {
+      if (isHeader(pos, allPositions, hdrOpts)) {
         totalHeaders++;
         continue;
       }

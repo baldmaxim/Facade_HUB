@@ -16,7 +16,8 @@ console.log(`\nSections:  ${parsed.stats.totalSections}`);
 console.log(`Positions: ${parsed.stats.totalPositions}`);
 
 console.log('\n\nGenerating filled VOR...');
-const result = generateFilledVor(parsed);
+// Донстрой: расцениваем все позиции с объёмом (и родителей, и дочерних)
+const result = generateFilledVor(parsed, { priceAllWithQty: true });
 
 const s = result.stats;
 console.log('\n=== STATISTICS ===');

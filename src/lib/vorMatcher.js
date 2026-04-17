@@ -106,6 +106,78 @@ export const TEMPLATES = {
       { name: 'Керамическая панель (по проекту)', unit: 'м2', kind: 'основн.', j: 1, k: 1.22 },
     ],
   },
+  nvf_cladding_porcelain: {
+    costPath: 'ФАСАДНЫЕ РАБОТЫ / Облицовка НВФ / Здание',
+    works: [
+      { name: 'Наружная облицовка фасада керамогранитом', unit: 'м2' },
+    ],
+    materials: [
+      { name: 'Керамогранит (по проекту)', unit: 'м2', kind: 'основн.', j: 1, k: 1.22 },
+    ],
+  },
+  nvf_cladding_natural_stone: {
+    costPath: 'ФАСАДНЫЕ РАБОТЫ / Облицовка НВФ / Здание',
+    works: [
+      { name: 'Наружная облицовка фасада натуральным камнем', unit: 'м2' },
+    ],
+    materials: [
+      { name: 'Натуральный камень (по проекту)', unit: 'м2', kind: 'основн.', j: 1, k: 1.22 },
+    ],
+  },
+  nvf_cladding_akp: {
+    costPath: 'ФАСАДНЫЕ РАБОТЫ / Облицовка НВФ / Здание',
+    works: [
+      { name: 'Наружная облицовка фасада алюмокомпозитными панелями', unit: 'м2' },
+    ],
+    materials: [
+      { name: 'Алюмокомпозитная панель (по проекту)', unit: 'м2', kind: 'основн.', j: 1, k: 1.22 },
+    ],
+  },
+  nvf_cladding_concrete_tile: {
+    costPath: 'ФАСАДНЫЕ РАБОТЫ / Облицовка НВФ / Здание',
+    works: [
+      { name: 'Наружная облицовка фасада бетонной плиткой', unit: 'м2' },
+    ],
+    materials: [
+      { name: 'Бетонная плитка (по проекту)', unit: 'м2', kind: 'основн.', j: 1, k: 1.15 },
+    ],
+  },
+  nvf_cladding_brick: {
+    costPath: 'ФАСАДНЫЕ РАБОТЫ / Облицовка НВФ / Здание',
+    works: [
+      { name: 'Наружная облицовка фасада кирпичом', unit: 'м2' },
+    ],
+    materials: [
+      { name: 'Кирпич облицовочный (по проекту)', unit: 'м2', kind: 'основн.', j: 1, k: 1.05 },
+    ],
+  },
+  nvf_cladding_fcp: {
+    costPath: 'ФАСАДНЫЕ РАБОТЫ / Облицовка НВФ / Здание',
+    works: [
+      { name: 'Наружная облицовка фасада фиброцементными панелями', unit: 'м2' },
+    ],
+    materials: [
+      { name: 'Фиброцементная панель (по проекту)', unit: 'м2', kind: 'основн.', j: 1, k: 1.05 },
+    ],
+  },
+  nvf_cladding_galvanized: {
+    costPath: 'ФАСАДНЫЕ РАБОТЫ / Облицовка НВФ / Здание',
+    works: [
+      { name: 'Наружная облицовка фасада оцинкованным листом', unit: 'м2' },
+    ],
+    materials: [
+      { name: 'Оцинкованный лист (по проекту)', unit: 'м2', kind: 'основн.', j: 1, k: 1.20 },
+    ],
+  },
+  nvf_cladding_arch_concrete: {
+    costPath: 'ФАСАДНЫЕ РАБОТЫ / Облицовка НВФ / Здание',
+    works: [
+      { name: 'Наружная облицовка фасада архитектурным бетоном', unit: 'м2' },
+    ],
+    materials: [
+      { name: 'Архитектурный бетон (по проекту)', unit: 'м2', kind: 'основн.', j: 1, k: 1.00 },
+    ],
+  },
   insulation: {
     costPath: 'ФАСАДНЫЕ РАБОТЫ / Подсистема НВФ + утеплитель / Здание',
     works: [
@@ -316,13 +388,45 @@ const MATCH_RULES = [
   { keywords: ['облицовк.*кассет', 'кассет.*облицовк', 'облицовк.*алюмин'],
     templates: ['nvf_subsystem', 'insulation', 'nvf_cladding_cassette'], secondary: ['scaffolding', 'kmd_nvf'] },
 
+  // НВФ фиброцементная панель ФЦП (k=1.05) — ДО фибробетона (т.к. "фибр" общий)
+  { keywords: ['фиброцемент', 'фцп\\b', 'цементн.*панел.*фасад'],
+    templates: ['nvf_subsystem', 'insulation', 'nvf_cladding_fcp'], secondary: ['scaffolding', 'kmd_nvf'] },
+
   // НВФ фибробетон — полный цикл
   { keywords: ['фибробетон', 'стеклофибробетон', 'сфб', 'облицовк.*фибр', 'фибр.*облицовк'],
     templates: ['nvf_subsystem', 'insulation', 'nvf_cladding_fibrobeton'], secondary: ['scaffolding', 'kmd_nvf'] },
 
-  // НВФ керамические панели / керамогранит — полный цикл
-  { keywords: ['керамическ.*панел', 'панел.*керамическ', 'керамогранит', 'облицовк.*керамическ', 'керамическ.*облицовк'],
+  // НВФ керамогранит — полный цикл (k=1.22)
+  { keywords: ['керамогранит', 'облицовк.*керамогранит'],
+    templates: ['nvf_subsystem', 'insulation', 'nvf_cladding_porcelain'], secondary: ['scaffolding', 'kmd_nvf'] },
+
+  // НВФ керамические панели — полный цикл (k=1.22)
+  { keywords: ['керамическ.*панел', 'панел.*керамическ', 'облицовк.*керамическ', 'керамическ.*облицовк'],
     templates: ['nvf_subsystem', 'insulation', 'nvf_cladding_ceramic'], secondary: ['scaffolding', 'kmd_nvf'] },
+
+  // НВФ натуральный камень (k=1.22) — 'камн' корень чтобы ловить "камнем/камня/камни"
+  { keywords: ['натуральн.*камн', 'камн.*натуральн', 'облицовк.*натур.*камн', 'облицовк.*камн', 'камн.*облицовк', 'гранитн.*камн'],
+    templates: ['nvf_subsystem', 'insulation', 'nvf_cladding_natural_stone'], secondary: ['scaffolding', 'kmd_nvf'] },
+
+  // НВФ алюмокомпозитная панель АКП (k=1.22)
+  { keywords: ['алюмокомпозит', 'алюмин.*композит', 'композит.*алюмин', 'акп\\b', 'облицовк.*акп'],
+    templates: ['nvf_subsystem', 'insulation', 'nvf_cladding_akp'], secondary: ['scaffolding', 'kmd_nvf'] },
+
+  // НВФ бетонная плитка (k=1.15)
+  { keywords: ['бетонн.*плитк', 'плитк.*бетонн', 'облицовк.*бетонн.*плитк'],
+    templates: ['nvf_subsystem', 'insulation', 'nvf_cladding_concrete_tile'], secondary: ['scaffolding', 'kmd_nvf'] },
+
+  // НВФ кирпич облицовочный (k=1.05)
+  { keywords: ['облицовк.*кирпич', 'кирпич.*облицовк', 'кирпичн.*облицовк', 'облицовочн.*кирпич'],
+    templates: ['nvf_subsystem', 'insulation', 'nvf_cladding_brick'], secondary: ['scaffolding', 'kmd_nvf'] },
+
+  // НВФ оцинкованный лист облицовка (k=1.20) — только для НВФ, НЕ для отливов/парапетов
+  { keywords: ['облицовк.*оцинкован.*лист', 'оцинкован.*лист.*облицовк', 'облицовк.*лист.*оцинкован'],
+    templates: ['nvf_subsystem', 'insulation', 'nvf_cladding_galvanized'], secondary: ['scaffolding', 'kmd_nvf'] },
+
+  // НВФ архитектурный бетон (k=1.00)
+  { keywords: ['архитектурн.*бетон', 'бетон.*архитектурн', 'облицовк.*архитектурн.*бетон'],
+    templates: ['nvf_subsystem', 'insulation', 'nvf_cladding_arch_concrete'], secondary: ['scaffolding', 'kmd_nvf'] },
 
   // НВФ generic — fallback по ключу "нвф" / "навесн вентилир" (когда тип облицовки не указан)
   { keywords: ['нвф\\.', 'нвф\\s', 'навесн.*вентилир', 'вентилируем.*фасад'],
@@ -391,13 +495,28 @@ const MATCH_RULES = [
 /**
  * Определяет, является ли позиция заголовком (имеет дочерние позиции).
  */
-export function isHeader(pos /* allPositions */) {
-  // Позиция — заголовок (не расценивается), только если нет объёма заказчика.
-  // Композитные родители с объёмом расцениваются наравне с листьями.
-  if (pos.qty && pos.qty !== 0) return false;
-  if (pos.qtyCustomer && pos.qtyCustomer !== 0) return false;
-  if (pos.qtyGp && pos.qtyGp !== 0) return false;
-  return true;
+export function isHeader(pos, allPositions = null, options = {}) {
+  const priceAllWithQty = options.priceAllWithQty === true;
+  const hasQty =
+    (pos.qty && pos.qty !== 0) ||
+    (pos.qtyCustomer && pos.qtyCustomer !== 0) ||
+    (pos.qtyGp && pos.qtyGp !== 0);
+
+  // Нет объёма — всегда заголовок
+  if (!hasQty) return true;
+
+  // Донстрой-режим: всё с объёмом расцениваем (и родителей, и дочерних)
+  if (priceAllWithQty) return false;
+
+  // Стандарт: родитель с дочерними позициями — заголовок (не дублируем объём с листьями)
+  if (!pos.code || !allPositions) return false;
+  const prefix = pos.code.replace(/\.$/, '');
+  return allPositions.some(other =>
+    other !== pos &&
+    other.code &&
+    other.code.startsWith(prefix + '.') &&
+    other.code.length > pos.code.length
+  );
 }
 
 /**
