@@ -279,34 +279,42 @@ const MATCH_RULES = [
 
   // Тамбура — отдельный costPath (ВЫШЕ стоечно-ригельн)
   { keywords: ['тамбур'],
-    templates: ['spk_profile', 'doors_tambour', 'spk_glass', 'spk_broneplenka'], secondary: ['scaffolding', 'kmd_spk', 'spk_hardware'] },
+    templates: ['spk_profile', 'doors_tambour', 'spk_glass', 'spk_broneplenka'], secondary: ['scaffolding', 'kmd_spk'] },
   // Двери входные (витражные, БКФН) — ВЫШЕ стоечно-ригельн
   { keywords: ['двер.*входн', 'входн.*двер', 'БКФН', 'бкфн', 'двер.*витражн', 'витражн.*двер'],
-    templates: ['spk_profile', 'doors_entrance', 'spk_glass', 'spk_broneplenka'], secondary: ['scaffolding', 'kmd_spk', 'spk_hardware'] },
+    templates: ['spk_profile', 'doors_entrance', 'spk_glass', 'spk_broneplenka'], secondary: ['scaffolding', 'kmd_spk'] },
   // Общие двери (fallback) — ВЫШЕ стоечно-ригельн
   { keywords: ['двер', 'створч'],
-    templates: ['spk_profile', 'doors_entrance', 'spk_glass', 'spk_broneplenka'], secondary: ['scaffolding', 'kmd_spk', 'spk_hardware'] },
+    templates: ['spk_profile', 'doors_entrance', 'spk_glass', 'spk_broneplenka'], secondary: ['scaffolding', 'kmd_spk'] },
 
   // Окна — ВЫШЕ "стекл", чтобы получить scaffolding+kmd+защиту
   { keywords: ['окна', 'оконн', 'аит'],
-    templates: ['spk_profile', 'spk_glass', 'spk_broneplenka'], secondary: ['scaffolding', 'kmd_spk', 'spk_hardware'] },
+    templates: ['spk_profile', 'spk_glass', 'spk_broneplenka'], secondary: ['scaffolding', 'kmd_spk'] },
 
   // Стемалит — полный СПК (крашеный стеклопакет)
   { keywords: ['стемалит'],
-    templates: ['spk_profile', 'spk_glass', 'spk_broneplenka'], secondary: ['scaffolding', 'kmd_spk', 'spk_hardware'] },
+    templates: ['spk_profile', 'spk_glass', 'spk_broneplenka'], secondary: ['scaffolding', 'kmd_spk'] },
 
   // === СПК полный цикл: стоечно-ригельная конструкция ===
   { keywords: ['стоечно-ригельн'],
-    templates: ['spk_profile', 'spk_glass', 'spk_broneplenka'], secondary: ['scaffolding', 'kmd_spk', 'spk_hardware'] },
+    templates: ['spk_profile', 'spk_glass', 'spk_broneplenka'], secondary: ['scaffolding', 'kmd_spk'] },
 
+  // НВФ клинкер — полный цикл: подсистема + утеплитель + облицовка
   { keywords: ['облицовк.*клинкер', 'клинкер.*облицовк', 'клинкер.*плитк'],
-    templates: ['nvf_cladding_clinker'], secondary: ['scaffolding', 'kmd_nvf'] },
+    templates: ['nvf_subsystem', 'insulation', 'nvf_cladding_clinker'], secondary: ['scaffolding', 'kmd_nvf'] },
 
+  // НВФ кассеты — полный цикл
   { keywords: ['облицовк.*кассет', 'кассет.*облицовк', 'облицовк.*алюмин'],
-    templates: ['nvf_cladding_cassette'], secondary: ['scaffolding', 'kmd_nvf'] },
+    templates: ['nvf_subsystem', 'insulation', 'nvf_cladding_cassette'], secondary: ['scaffolding', 'kmd_nvf'] },
 
+  // НВФ фибробетон — полный цикл
   { keywords: ['фибробетон', 'стеклофибробетон', 'сфб', 'облицовк.*фибр', 'фибр.*облицовк'],
-    templates: ['nvf_cladding_fibrobeton'], secondary: ['scaffolding', 'kmd_nvf'] },
+    templates: ['nvf_subsystem', 'insulation', 'nvf_cladding_fibrobeton'], secondary: ['scaffolding', 'kmd_nvf'] },
+
+  // НВФ generic — керамические панели, керамогранит и т.п. (fallback, когда нет ключа конкретного типа)
+  { keywords: ['нвф\\.', 'нвф\\s', 'навесн.*вентилир', 'вентилируем.*фасад',
+               'керамическ.*панел', 'панел.*керамическ', 'керамогранит'],
+    templates: ['nvf_subsystem', 'insulation', 'nvf_cladding_cassette'], secondary: ['scaffolding', 'kmd_nvf'] },
 
   // Утеплитель с явными ключами типа — ДО общего "стекл" (иначе "пеностекла" ловится на "стекл")
   { keywords: ['пеностекл', 'эппс', 'экструдирован.*пенополистирол', 'пенополистирол.*экструдирован'],
@@ -314,7 +322,7 @@ const MATCH_RULES = [
 
   // СПК fallback по "профил"/"каркас" (ПОСЛЕ специфичных окон/дверей/стоечно-ригельн)
   { keywords: ['профил', 'каркас', 'сборка.*витраж', 'монтаж.*витраж', 'монтаж.*спк', 'устройство.*профил'],
-    templates: ['spk_profile'], secondary: ['scaffolding', 'kmd_spk', 'spk_hardware'] },
+    templates: ['spk_profile'], secondary: ['scaffolding', 'kmd_spk'] },
 
   { keywords: ['стекл', 'остеклен', 'заполнен', 'стеклопакет'],
     templates: ['spk_glass'], secondary: [] },
@@ -359,13 +367,13 @@ const MATCH_RULES = [
 
   // === Составные позиции (когда НЕ разбиты на подпозиции) ===
   { keywords: ['витраж', 'светопрозрачн'],
-    templates: ['spk_profile', 'spk_glass'], secondary: ['scaffolding', 'kmd_spk', 'spk_hardware'] },
+    templates: ['spk_profile', 'spk_glass'], secondary: ['scaffolding', 'kmd_spk'] },
 
   { keywords: ['клинкер'],
-    templates: ['nvf_subsystem', 'nvf_cladding_clinker'], secondary: ['scaffolding', 'kmd_nvf'] },
+    templates: ['nvf_subsystem', 'insulation', 'nvf_cladding_clinker'], secondary: ['scaffolding', 'kmd_nvf'] },
 
   { keywords: ['кассет', 'сэндвич'],
-    templates: ['nvf_subsystem', 'nvf_cladding_cassette'], secondary: ['scaffolding', 'kmd_nvf'] },
+    templates: ['nvf_subsystem', 'insulation', 'nvf_cladding_cassette'], secondary: ['scaffolding', 'kmd_nvf'] },
 ];
 
 /**
@@ -386,19 +394,27 @@ export function isHeader(pos /* allPositions */) {
  */
 export function matchPosition(positionName, noteCustomer = '') {
   const searchText = (positionName + ' ' + (noteCustomer || '')).toLowerCase();
+  // Маркер "без утепления/утеплителя" — исключаем insulation из результата
+  const skipInsulation = /без\s+утепл/i.test(searchText);
   const matched = [];
   const seen = new Set();
 
   for (const rule of MATCH_RULES) {
+    // Правило, которое даёт ТОЛЬКО insulation — пропускаем, если "без утепл"
+    if (skipInsulation && rule.templates.length === 1 && rule.templates[0] === 'insulation') {
+      continue;
+    }
     const hit = rule.keywords.some(kw => {
       if (kw.includes('.*') || kw.includes('[')) return new RegExp(kw, 'i').test(searchText);
       return searchText.includes(kw);
     });
     if (hit) {
       for (const t of rule.templates) {
+        if (skipInsulation && t === 'insulation') continue;
         if (!seen.has(t)) { matched.push(t); seen.add(t); }
       }
       for (const t of rule.secondary) {
+        if (skipInsulation && t === 'insulation') continue;
         if (!seen.has(t)) { matched.push(t); seen.add(t); }
       }
       break;
