@@ -24,6 +24,8 @@ import TasksPage from './pages/TasksPage';
 import CostAnalyticsPage from './pages/CostAnalyticsPage';
 import WorkTypeAnalyticsPage from './pages/WorkTypeAnalyticsPage';
 import PlanFactAnalysisPage from './pages/PlanFactAnalysisPage';
+import VorPage from './pages/VorPage';
+import VorTemplatesPage from './pages/VorTemplatesPage';
 import './index.css';
 
 function HomePage() {
@@ -62,6 +64,8 @@ function App() {
         <Route path="/objects/:id/work-prices" element={<InnerLayout><WorkPricesPage /></InnerLayout>} />
         <Route path="/objects/:id/work-prices-fact" element={<InnerLayout><WorkPricesFactPage /></InnerLayout>} />
         <Route path="/objects/:id/tasks" element={<InnerLayout><TasksPage /></InnerLayout>} />
+        <Route path="/objects/:id/vor" element={<InnerLayout><VorPage /></InnerLayout>} />
+        <Route path="/vor-templates" element={<InnerLayout><VorTemplatesPage /></InnerLayout>} />
         <Route path="/about" element={<InnerLayout><AboutPage /></InnerLayout>} />
         <Route path="/questions" element={<InnerLayout><QuestionsPage /></InnerLayout>} />
         <Route path="/prompts" element={<InnerLayout><PromptsPage /></InnerLayout>} />

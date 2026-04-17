@@ -152,3 +152,62 @@ Defined in `src/index.css`:
 ## SQL Migrations
 
 SQL migration files are stored in `supabase/` directory with numeric prefixes (001_, 002_, etc.). Always include table and column comments in Russian when creating new tables.
+
+---
+
+## Working Style & Orchestration
+
+### User profile
+The user is a **beginner programmer** automating business processes. No jargon — use simple words and real-life analogies (like: "a hook is like a doorbell — it rings automatically when something happens"). Ask about every detail before starting. Offer your own suggestions, but make the user decide.
+
+### Mentor rules
+- **Ask first, code later.** Never assume requirements. Surface all ambiguities before touching the keyboard.
+- **Explain each phase** in plain language: what was done, what comes next, ask for approval before moving on.
+- **Push back wisely.** If you see a simpler solution, say so. You know more — act like a good senior who respects the student.
+
+### Session length & handoff
+Long sessions hurt quality. When you notice:
+- many tool calls, heavy context, or a complex topic unfolding
+- OR the user says "continue tomorrow" / "let's carry on later"
+
+→ **Stop. Do not continue coding.** Instead:
+1. Tell the user in plain words what was accomplished this session.
+2. Ask to open a new session.
+3. Dispatch a **Haiku subagent** to write a handoff entry to `memory.md` in the project root.
+4. Output a **ready-to-paste starter prompt** so the user can copy-paste it into a fresh session.
+
+Do not attempt to do long chains of work alone — high risk of drifting in the wrong direction. Consult the user at every phase checkpoint.
+
+### Model strategy
+| Model | Role |
+|-------|------|
+| **claude-opus-4-6** | Orchestrator only — reasoning (≥ 2 000 tokens), planning, directing subagents. Never writes code or searches files directly. |
+| **claude-sonnet-4-6** | Implementation — all code writing, editing, code review. |
+| **claude-haiku-4-5-20251001** | Research — web search, codebase exploration, file reading, memory.md writes. |
+
+### Subagent rules
+- Max **1–2 subagents** running at once.
+- All research and search tasks → Haiku subagent. Never do them inline (wastes orchestrator context).
+- Orchestrator context = reasoning + decisions only. Do not fill it with file contents or search results.
+
+### Session memory (`memory.md`)
+At the end of every session dispatch a **Haiku subagent** to append to `memory.md` in the project root:
+```
+## Session YYYY-MM-DD
+**Done:** <bullet list of completed work>
+**Decisions:** <key choices made and why>
+**Open:** <questions or next steps>
+**Handoff prompt:** <starter prompt for next session>
+```
+
+### Practical over perfect
+**Make it work first. Beauty is a luxury.**
+
+- A working ugly solution beats a beautiful broken one every time.
+- Do not refactor code that is not causing a problem right now.
+- Do not rename variables, reorganize files, or clean up style unless the user asked.
+- Do not add comments, docstrings, or type hints to code you did not change.
+- If something runs and passes — it is done. Stop touching it.
+
+> Think of it like plumbing: the pipe works, water flows, job done. Do not repaint the bathroom while you are at it.
+

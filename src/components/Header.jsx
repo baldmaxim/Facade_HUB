@@ -41,6 +41,7 @@ function Header() {
           <Link to="/questions" className="nav-btn">Типовые вопросы заказчику</Link>
           <Link to="/prompts" className="nav-btn">Промты</Link>
           <Link to="/contractors" className="nav-btn">База подрядчиков</Link>
+          <Link to="/vor-templates" className="nav-btn">Шаблоны ВОР</Link>
           <Link to="/admin" className="nav-btn">Панель управления</Link>
 
           <div className="nav-dropdown">
