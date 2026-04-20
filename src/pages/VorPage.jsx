@@ -4,7 +4,7 @@ import * as XLSX from 'xlsx';
 import { fetchObjectById } from '../api/objects';
 import { fetchVorRows, insertVorRows, deleteVorRows, updateVorRowField } from '../api/vor';
 import { fetchVorTemplates } from '../api/vorTemplates';
-import { parseEmptyVor, generateFilledVor, downloadBlob } from '../lib/vorExcelGenerator';
+import VorFillModal from '../components/VorFillModal';
 import './VorPage.css';
 
 // ─── Парсер пустого ВОР заказчика ───────────────────────────────────
@@ -112,10 +112,9 @@ function VorPage() {
   const [saving, setSaving] = useState(false);
   const [filling, setFilling] = useState(false);
   const [error, setError] = useState(null);
-  const [generating, setGenerating] = useState(false);
   const [genStats, setGenStats] = useState(null);
+  const [showFillModal, setShowFillModal] = useState(false);
   const fileInputRef = useRef(null);
-  const fillInputRef = useRef(null);
   const saveTimers = useRef({});
 
   useEffect(() => { loadData(); }, [id]);
@@ -276,38 +275,6 @@ function VorPage() {
     }
   }
 
-  // ─── Расценить и скачать Excel ──────────────────────────────────
-  function handleFillFileChange(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    setGenerating(true);
-    setError(null);
-    setGenStats(null);
-
-    const reader = new FileReader();
-    reader.onload = (evt) => {
-      try {
-        const parsed = parseEmptyVor(evt.target.result);
-        if (parsed.stats.totalPositions === 0) {
-          setError('Не найдено позиций в файле. Проверьте формат ВОР.');
-          setGenerating(false);
-          return;
-        }
-
-        const { blob, stats } = generateFilledVor(parsed);
-        const baseName = file.name.replace(/\.xlsx?$/i, '');
-        downloadBlob(blob, `${baseName}_расценённый.xlsx`);
-        setGenStats(stats);
-      } catch (err) {
-        setError('Ошибка генерации: ' + err.message);
-      } finally {
-        setGenerating(false);
-      }
-    };
-    reader.readAsArrayBuffer(file);
-    e.target.value = '';
-  }
-
   // ─── Редактирование ячеек ─────────────────────────────────────
   function handleFieldChange(rowId, field, value) {
     setRows(prev => prev.map(r => r.id === rowId ? { ...r, [field]: value } : r));
@@ -392,18 +359,10 @@ function VorPage() {
             )}
             <button
               className="vor-btn-fill"
-              onClick={() => fillInputRef.current?.click()}
-              disabled={generating}
+              onClick={() => setShowFillModal(true)}
             >
-              {generating ? 'Генерация...' : 'Расценить и скачать'}
+              Заполнение ВОРа
             </button>
-            <input
-              ref={fillInputRef}
-              type="file"
-              accept=".xlsx,.xls"
-              onChange={handleFillFileChange}
-              hidden
-            />
             <button
               className="vor-btn-primary"
               onClick={() => fileInputRef.current?.click()}
@@ -590,6 +549,14 @@ function VorPage() {
           </>
         )}
       </div>
+
+      {showFillModal && (
+        <VorFillModal
+          objectId={id}
+          objectName={object?.name}
+          onClose={() => setShowFillModal(false)}
+        />
+      )}
     </main>
   );
 }

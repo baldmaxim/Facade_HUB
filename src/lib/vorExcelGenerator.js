@@ -4,6 +4,7 @@
  */
 import XLSX from 'xlsx-js-style';
 import { TEMPLATES, matchPosition, isHeader, detectVorStyle, classifyRowRole, detectInsulationThickness, detectInsulationType, adjustInsulationTemplate } from './vorMatcher.js';
+import { findWorkPrice } from './vorPriceLoader.js';
 
 const HEADERS = [
   'Номер позиции', '№ п/п', 'Затрата на строительство', 'Наличие',
@@ -104,6 +105,8 @@ export function parseEmptyVor(data) {
 export function generateFilledVor(parsed, options = {}) {
   const { sections } = parsed;
   const hdrOpts = { priceAllWithQty: options.priceAllWithQty === true };
+  const workPrices = options.workPrices || null; // Map<tplKey, Array<{name, price}>>
+  let totalWorkPricesFilled = 0;
   const ws = {};
   let R = 0; // текущая строка
   const merges = [];
@@ -153,6 +156,34 @@ export function generateFilledVor(parsed, options = {}) {
     if (excludeFromSecondary.size === 0) return tplKeys;
     const filtered = tplKeys.filter(k => !excludeFromSecondary.has(k));
     return filtered.length > 0 ? filtered : tplKeys;
+  }
+
+  // Для основных материалов облицовки — использовать описание заказчика:
+  // приоритет — название позиции, если нет специфики — примечание.
+  // Лукап цены работы по (tplKey, workName) + fallback по costPath
+  function priceForWork(tplKey, workName, costPath) {
+    if (!workPrices) return null;
+    const p = findWorkPrice(workPrices, tplKey, workName, costPath);
+    if (p) totalWorkPricesFilled++;
+    return p;
+  }
+
+  function getCustomerMaterialName(pos) {
+    const name = (pos.name || '').trim();
+    const note = (pos.noteCustomer || '').trim();
+    // Чистим префиксы "НВФ.", "Облицовка:", "- " и суффикс "без утеплителя"
+    const cleanName = name
+      .replace(/^нвф\.?\s*/i, '')
+      .replace(/^облицовк[аи]:?\s*/i, '')
+      .replace(/^[-–—]\s*/, '')
+      .replace(/,?\s*без\s+утеплен\w*\s*$/i, '')
+      .trim();
+    // Если название слишком общее (короче 15 символов или просто "облицовка") — берём примечание
+    const genericPatterns = /^устройство\s+облицовк|^облицовк$|^фасад\s*$/i;
+    if (cleanName.length < 15 || genericPatterns.test(cleanName)) {
+      if (note.length > 10) return note;
+    }
+    return cleanName || note || name;
   }
 
   function getTemplate(key, posName, posNote, clusterThickness) {
@@ -300,6 +331,8 @@ export function generateFilledVor(parsed, options = {}) {
             wd[6] = w.name;
             wd[7] = w.unit;
             wd[12] = 'RUB';
+            const p = priceForWork(firstTplKey, w.name, firstTpl.costPath);
+            if (p) wd[15] = p;
             for (let c = 0; c < NC; c++) {
               ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], STYLE_WORK);
             }
@@ -371,6 +404,8 @@ export function generateFilledVor(parsed, options = {}) {
               wd[6] = w.name;
               wd[7] = w.unit;
               wd[12] = 'RUB';
+              const p = priceForWork(key, w.name, tpl.costPath);
+              if (p) wd[15] = p;
               for (let c = 0; c < NC; c++) {
                 ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], STYLE_WORK);
               }
@@ -383,7 +418,7 @@ export function generateFilledVor(parsed, options = {}) {
               md[3] = 'да';
               md[4] = 'суб-мат';
               md[5] = m.kind || 'основн.';
-              md[6] = m.name;
+              md[6] = (key.startsWith('nvf_cladding') && m.kind === 'основн.') ? getCustomerMaterialName(pos) : m.name;
               md[7] = m.unit;
               if (m.j != null) md[9] = m.j;
               if (m.k != null) md[10] = m.k;
@@ -420,6 +455,8 @@ export function generateFilledVor(parsed, options = {}) {
               wd[6] = w.name;
               wd[7] = w.unit;
               wd[12] = 'RUB';
+              const p = priceForWork(key, w.name, tpl.costPath);
+              if (p) wd[15] = p;
               for (let c = 0; c < NC; c++) {
                 ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], STYLE_WORK);
               }
@@ -442,6 +479,8 @@ export function generateFilledVor(parsed, options = {}) {
               wd[6] = w.name;
               wd[7] = w.unit;
               wd[12] = 'RUB';
+              const p = priceForWork(key, w.name, tpl.costPath);
+              if (p) wd[15] = p;
               for (let c = 0; c < NC; c++) {
                 ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], STYLE_WORK);
               }
@@ -457,7 +496,7 @@ export function generateFilledVor(parsed, options = {}) {
               md[3] = 'да';
               md[4] = 'суб-мат';
               md[5] = m.kind;
-              md[6] = m.name;
+              md[6] = key.startsWith('nvf_cladding') ? getCustomerMaterialName(pos) : m.name;
               md[7] = m.unit;
               if (m.j != null) md[9] = m.j;
               if (m.k != null) md[10] = m.k;
@@ -500,6 +539,8 @@ export function generateFilledVor(parsed, options = {}) {
           wd[6] = w.name;
           wd[7] = w.unit;
           wd[12] = 'RUB';
+          const p = priceForWork(key, w.name, tpl.costPath);
+          if (p) wd[15] = p;
           for (let c = 0; c < NC; c++) {
             ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], STYLE_WORK);
           }
@@ -514,7 +555,7 @@ export function generateFilledVor(parsed, options = {}) {
           md[3] = 'да';
           md[4] = 'суб-мат';
           md[5] = m.kind || 'основн.';
-          md[6] = m.name;
+          md[6] = (key.startsWith('nvf_cladding') && m.kind === 'основн.') ? getCustomerMaterialName(pos) : m.name;
           md[7] = m.unit;
           if (m.j != null) md[9] = m.j;
           if (m.k != null) md[10] = m.k;
@@ -550,6 +591,7 @@ export function generateFilledVor(parsed, options = {}) {
       totalMatched,
       totalWorks,
       totalMaterials,
+      totalWorkPricesFilled,
       totalRows: R,
       unmatched,
       vorStyle,

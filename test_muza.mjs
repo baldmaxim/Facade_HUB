@@ -1,14 +1,22 @@
 import fs from 'fs';
 import path from 'path';
 import { parseEmptyVor, generateFilledVor } from './src/lib/vorExcelGenerator.js';
+import { loadWorkPrices } from './src/lib/vorPriceLoader.js';
 
 const inputPath = path.resolve(process.cwd(), 'Муза_Финал.xlsx');
+const pricesPath = path.resolve(process.cwd(), 'prices_muza.xlsx');
 const outputPath = path.resolve(process.cwd(), 'test_output_muza.xlsx');
 
 // ─── Читаем файл ──────────────────────────────────────────────────────
 console.log(`Reading: ${inputPath}`);
 const fileBuffer = fs.readFileSync(inputPath);
 const uint8 = new Uint8Array(fileBuffer);
+
+let workPrices = null;
+if (fs.existsSync(pricesPath)) {
+  console.log(`Loading prices: ${pricesPath}`);
+  workPrices = loadWorkPrices(new Uint8Array(fs.readFileSync(pricesPath)));
+}
 
 // ─── Парсим пустой ВОР ───────────────────────────────────────────────
 console.log('\nParsing empty VOR...');
@@ -29,7 +37,7 @@ for (const section of parsed.sections) {
 
 // ─── Генерируем заполненный ВОР ──────────────────────────────────────
 console.log('\n\nGenerating filled VOR...');
-const result = generateFilledVor(parsed);
+const result = generateFilledVor(parsed, { workPrices });
 
 // ─── Статистика ───────────────────────────────────────────────────────
 const s = result.stats;
