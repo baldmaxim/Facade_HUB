@@ -70,13 +70,28 @@ export const TEMPLATES = {
   },
   nvf_cladding_clinker: {
     costPath: 'ФАСАДНЫЕ РАБОТЫ / Облицовка НВФ / Здание',
+    // workMaterials: каждая работа идёт вместе со своими материалами (чередование)
+    workMaterials: [
+      {
+        work: { name: 'Наружная облицовка фасада клинкерной плиткой', unit: 'м2' },
+        materials: [
+          { name: 'Фасадная клинкерная плитка (по проекту)', unit: 'м2', kind: 'основн.', j: 1, k: 1.22 },
+        ],
+      },
+      {
+        work: { name: 'Затирка швов клинкерной плитки', unit: 'м2' },
+        materials: [
+          { name: 'FM.R-E, Смесь затирочная для НФС, антрацитово-серый, производства Quick-mix(Россия), фасовка 30 кг/мешок', unit: 'м2', kind: 'основн.', j: 1, k: 1.05, price: 699.6, noOverride: true },
+        ],
+      },
+    ],
     works: [
       { name: 'Наружная облицовка фасада клинкерной плиткой', unit: 'м2' },
       { name: 'Затирка швов клинкерной плитки', unit: 'м2' },
     ],
     materials: [
       { name: 'Фасадная клинкерная плитка (по проекту)', unit: 'м2', kind: 'основн.', j: 1, k: 1.22 },
-      { name: 'Смесь затирочная для НФС', unit: 'м2', kind: 'основн.', j: 1, k: 1.05 },
+      { name: 'FM.R-E, Смесь затирочная для НФС, антрацитово-серый, производства Quick-mix(Россия), фасовка 30 кг/мешок', unit: 'м2', kind: 'основн.', j: 1, k: 1.05, price: 699.6, noOverride: true },
     ],
   },
   nvf_cladding_cassette: {
@@ -184,22 +199,42 @@ export const TEMPLATES = {
       { name: 'Утепление в 2 слоя (180 мм)', unit: 'м2' },
     ],
     materials: [
-      { name: 'Мембрана ветрозащитная ТехноНИКОЛЬ АЛЬФА ПРОФ НГ', unit: 'м2', kind: 'основн.', j: 1, k: 1.15 },
-      { name: 'Дюбель фасадный забивной EJOT (наруж. слой)', unit: 'м2', kind: 'вспомогат.', j: 5, k: 1.05, price: 13.25 },
-      { name: 'Утеплитель ТЕХНОВЕНТ ОПТИМА 50мм (наруж. слой)', unit: 'м3', kind: 'основн.', j: 0.08, k: 1.15 },
-      { name: 'Утеплитель ТЕХНОВЕНТ Н 130мм (внутр. слой)', unit: 'м3', kind: 'основн.', j: 0.1, k: 1.15 },
-      { name: 'Дюбель фасадный забивной EJOT (внутр. слой)', unit: 'м2', kind: 'вспомогат.', j: 10, k: 1.05, price: 18.73 },
+      { name: 'Утеплитель ТЕХНОВЕНТ ОПТИМА', unit: 'м3', kind: 'основн.', j: 0.05, k: 1.15 },
+      { name: 'Утеплитель ТЕХНОВЕНТ ОПТИМА', unit: 'м3', kind: 'основн.', j: 0.13, k: 1.15 },
+      { name: 'Противопожарная защитная мембрана ТехноНИКОЛЬ АЛЬФА ПРО НГ', unit: 'м2', kind: 'основн.', j: 1, k: 1.15 },
+      { name: 'Фасадный забивной дюбель со стальным распорным элементом', unit: 'м2', kind: 'вспомогат.', j: 5, k: 1.05, price: 13.25 },
+      { name: 'Фасадный забивной дюбель со стальным распорным элементом', unit: 'м2', kind: 'вспомогат.', j: 10, k: 1.05, price: 18.73 },
     ],
   },
   flashings: {
     costPath: 'ФАСАДНЫЕ РАБОТЫ / Облицовка НВФ / Здание',
+    workMaterials: [
+      {
+        work: { name: 'Изготовление и монтаж оцинкованных элементов (парапеты, отливы, нащельники)', unit: 'м.п.' },
+        materials: [
+          { name: 'Лист 0,7 оц. с полимерным покрытием (1 м2 = 5,7 кг)', unit: 'м2', kind: 'основн.', j: 0.2, k: 1.2 },
+          { name: 'Заклепка вытяжная комбинированная 4,0*8', unit: 'шт', kind: 'вспомогат.', j: 6, k: 1, price: 1.44 },
+          { name: 'Дюбель-гвоздь 6*60', unit: 'шт', kind: 'вспомогат.', j: 4, k: 2, price: 1.6 },
+        ],
+      },
+      {
+        work: { name: 'Устройство герметика', unit: 'м.п.' },
+        materials: [
+          { name: 'Герметик акриловый СТИЗ-А 7 кг', unit: 'кг', kind: 'вспомогат.', j: 0.1, k: 1.05 },
+          { name: 'Герметик акриловый СТИЗ-В 7 кг', unit: 'кг', kind: 'вспомогат.', j: 0.1, k: 1.05 },
+        ],
+      },
+    ],
     works: [
-      { name: 'Изготовление и монтаж оцинкованных элементов', unit: 'м.п.' },
+      { name: 'Изготовление и монтаж оцинкованных элементов (парапеты, отливы, нащельники)', unit: 'м.п.' },
+      { name: 'Устройство герметика', unit: 'м.п.' },
     ],
     materials: [
-      { name: 'Лист 0,7 оц. с полимерным покрытием', unit: 'м2', kind: 'основн.', j: 0.3, k: 1.2 },
-      { name: 'Заклепка вытяжная 4,0*8', unit: 'шт', kind: 'вспомогат.', j: 6, k: 1, price: 1.44 },
-      { name: 'Дюбель-гвоздь 6*60', unit: 'шт', kind: 'вспомогат.', j: 6, k: 1, price: 1.6 },
+      { name: 'Лист 0,7 оц. с полимерным покрытием (1 м2 = 5,7 кг)', unit: 'м2', kind: 'основн.', j: 0.2, k: 1.2 },
+      { name: 'Заклепка вытяжная комбинированная 4,0*8', unit: 'шт', kind: 'вспомогат.', j: 6, k: 1, price: 1.44 },
+      { name: 'Дюбель-гвоздь 6*60', unit: 'шт', kind: 'вспомогат.', j: 4, k: 2, price: 1.6 },
+      { name: 'Герметик акриловый СТИЗ-А 7 кг', unit: 'кг', kind: 'вспомогат.', j: 0.1, k: 1.05 },
+      { name: 'Герметик акриловый СТИЗ-В 7 кг', unit: 'кг', kind: 'вспомогат.', j: 0.1, k: 1.05 },
     ],
   },
   glass_railing: {
@@ -210,10 +245,12 @@ export const TEMPLATES = {
     materials: [
       { name: 'Профиль алюминиевый зажимной L=3000 мм', unit: 'м', kind: 'основн.', j: 0.83, k: 1.1 },
       { name: 'Триплекс UltraClear (зак.) полир', unit: 'м2', kind: 'основн.', j: 1, k: 1.2 },
-      { name: 'Уплотнитель EPDM', unit: 'м', kind: 'вспомогат.', j: 1, k: 1.05, price: 50 },
+      { name: 'Уплотнитель EPDM базовый', unit: 'м', kind: 'вспомогат.', j: 1, k: 1.05, price: 50 },
+      { name: 'Уплотнитель EPDM установочный', unit: 'м', kind: 'вспомогат.', j: 1, k: 1.05, price: 50 },
       { name: 'Крышка декоративная', unit: 'м', kind: 'вспомогат.', j: 1, k: 1.05, price: 200 },
       { name: 'Клипса зажимная для стекла', unit: 'шт', kind: 'вспомогат.', j: 4, k: 1.05, price: 450 },
       { name: 'Химический анкер эпоксидный', unit: 'шт', kind: 'вспомогат.', j: 0.5, k: 1.05, price: 1690 },
+      { name: 'Анкерный крепеж Ø14х110 + винт М10, AISI 304+Q345B', unit: 'шт', kind: 'вспомогат.', j: 8, k: 1.05, price: 503 },
     ],
   },
   glass_railing_molled: {
@@ -308,6 +345,41 @@ export const TEMPLATES = {
       { name: 'Краска силиконовая атмосферостойкая', unit: 'кг', kind: 'основн.', j: 1, k: 1 },
     ],
   },
+  wet_facade: {
+    costPath: 'ФАСАДНЫЕ РАБОТЫ / Устройство мокрого фасада / Здание',
+    works: [{ name: 'Мокрый штукатурный фасад', unit: 'м2' }],
+    materials: [
+      { name: 'ROCKforce грунтовка пропитывающая', unit: 'л', kind: 'основн.', j: 0.18, k: 1.1 },
+      { name: 'ROCKglue', unit: 'кг', kind: 'основн.', j: 6, k: 1.1, price: 54.75 },
+      { name: 'Дюбель для изоляции (гриб) 10*260 мет.гвоздем', unit: 'шт', kind: 'вспомогат.', j: 7, k: 1.05, price: 15 },
+      { name: 'Армирующая шпаклевка ROCKmortar', unit: 'кг', kind: 'основн.', j: 6, k: 1.1, price: 56.38 },
+      { name: 'Сетка стеклотканевая для фасадных работ FasadPro 2000 1x50 м', unit: 'м2', kind: 'основн.', j: 1, k: 1.1, price: 219 },
+      { name: 'Грунтовочный слой ROCKprimer (на все 3 слоя)', unit: 'кг', kind: 'основн.', j: 0.75, k: 1.15 },
+      { name: 'Силикатно-силиконовая структурная штукатурка для наружных работ', unit: 'кг', kind: 'основн.', j: 0.37, k: 1.1 },
+      { name: 'Краска силиконовая ROCKsil', unit: 'кг', kind: 'основн.', j: 0.3, k: 1.15 },
+    ],
+  },
+  nvf_cladding_profiles_vertical: {
+    costPath: 'ФАСАДНЫЕ РАБОТЫ / Облицовка НВФ / Здание',
+    workMaterials: [
+      {
+        work: { name: 'Монтаж декоративных прямоугольных профилей', unit: 'м.п.' },
+        materials: [{ name: 'Декоративный профиль прямоугольный (по проекту)', unit: 'м.п.', kind: 'основн.', j: 1, k: 1.2 }],
+      },
+      {
+        work: { name: 'Монтаж креплений', unit: 'м.п.' },
+        materials: [{ name: 'Крепление', unit: 'м.п.', kind: 'основн.', j: 1, k: 1 }],
+      },
+    ],
+    works: [
+      { name: 'Монтаж декоративных прямоугольных профилей', unit: 'м.п.' },
+      { name: 'Монтаж креплений', unit: 'м.п.' },
+    ],
+    materials: [
+      { name: 'Декоративный профиль прямоугольный (по проекту)', unit: 'м.п.', kind: 'основн.', j: 1, k: 1.2 },
+      { name: 'Крепление', unit: 'м.п.', kind: 'основн.', j: 1, k: 1 },
+    ],
+  },
   mockup: {
     costPath: 'МОКАП / Фасадные работы / Здание',
     works: [
@@ -325,6 +397,14 @@ export const TEMPLATES = {
 const MATCH_RULES = [
   // === Пропускаемые позиции (не наш раздел) ===
   { keywords: ['архитектурн.*освещен', 'освещен.*фасад'],
+    templates: [], secondary: [] },
+
+  // Перголы — всегда ручная расценка, пропускаем
+  { keywords: ['пергол'],
+    templates: [], secondary: [] },
+
+  // Пол в технических лоджиях/кондиционеров — не наш раздел
+  { keywords: ['пол.*технич.*лоджи', 'пол.*лоджи.*кондиционер', 'пол.*лоджи.*тех'],
     templates: [], secondary: [] },
 
   // === МОКАП — всегда отдельный шаблон ===
@@ -357,6 +437,30 @@ const MATCH_RULES = [
   // === Стеклянные ограждения — ДО общего правила "стекл" ===
   { keywords: ['ограждени.*стекл', 'стекл.*ограждени', 'ограждени.*кровл', 'ограждени.*террас', 'ограждени.*балкон'],
     templates: ['glass_railing'], secondary: [] },
+
+  // Откосы с мокрым фасадом (ВЫШЕ общего откос)
+  { keywords: ['откос.*мокр', 'мокр.*фасад.*откос', 'откос.*штукатурн'],
+    templates: ['wet_facade', 'flashings'], secondary: [] },
+
+  // Откосы с кассетами / алюминиевым фасадом (ВЫШЕ общего откос)
+  { keywords: ['откос.*кассет', 'кассет.*откос', 'откос.*алюминиев.*фасад'],
+    templates: ['nvf_subsystem', 'nvf_cladding_cassette', 'flashings'], secondary: [] },
+
+  // Навесные элементы на витраж (пилоны) → кассеты без утеплителя (ВЫШЕ витраж)
+  { keywords: ['навесн.*элемент.*витраж', 'пилон.*горизонт', 'пилон.*навесн', 'навесн.*пилон'],
+    templates: ['nvf_subsystem', 'nvf_cladding_cassette'], secondary: ['scaffolding'] },
+
+  // Фасадные короба кондиционеров → кассеты без утеплителя
+  { keywords: ['фасадн.*короб.*кондиционер', 'короб.*наружн.*блок', 'короб.*кондиционер'],
+    templates: ['nvf_subsystem', 'nvf_cladding_cassette'], secondary: ['scaffolding'] },
+
+  // Решётки под лоджиями → полный НВФ с кассетами
+  { keywords: ['решетк.*лоджи', 'решетк.*ниш.*кондиционер', 'решетк.*технич.*лодж'],
+    templates: ['nvf_subsystem', 'insulation', 'nvf_cladding_cassette'], secondary: ['scaffolding', 'kmd_nvf'] },
+
+  // Вертикальные прямоугольные профили
+  { keywords: ['вертикальн.*прямоугольн.*профил', 'прямоугольн.*профил.*вертикальн', 'декоратив.*прямоугольн.*профил'],
+    templates: ['nvf_cladding_profiles_vertical'], secondary: [] },
 
   // Тамбура — отдельный costPath (ВЫШЕ стоечно-ригельн)
   { keywords: ['тамбур'],
@@ -436,6 +540,10 @@ const MATCH_RULES = [
   { keywords: ['пеностекл', 'эппс', 'экструдирован.*пенополистирол', 'пенополистирол.*экструдирован'],
     templates: ['insulation'], secondary: ['scaffolding', 'kmd_nvf'] },
 
+  // Козырёк — ВЫШЕ "профил", т.к. "Козырек из ... алюминиевом профиле" содержит "профил"
+  { keywords: ['козыр'],
+    templates: ['glass_canopy'], secondary: [] },
+
   // СПК fallback по "профил"/"каркас" (ПОСЛЕ специфичных окон/дверей/стоечно-ригельн)
   { keywords: ['профил', 'каркас', 'сборка.*витраж', 'монтаж.*витраж', 'монтаж.*спк', 'устройство.*профил'],
     templates: ['spk_profile'], secondary: ['scaffolding', 'kmd_spk'] },
@@ -455,16 +563,18 @@ const MATCH_RULES = [
   { keywords: ['подсистем'],
     templates: ['nvf_subsystem'], secondary: [] },
 
-  // Мокрый фасад — утепление только если явно написано "мокр.*фасад" с утеплителем
-  { keywords: ['мокр.*фасад.*утепл', 'утепл.*мокр.*фасад', 'мокр.*утепл.*фасад'],
-    templates: ['wet_facade_insulation'], secondary: [] },
-
   // Краска фасадная
   { keywords: ['краск.*атмосфер', 'краск.*силикон', 'краск.*фасад'],
     templates: ['wet_facade_paint'], secondary: [] },
   // Отделка декоративным слоем мокрого фасада
   { keywords: ['отделк.*мокр', 'декор.*мокр', 'мокр.*декор', 'отделк.*штукатур'],
     templates: ['wet_facade_finish'], secondary: [] },
+  // Полный мокрый фасад (со всеми материалами) — ПЕРЕД wet_facade_insulation и штукатур
+  { keywords: ['мокрого фасада', 'устройств.*мокрого', 'мокр.*фасад.*систем', 'мокр.*фасад.*техн', 'мокрый штукатурн', 'rockforce', 'rockglue'],
+    templates: ['wet_facade'], secondary: ['insulation'] },
+  // Мокрый фасад — с утеплением (старый fallback, после основного правила)
+  { keywords: ['мокр.*фасад.*утепл', 'утепл.*мокр.*фасад', 'мокр.*утепл.*фасад'],
+    templates: ['wet_facade_insulation'], secondary: [] },
   // Общий мокрый фасад (fallback)
   { keywords: ['штукатур', 'сфтк', 'мокр.*фасад', 'отделка стен'],
     templates: ['wet_facade_finish'], secondary: [] },
@@ -477,8 +587,6 @@ const MATCH_RULES = [
   { keywords: ['откос'], templates: ['flashings'], secondary: [] },
   { keywords: ['отлив'], templates: ['flashings'], secondary: [] },
   { keywords: ['парапет'], templates: ['flashings'], secondary: [] },
-  { keywords: ['козыр'],
-    templates: ['glass_canopy'], secondary: [] },
   { keywords: ['перфорирован'], templates: ['nvf_cladding_cassette'], secondary: ['scaffolding', 'kmd_nvf'] },
 
   // === Составные позиции (когда НЕ разбиты на подпозиции) ===
@@ -488,7 +596,11 @@ const MATCH_RULES = [
   { keywords: ['клинкер'],
     templates: ['nvf_subsystem', 'insulation', 'nvf_cladding_clinker'], secondary: ['scaffolding', 'kmd_nvf'] },
 
-  { keywords: ['кассет', 'сэндвич'],
+  // Сэндвич-панель — утеплитель встроен, отдельной подсистемы нет
+  { keywords: ['сэндвич', 'трёхслойн.*панел', 'трехслойн.*панел'],
+    templates: ['nvf_cladding_cassette'], secondary: ['scaffolding', 'kmd_nvf'] },
+
+  { keywords: ['кассет'],
     templates: ['nvf_subsystem', 'insulation', 'nvf_cladding_cassette'], secondary: ['scaffolding', 'kmd_nvf'] },
 ];
 
@@ -621,18 +733,28 @@ export function detectInsulationType(name, note) {
 }
 
 /**
- * Возвращает скорректированный шаблон утеплителя под толщину и тип.
- * Универсальная формула толщины:
- *   - Внутренний слой всегда 100мм, j = 0.1
- *   - Наружный слой = (толщина - 100)мм, j = (толщина - 100) / 1000
- *   - Если толщина ≤ 100мм → 1 слой, j = толщина / 1000
- * Тип утеплителя заменяет имя материала (минераловатный / пеностекло / ЭППС).
+ * Возвращает скорректированный шаблон утеплителя под толщину, тип и слои.
+ * Формула толщины:
+ *   - Всегда 2 слоя: наружный = 50мм (j=0.05), внутренний = (толщина - 50)мм / 1000
+ *   - Если толщина ≤ 50мм → 1 слой, j = толщина / 1000
+ *   - Оба слоя называются одинаково (бренд/тип без суффиксов)
+ *   - layers: { outer, inner } — ручные толщины из названия позиции "X+Y мм"
  */
-export function adjustInsulationTemplate(thickness, insulationType = 'mineral') {
+export function adjustInsulationTemplate(thickness, insulationType = 'mineral', layers = null) {
   const base = TEMPLATES.insulation;
-  const oneLayer = thickness <= 100;
-  const outerMm = oneLayer ? thickness : thickness - 100;
-  const outerJ = oneLayer ? thickness / 1000 : outerMm / 1000;
+
+  let outerMm, innerMm;
+  if (layers) {
+    outerMm = layers.outer;
+    innerMm = layers.inner;
+  } else {
+    outerMm = 50;
+    innerMm = thickness - 50;
+  }
+  const oneLayer = (layers ? innerMm <= 0 : thickness <= 50);
+
+  const outerJ = outerMm / 1000;
+  const innerJ = innerMm / 1000;
 
   const works = base.works.map(w => ({
     ...w,
@@ -641,34 +763,46 @@ export function adjustInsulationTemplate(thickness, insulationType = 'mineral') 
       : `Утепление в 2 слоя (${thickness} мм)`,
   }));
 
-  // Замена названия утеплителя по типу
-  const typeLabel = insulationType === 'foam_glass' ? 'пеностекло'
-                  : insulationType === 'xps' ? 'ЭППС'
-                  : null;
-  const renameInsulation = (matName) => {
-    if (!typeLabel) return matName;
-    // Заменяем бренд ТЕХНОВЕНТ на обобщённое имя типа утеплителя
-    if (matName.includes('ТЕХНОВЕНТ') || matName.includes('Утеплитель')) {
-      if (matName.includes('(наруж. слой)')) return `Утеплитель ${typeLabel} (наруж. слой)`;
-      if (matName.includes('(внутр. слой)')) return `Утеплитель ${typeLabel} (внутр. слой)`;
-    }
-    return matName;
-  };
+  // Имя утеплителя по типу
+  const insulationName = insulationType === 'foam_glass' ? 'Утеплитель пеностекло'
+                       : insulationType === 'xps' ? 'Утеплитель ЭППС'
+                       : 'Утеплитель ТЕХНОВЕНТ ОПТИМА';
 
   let materials;
+  const [mat0, mat1, mem, dub0, dub1] = base.materials;
   if (oneLayer) {
-    // Один слой: убираем внутренний, наружный с расчётной j
-    materials = base.materials
-      .filter(m => !m.name.includes('внутр. слой'))
-      .map(m => m.name.includes('наруж. слой') && m.unit === 'м3'
-        ? { ...m, j: outerJ, name: renameInsulation(m.name) }
-        : { ...m, name: renameInsulation(m.name) });
+    materials = [
+      { ...mat0, name: insulationName, j: outerJ },
+      { ...mem },
+      { ...dub0 },
+      { ...dub1 },
+    ];
   } else {
-    materials = base.materials.map(m =>
-      m.name.includes('наруж. слой') && m.unit === 'м3'
-        ? { ...m, j: outerJ, name: renameInsulation(m.name) }
-        : { ...m, name: renameInsulation(m.name) });
+    materials = [
+      { ...mat0, name: insulationName, j: outerJ },
+      { ...mat1, name: insulationName, j: innerJ },
+      { ...mem },
+      { ...dub0 },
+      { ...dub1 },
+    ];
   }
 
   return { ...base, works, materials };
+}
+
+/**
+ * Определяет слои утеплителя из формата "X+Y мм" в названии позиции.
+ * Возвращает { outer, inner } (оба в мм), или null если не найдено.
+ */
+export function detectInsulationLayers(name, note) {
+  const s = ((name || '') + ' ' + (note || '')).toLowerCase();
+  const m = s.match(/(\d+)\s*\+\s*(\d+)\s*мм/);
+  if (m) {
+    const a = parseInt(m[1]);
+    const b = parseInt(m[2]);
+    if (a >= 30 && a <= 200 && b >= 30 && b <= 200) {
+      return { outer: Math.min(a, b), inner: Math.max(a, b) };
+    }
+  }
+  return null;
 }

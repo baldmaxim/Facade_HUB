@@ -3,7 +3,7 @@
  * Использует xlsx-js-style для цветных ячеек.
  */
 import XLSX from 'xlsx-js-style';
-import { TEMPLATES, matchPosition, isHeader, detectVorStyle, classifyRowRole, detectInsulationThickness, detectInsulationType, adjustInsulationTemplate } from './vorMatcher.js';
+import { TEMPLATES, matchPosition, isHeader, detectVorStyle, classifyRowRole, detectInsulationThickness, detectInsulationType, adjustInsulationTemplate, detectInsulationLayers } from './vorMatcher.js';
 import { findWorkPrice } from './vorPriceLoader.js';
 
 const HEADERS = [
@@ -150,6 +150,15 @@ export function generateFilledVor(parsed, options = {}) {
       excludeFromSecondary.add('kmd_nvf');
     }
   }
+  // Если есть отдельная позиция утеплителя (только insulation, без НВФ-облицовки) —
+  // не добавлять insulation как вторичный шаблон к другим позициям
+  for (const p of allPositions) {
+    const keys = matchPosition(p.name, p.noteCustomer || '');
+    if (keys.length === 1 && keys[0] === 'insulation') {
+      excludeFromSecondary.add('insulation');
+      break;
+    }
+  }
 
   // Убираем secondary шаблоны, но если ВСЕ шаблоны попадают под исключение — оставляем
   function filterExcluded(tplKeys) {
@@ -186,11 +195,26 @@ export function generateFilledVor(parsed, options = {}) {
     return cleanName || note || name;
   }
 
+  // Нормализует шаблон в массив [{work, materials[]}] для чередованного рендеринга.
+  // Если в шаблоне есть workMaterials — используем его.
+  // Иначе старый формат: все work'и первыми, materials — после последней работы.
+  function getWorkGroups(tpl) {
+    if (tpl.workMaterials) return tpl.workMaterials;
+    const works = tpl.works || [];
+    const mats = tpl.materials || [];
+    if (!works.length) return mats.length ? [{ work: null, materials: mats }] : [];
+    return [
+      ...works.slice(0, -1).map(w => ({ work: w, materials: [] })),
+      { work: works[works.length - 1], materials: mats },
+    ];
+  }
+
   function getTemplate(key, posName, posNote, clusterThickness) {
     if (key === 'insulation') {
       const t = clusterThickness || (posName ? detectInsulationThickness(posName, posNote) : 150);
       const type = posName ? detectInsulationType(posName, posNote) : 'mineral';
-      return adjustInsulationTemplate(t, type);
+      const layers = posName ? detectInsulationLayers(posName, posNote) : null;
+      return adjustInsulationTemplate(t, type, layers);
     }
     return TEMPLATES[key];
   }
@@ -392,44 +416,46 @@ export function generateFilledVor(parsed, options = {}) {
           (role === 'work' && !isClusteredWork(posIdx)) ||
           (role === 'material' && !isClusteredMaterial(posIdx));
         if (isStandalone) {
-          // ─── Standalone: works + all materials (как simple mode), без накопления ───
+          // ─── Standalone: чередованный рендеринг работа→материалы ───
           for (const key of tplKeys) {
             const tpl = getTemplate(key, pos.name, pos.noteCustomer, posInfos[posIdx] && posInfos[posIdx].insulationThickness);
             if (!tpl) continue;
             const costPath = tpl.costPath;
-            for (const w of tpl.works) {
-              const wd = new Array(NC).fill('');
-              wd[2] = costPath;
-              wd[4] = 'суб-раб';
-              wd[6] = w.name;
-              wd[7] = w.unit;
-              wd[12] = 'RUB';
-              const p = priceForWork(key, w.name, tpl.costPath);
-              if (p) wd[15] = p;
-              for (let c = 0; c < NC; c++) {
-                ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], STYLE_WORK);
+            for (const { work: w, materials: wMats } of getWorkGroups(tpl)) {
+              if (w) {
+                const wd = new Array(NC).fill('');
+                wd[2] = costPath;
+                wd[4] = 'суб-раб';
+                wd[6] = w.name;
+                wd[7] = w.unit;
+                wd[12] = 'RUB';
+                const p = priceForWork(key, w.name, tpl.costPath);
+                if (p) wd[15] = p;
+                for (let c = 0; c < NC; c++) {
+                  ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], STYLE_WORK);
+                }
+                R++;
+                totalWorks++;
               }
-              R++;
-              totalWorks++;
-            }
-            for (const m of tpl.materials) {
-              const md = new Array(NC).fill('');
-              md[2] = costPath;
-              md[3] = 'да';
-              md[4] = 'суб-мат';
-              md[5] = m.kind || 'основн.';
-              md[6] = (key.startsWith('nvf_cladding') && m.kind === 'основн.') ? getCustomerMaterialName(pos) : m.name;
-              md[7] = m.unit;
-              if (m.j != null) md[9] = m.j;
-              if (m.k != null) md[10] = m.k;
-              md[12] = 'RUB';
-              md[13] = 'в цене';
-              if (m.price) md[15] = m.price;
-              for (let c = 0; c < NC; c++) {
-                ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(md[c], STYLE_MATERIAL);
+              for (const m of wMats) {
+                const md = new Array(NC).fill('');
+                md[2] = costPath;
+                md[3] = 'да';
+                md[4] = 'суб-мат';
+                md[5] = m.kind || 'основн.';
+                md[6] = (key.startsWith('nvf_cladding') && m.kind === 'основн.' && !m.noOverride) ? getCustomerMaterialName(pos) : m.name;
+                md[7] = m.unit;
+                if (m.j != null) md[9] = m.j;
+                if (m.k != null) md[10] = m.k;
+                md[12] = 'RUB';
+                md[13] = 'в цене';
+                if (m.price) md[15] = m.price;
+                for (let c = 0; c < NC; c++) {
+                  ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(md[c], STYLE_MATERIAL);
+                }
+                R++;
+                totalMaterials++;
               }
-              R++;
-              totalMaterials++;
             }
           }
           continue;
@@ -528,45 +554,44 @@ export function generateFilledVor(parsed, options = {}) {
         const tpl = getTemplate(key, pos.name, pos.noteCustomer, posInfos[posIdx] && posInfos[posIdx].insulationThickness);
         if (!tpl) continue;
 
-        // Путь затрат — из шаблона
         const costPath = tpl.costPath;
 
-        // Работы (сиреневые) — без объёмов, заполняются позже
-        for (const w of tpl.works) {
-          const wd = new Array(NC).fill('');
-          wd[2] = costPath;
-          wd[4] = 'суб-раб';
-          wd[6] = w.name;
-          wd[7] = w.unit;
-          wd[12] = 'RUB';
-          const p = priceForWork(key, w.name, tpl.costPath);
-          if (p) wd[15] = p;
-          for (let c = 0; c < NC; c++) {
-            ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], STYLE_WORK);
+        // Чередованный рендеринг: работа → её материалы (поддерживает workMaterials)
+        for (const { work: w, materials: wMats } of getWorkGroups(tpl)) {
+          if (w) {
+            const wd = new Array(NC).fill('');
+            wd[2] = costPath;
+            wd[4] = 'суб-раб';
+            wd[6] = w.name;
+            wd[7] = w.unit;
+            wd[12] = 'RUB';
+            const p = priceForWork(key, w.name, tpl.costPath);
+            if (p) wd[15] = p;
+            for (let c = 0; c < NC; c++) {
+              ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], STYLE_WORK);
+            }
+            R++;
+            totalWorks++;
           }
-          R++;
-          totalWorks++;
-        }
-
-        // Материалы (зелёные) — коэффициенты и цены из шаблонов, без объёмов
-        for (const m of tpl.materials) {
-          const md = new Array(NC).fill('');
-          md[2] = costPath;
-          md[3] = 'да';
-          md[4] = 'суб-мат';
-          md[5] = m.kind || 'основн.';
-          md[6] = (key.startsWith('nvf_cladding') && m.kind === 'основн.') ? getCustomerMaterialName(pos) : m.name;
-          md[7] = m.unit;
-          if (m.j != null) md[9] = m.j;
-          if (m.k != null) md[10] = m.k;
-          md[12] = 'RUB';
-          md[13] = 'в цене';
-          if (m.price) md[15] = m.price;
-          for (let c = 0; c < NC; c++) {
-            ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(md[c], STYLE_MATERIAL);
+          for (const m of wMats) {
+            const md = new Array(NC).fill('');
+            md[2] = costPath;
+            md[3] = 'да';
+            md[4] = 'суб-мат';
+            md[5] = m.kind || 'основн.';
+            md[6] = (key.startsWith('nvf_cladding') && m.kind === 'основн.' && !m.noOverride) ? getCustomerMaterialName(pos) : m.name;
+            md[7] = m.unit;
+            if (m.j != null) md[9] = m.j;
+            if (m.k != null) md[10] = m.k;
+            md[12] = 'RUB';
+            md[13] = 'в цене';
+            if (m.price) md[15] = m.price;
+            for (let c = 0; c < NC; c++) {
+              ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(md[c], STYLE_MATERIAL);
+            }
+            R++;
+            totalMaterials++;
           }
-          R++;
-          totalMaterials++;
         }
       }
     }
