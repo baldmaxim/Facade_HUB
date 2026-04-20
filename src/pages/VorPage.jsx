@@ -330,11 +330,11 @@ function VorPage() {
           <span>/</span>
           <Link to={`/objects/${id}`}>{object?.name}</Link>
           <span>/</span>
-          <span>Заполнение ВОРа</span>
+          <span>ВОР объекта</span>
         </div>
 
         <div className="vor-header">
-          <h1 className="vor-title">Заполнение ВОРа</h1>
+          <h1 className="vor-title">ВОР объекта</h1>
           <div className="vor-header-actions">
             <Link to="/vor-templates" className="vor-btn-secondary">
               База шаблонов

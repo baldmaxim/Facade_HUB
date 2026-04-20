@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { fetchObjectById, updateObject } from '../api/objects';
 import { fetchAllObjectStatuses } from '../api/objectStatus';
 import { supabase } from '../lib/supabase';
+import VorFillModal from '../components/VorFillModal';
 import './ObjectPage.css';
 
 function ObjectPage() {
@@ -11,6 +12,7 @@ function ObjectPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showVorFillModal, setShowVorFillModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editForm, setEditForm] = useState({
     name: '',
@@ -232,6 +234,16 @@ function ObjectPage() {
                 </svg>
                 <span>Задачи</span>
               </Link>
+              <button type="button" className="tab-btn tab-btn-tasks tab-btn-full" onClick={() => setShowVorFillModal(true)}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                  <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                <span>Заполнение ВОРа</span>
+              </button>
               <Link to={`/objects/${id}/checklist`} className="tab-btn">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M9 11l3 3L22 4"></path>
@@ -263,16 +275,6 @@ function ObjectPage() {
                 </svg>
                 <span>Цены работ на тендере</span>
               </Link>
-              <Link to={`/objects/${id}/vor`} className="tab-btn">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                  <line x1="16" y1="17" x2="8" y2="17"></line>
-                  <polyline points="10 9 9 9 8 9"></polyline>
-                </svg>
-                <span>Заполнение ВОРа</span>
-              </Link>
             </div>
           </div>
 
@@ -302,6 +304,14 @@ function ObjectPage() {
           </div>
         </div>
       </div>
+
+      {showVorFillModal && (
+        <VorFillModal
+          objectId={id}
+          objectName={object?.name}
+          onClose={() => setShowVorFillModal(false)}
+        />
+      )}
 
       {showEditModal && (
         <div className="edit-modal-overlay" onClick={() => setShowEditModal(false)}>
