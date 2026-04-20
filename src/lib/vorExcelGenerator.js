@@ -216,6 +216,21 @@ export function generateFilledVor(parsed, options = {}) {
       const layers = posName ? detectInsulationLayers(posName, posNote) : null;
       return adjustInsulationTemplate(t, type, layers);
     }
+    if (key === 'wet_facade') {
+      const t = clusterThickness || (posName ? detectInsulationThickness(posName, posNote) : 150);
+      const type = posName ? detectInsulationType(posName, posNote) : 'mineral';
+      const layers = posName ? detectInsulationLayers(posName, posNote) : null;
+      const insTpl = adjustInsulationTemplate(t, type, layers);
+      const base = TEMPLATES.wet_facade;
+      // Insert only the m3 insulation rows after ROCKglue (index 1)
+      const insMats = insTpl.materials.filter(m => m.unit === 'м3');
+      const materials = [
+        ...base.materials.slice(0, 2),
+        ...insMats,
+        ...base.materials.slice(2),
+      ];
+      return { ...base, materials };
+    }
     return TEMPLATES[key];
   }
 
