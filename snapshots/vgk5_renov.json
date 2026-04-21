@@ -1,0 +1,242 @@
+{
+  "file": "ВГК5 реновация  тест.xlsx",
+  "sections": [
+    {
+      "name": "Окна и витражи",
+      "positions": [
+        {
+          "code": "10.1.1.1.",
+          "name": "Витражная стоечно-ригельная система 1-го этажа и БКТ из алюминиевых профилей, цв",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "10.1.1.2.",
+          "name": "Окна, из ПВХ профиля и двухкамерного стеклопакета, нижнее заполнение на высоте 0",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "pvh_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "10.1.1.3.",
+          "name": "Остекление балконов/лоджий квартир из ПВХ профиля с одинарным стеклопакетом, ниж",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "pvh_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "10.1.1.4.",
+          "name": "Блоки оконные и балконные дверные из жесткого ПВХ \"Brusbox Aero 70\"или аналог с ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "pvh_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "10.1.1.5.",
+          "name": "Витражная система в составе стоечно-ригельной конструкции, глухие вставки - стем",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Откосы и отливы оконных, витражных, дверных проемов",
+      "positions": [
+        {
+          "code": "10.1.2.1.",
+          "name": "Наружные откосы",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "flashings",
+            "pp_otsechi"
+          ]
+        },
+        {
+          "code": "10.1.2.2.",
+          "name": "Отливы окон",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "flashings"
+          ]
+        },
+        {
+          "code": "10.1.3.",
+          "name": "Решетки фасадные",
+          "role": "material",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "10.1.3.1.",
+          "name": "Металлические вентиляционные решетки, окрашенные в заводских условиях в составе ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "vent_grilles"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Фасадные двери",
+      "positions": [
+        {
+          "code": "10.2.1.",
+          "name": "Двери витражные двупольные внутренние  1550х2100",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_tambour",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Наружные стены",
+      "positions": [
+        {
+          "code": "10.3.1.1.",
+          "name": "Фасадный утеплитель из минераловатных плит 150 мм: - наружный слой 50мм, минерал",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "10.3.1.2.",
+          "name": "Облицовка фасадов бетонной плиткой (производитель White Hills или аналог ) на по",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_concrete_tile",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "10.3.1.3.",
+          "name": "Утепление цокольной части -  плиты из пеностекла Изостек*плотностью 145.17 кг/м3",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "insulation",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "10.3.1.4.",
+          "name": "Облицовка фасадов из алюминиевых перфорированных панелей на металлической подсис",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "10.3.1.5.",
+          "name": "Мокрый фасад (сертифицированная система штукатурного фасада ТЕХНОНИКОЛЬ \"ТН-ФАСА",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "wet_facade"
+          ]
+        },
+        {
+          "code": "10.3.1.6.",
+          "name": "Штукатурка технической надстройки выхода на кровлю",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "wet_facade"
+          ]
+        },
+        {
+          "code": "10.3.2.2.",
+          "name": "Ограждение кровли из стекла триплекс h=1,2 м",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "10.3.2.3.",
+          "name": "Металлический отлив парапета",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "flashings"
+          ]
+        },
+        {
+          "code": "10.3.2.4.",
+          "name": "Козырьки (выполнены из стекла триплекс в составе витражной стоечно-ригельной сис",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        },
+        {
+          "code": "10.3.2.5.",
+          "name": "Подшивки, свесы (облицовка клинкерной плиткой в составе сертифицированной систем",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_clinker",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        }
+      ]
+    }
+  ]
+}

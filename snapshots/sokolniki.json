@@ -1,0 +1,1281 @@
+{
+  "file": "Финал3_Сокольники.xlsx",
+  "sections": [
+    {
+      "name": "Без раздела",
+      "positions": [
+        {
+          "code": "3.3.3.2",
+          "name": "Монтаж оборудования на кровле для обслуживания фасадов в период эксплуатации",
+          "role": "work",
+          "isHeader": false,
+          "templates": []
+        },
+        {
+          "code": "3.3.4",
+          "name": "Комплекс работ по устройству фасадов и СПК (устройство остекления окон, лоджий, ",
+          "role": "material",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.3.4.1",
+          "name": "Устройство светопрозрачных конструкций (1-ые этажи)",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.3.4.1.1",
+          "name": "устройство витражей",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.3.4.1.1.1",
+          "name": "профиль",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.3.4.1.1.2",
+          "name": "стеклопакет",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        },
+        {
+          "code": "3.3.4.1.2",
+          "name": "устройство светопрозрачных дверей",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.3.4.1.3",
+          "name": "устройство витражей",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.3.4.1.3.1",
+          "name": "профиль",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.3.4.1.3.2",
+          "name": "стеклопакет",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        },
+        {
+          "code": "3.3.4.1.4",
+          "name": "устройство витражей",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.3.4.1.4.1",
+          "name": "профиль",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.3.4.1.4.2",
+          "name": "стеклопакет",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        },
+        {
+          "code": "3.3.4.1.5",
+          "name": "устройство непрозрачных участков",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.3.4.1.5.1",
+          "name": "профиль",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.3.4.1.5.2",
+          "name": "стеклопакет",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        },
+        {
+          "code": "3.3.4.2",
+          "name": "Устройство светопрозрачных конструкций (выше 1-го этажа)",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.3.4.2.1",
+          "name": "устройство витражей",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.3.4.2.1.1",
+          "name": "профиль",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.3.4.2.1.2",
+          "name": "стеклопакет",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        },
+        {
+          "code": "3.3.4.2.1.3",
+          "name": "решетки",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.3.4.2.2",
+          "name": "устройство витражей",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.3.4.2.2.1",
+          "name": "профиль",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.3.4.2.2.2",
+          "name": "стеклопакет",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        },
+        {
+          "code": "3.3.4.2.3",
+          "name": "устройство витражей",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.3.4.2.3.1",
+          "name": "профиль",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.3.4.2.3.2",
+          "name": "стеклопакет",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        },
+        {
+          "code": "3.3.4.2.4",
+          "name": "устройство непрозрачных участков",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.3.4.2.4.1",
+          "name": "профиль",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.3.4.2.4.2",
+          "name": "стеклопакет",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        },
+        {
+          "code": "3.3.4.2.4.3",
+          "name": "утеплитель",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "3.3.4.2.5",
+          "name": "устройство непрозрачных участков",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.3.4.2.5.1",
+          "name": "профиль",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.3.4.2.5.2",
+          "name": "стеклопакет",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        },
+        {
+          "code": "3.3.4.2.5.3",
+          "name": "утеплитель",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "3.3.4.3",
+          "name": "Устройство фасадов  (вкл. декоративные элементы)",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.3.4.3.1",
+          "name": "устройство вертикальных навесных вентилируемых фасадов (подсистема, утеплитель, ",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.3.4.3.1.1",
+          "name": "устройство облицовки",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_clinker",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "3.3.4.3.1.2",
+          "name": "устройство подсистемы",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem"
+          ]
+        },
+        {
+          "code": "3.3.4.3.1.3",
+          "name": "устройство утеплителя",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "3.3.4.3.2",
+          "name": "устройство вертикальных навесных вентилируемых фасадов (подсистема, утеплитель, ",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.3.4.3.2.1",
+          "name": "устройство облицовки",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_fibrobeton",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "3.3.4.3.2.2",
+          "name": "устройство подсистемы",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem"
+          ]
+        },
+        {
+          "code": "3.3.4.3.2.3",
+          "name": "устройство утеплителя",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "3.3.4.3.3",
+          "name": "устройство вертикальных навесных вентилируемых фасадов (подсистема, утеплитель, ",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.3.4.3.3.1",
+          "name": "устройство облицовки",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_fibrobeton",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "3.3.4.3.3.2",
+          "name": "устройство подсистемы",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem"
+          ]
+        },
+        {
+          "code": "3.3.4.3.3.3",
+          "name": "устройство утеплителя",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "3.3.4.3.4",
+          "name": "устройство вертикальных навесных вентилируемых фасадов (подсистема, утеплитель, ",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.3.4.3.4.1",
+          "name": "устройство облицовки",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "3.3.4.3.4.2",
+          "name": "устройство подсистемы",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem"
+          ]
+        },
+        {
+          "code": "3.3.4.3.4.3",
+          "name": "устройство утеплителя",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "3.3.4.3.5",
+          "name": "устройство вертикальных навесных вентилируемых фасадов (подсистема, утеплитель, ",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.3.4.3.5.1",
+          "name": "устройство облицовки",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "vent_grilles"
+          ]
+        },
+        {
+          "code": "3.3.4.3.6",
+          "name": "устройство горизонтальных фасадов",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.3.4.3.6.1",
+          "name": "устройство облицовки",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_fibrobeton",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "3.3.4.3.6.2",
+          "name": "устройство подсистемы",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem"
+          ]
+        },
+        {
+          "code": "3.3.4.4",
+          "name": "Устройство элементов и оборудования фасада",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.3.4.4.1",
+          "name": "устройство декоративных элементов",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.3.4.4.2",
+          "name": "устройство металлических решеток",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.3.4.4.3",
+          "name": "устройство отливов",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "flashings"
+          ]
+        },
+        {
+          "code": "3.3.4.4.4",
+          "name": "устройство откосов",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "flashings",
+            "pp_otsechi"
+          ]
+        },
+        {
+          "code": "3.3.4.4.5",
+          "name": "устройство козырьков",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        },
+        {
+          "code": "3.3.4.4.6",
+          "name": "устройство наружных дверей",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.3.4.4.7",
+          "name": "устройство ограждения балконов",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "3.3.6.4.7.3",
+          "name": "стеклянное ограждение",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "3.3.4.5",
+          "name": "Архитектурное освещение фасадов",
+          "role": "material",
+          "isHeader": false,
+          "templates": []
+        },
+        {
+          "code": "3.3.4.6",
+          "name": "Устройство декоративных элементов на кровле",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.3.4.6.1",
+          "name": "ограждение кровли стеклянное (КОРОНА)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "3.3.4.6.2",
+          "name": "ограждение кровли стеклянное (КОРОНА)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "3.3.4.6.3",
+          "name": "конструкция на кровле",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "3.3.4.7",
+          "name": "Монтаж, демонтаж, эксплуатация строительных лесов",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "scaffolding"
+          ]
+        },
+        {
+          "code": "3.3.4.8.1.2",
+          "name": "отделка стен",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "wet_facade_finish"
+          ]
+        },
+        {
+          "code": "3.3.4.9",
+          "name": "Защита стеклянных конструкций",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_broneplenka"
+          ]
+        },
+        {
+          "code": "3.3.4.10",
+          "name": "Устройство мокап фасада",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "mockup"
+          ]
+        },
+        {
+          "code": "3.4.4.1",
+          "name": "Устройство светопрозрачных конструкций (1-ые этажи)",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.4.4.1.1",
+          "name": "устройство витражей",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.4.4.1.1.1",
+          "name": "профиль",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.4.4.1.1.2",
+          "name": "стеклопакет",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        },
+        {
+          "code": "3.4.4.1.2",
+          "name": "устройство светопрозрачных дверей",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.4.4.1.3",
+          "name": "устройство витражей",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.4.4.1.3.1",
+          "name": "профиль",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.4.4.1.3.2",
+          "name": "стеклопакет",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        },
+        {
+          "code": "3.4.4.1.4",
+          "name": "устройство непрозрачных участков",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.4.4.1.4.1",
+          "name": "профиль",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.4.4.1.4.2",
+          "name": "стеклопакет",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        },
+        {
+          "code": "3.4.4.2",
+          "name": "Устройство светопрозрачных конструкций (выше 1-го этажа)",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.4.4.2.1",
+          "name": "устройство витражей",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.4.4.2.1.1",
+          "name": "профиль",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.4.4.2.1.2",
+          "name": "стеклопакет",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        },
+        {
+          "code": "3.4.4.2.1.3",
+          "name": "решетки",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.4.4.2.2",
+          "name": "устройство непрозрачных участков",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.4.4.2.2.1",
+          "name": "профиль",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.4.4.2.2.2",
+          "name": "стеклопакет",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        },
+        {
+          "code": "3.4.4.2.2.3",
+          "name": "утеплитель",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "3.4.4.2.3",
+          "name": "устройство непрозрачных участков",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.4.4.2.3.1",
+          "name": "профиль",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.4.4.2.3.2",
+          "name": "стеклопакет",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        },
+        {
+          "code": "3.4.4.2.3.3",
+          "name": "утеплитель",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "3.4.4.3",
+          "name": "Устройство фасадов  (вкл. декоративные элементы)",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.4.4.3.1",
+          "name": "устройство вертикальных навесных вентилируемых фасадов (подсистема, утеплитель, ",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.4.4.3.1.1",
+          "name": "устройство облицовки",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_clinker",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "3.4.4.3.1.2",
+          "name": "устройство подсистемы",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem"
+          ]
+        },
+        {
+          "code": "3.4.4.3.1.3",
+          "name": "устройство утеплителя",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "3.4.4.3.2",
+          "name": "устройство вертикальных навесных вентилируемых фасадов (подсистема, утеплитель, ",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.4.4.3.2.1",
+          "name": "устройство облицовки",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_fibrobeton",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "3.4.4.3.2.2",
+          "name": "устройство подсистемы",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem"
+          ]
+        },
+        {
+          "code": "3.4.4.3.2.3",
+          "name": "устройство утеплителя",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "3.4.4.3.3",
+          "name": "устройство вертикальных навесных вентилируемых фасадов (подсистема, утеплитель, ",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.4.4.3.3.1",
+          "name": "устройство облицовки",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_fibrobeton",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "3.4.4.3.3.2",
+          "name": "устройство подсистемы",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem"
+          ]
+        },
+        {
+          "code": "3.4.4.3.3.3",
+          "name": "устройство утеплителя",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "3.4.4.3.4",
+          "name": "устройство вертикальных навесных вентилируемых фасадов (подсистема, утеплитель, ",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.4.4.3.4.1",
+          "name": "устройство облицовки",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "3.4.4.3.4.2",
+          "name": "устройство подсистемы",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem"
+          ]
+        },
+        {
+          "code": "3.4.4.3.4.3",
+          "name": "устройство утеплителя",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "3.4.4.3.5",
+          "name": "устройство вертикальных навесных вентилируемых фасадов (подсистема, утеплитель, ",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.4.4.3.5.1",
+          "name": "устройство облицовки",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "vent_grilles"
+          ]
+        },
+        {
+          "code": "3.4.4.3.8",
+          "name": "устройство горизонтальных фасадов",
+          "role": "work",
+          "isHeader": false,
+          "templates": []
+        },
+        {
+          "code": "3.4.4.3.6.1",
+          "name": "устройство облицовки",
+          "role": "work",
+          "isHeader": false,
+          "templates": []
+        },
+        {
+          "code": "3.4.4.3.6.2",
+          "name": "устройство подсистемы",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem"
+          ]
+        },
+        {
+          "code": "3.4.4.4",
+          "name": "Устройство элементов и оборудования фасада",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.4.4.4.1",
+          "name": "устройство металлических решеток",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.4.4.4.2",
+          "name": "устройство отливов",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "flashings"
+          ]
+        },
+        {
+          "code": "3.4.4.4.3",
+          "name": "устройство откосов",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "flashings",
+            "pp_otsechi"
+          ]
+        },
+        {
+          "code": "3.4.4.4.4",
+          "name": "устройство козырьков",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        },
+        {
+          "code": "3.4.4.4.5",
+          "name": "устройство наружных дверей",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "3.4.4.4.6",
+          "name": "устройство ограждения балконов",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.4.4.4.6.5",
+          "name": "стеклянное ограждение",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "3.4.4.4.6.6",
+          "name": "стеклянное ограждение",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "3.4.4.5",
+          "name": "Архитектурное освещение фасадов",
+          "role": "material",
+          "isHeader": false,
+          "templates": []
+        },
+        {
+          "code": "3.4.4.6",
+          "name": "Устройство декоративных элементов на кровле",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "3.4.4.6.1",
+          "name": "ограждение кровли стеклянное (КОРОНА)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "3.4.4.6.2",
+          "name": "ограждение кровли стеклянное (КОРОНА)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "3.4.4.6.4",
+          "name": "конструкция на кровле",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "3.4.4.7",
+          "name": "Монтаж, демонтаж, эксплуатация строительных лесов",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "scaffolding"
+          ]
+        },
+        {
+          "code": "3.4.4.8.1.2",
+          "name": "отделка стен",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "wet_facade_finish"
+          ]
+        },
+        {
+          "code": "3.4.4.9",
+          "name": "Защита стеклянных конструкций",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_broneplenka"
+          ]
+        },
+        {
+          "code": "3.4.4.10",
+          "name": "Устройство мокап фасада",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "mockup"
+          ]
+        }
+      ]
+    }
+  ]
+}

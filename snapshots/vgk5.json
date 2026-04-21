@@ -1,0 +1,280 @@
+{
+  "file": "ВГК 5.xlsx",
+  "sections": [
+    {
+      "name": "Окна и витражи",
+      "positions": [
+        {
+          "code": "10.1.1.1.",
+          "name": "Витражная стоечно-ригельная система 1-го этажа и БКТ из алюминиевых профилей, цв",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "10.1.1.2.",
+          "name": "Окна, состоящие из алюминиевого профиля и двухкамерного стеклопакета из безопасн",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "10.1.1.3.",
+          "name": "Витражная система в составе стоечно-ригельной конструкции, глухие вставки - стем",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Откосы и отливы оконных, витражных, дверных проемов",
+      "positions": [
+        {
+          "code": "10.1.2.1.",
+          "name": "Наружные откосы",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "flashings",
+            "pp_otsechi"
+          ]
+        },
+        {
+          "code": "10.1.2.2.",
+          "name": "Отливы окон",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "flashings"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Решетки фасадные",
+      "positions": [
+        {
+          "code": "10.1.3.1.",
+          "name": "Вентрешетка из алюминиевых ламелей с порошковой окраской в цвет RAL 7016 на перв",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "vent_grilles"
+          ]
+        },
+        {
+          "code": "10.1.3.2.",
+          "name": "Алюминиевые ламели с порошковой окраской в цвет RAL 7016 в нишах размещения сист",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "vent_grilles"
+          ]
+        },
+        {
+          "code": "10.1.3.3.",
+          "name": "Перфорированные алюминиевые кассеты, окрашенные в цвет RAL 7047 с анодированием",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Фасадные двери",
+      "positions": [
+        {
+          "code": "36932",
+          "name": "Одностворчатая витражная (высота 2300, ширина 950мм)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "37297",
+          "name": "Одностворчатая витражная (высота 2400, ширина 1060мм)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "37662",
+          "name": "Одностворчатая витражная (высота 2300, ширина 1190мм)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "38027",
+          "name": "Одностворчатая витражная (высота 2300, ширина 1200мм)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "38393",
+          "name": "Одностворчатая витражная (высота 2300, ширина 1240мм)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "38758",
+          "name": "Одностворчатая витражная (высота 2300, ширина 1340мм)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "39123",
+          "name": "Одностворчатая витражная (высота 2400, ширина 1340мм)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Наружные стены",
+      "positions": [
+        {
+          "code": "10.3.1.1.",
+          "name": "Фасадный утеплитель из минераловатных плит 170 мм \r\n \r\n - 60 мм - наружный слой ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "10.3.1.2.",
+          "name": "Фасад основной - клинкерная облицовочная плитка RAL 8002 на подсистеме",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_clinker",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "10.3.1.3.",
+          "name": "Фасад - трехслойная сэндвич-панель с наружным слоем из алюминиевого листа, окраш",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Прочие конструкции",
+      "positions": [
+        {
+          "code": "10.3.2.1.",
+          "name": "Отлив парапета кровли, металлический, окрашенный в цвет RAL 7016",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "flashings"
+          ]
+        },
+        {
+          "code": "10.3.2.2.",
+          "name": "Ограждение парапета кровли стеклянное из триплекса в зажимном профиле 1200 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "10.3.2.3.",
+          "name": "Козырек из триплекса в алюминиевом профиле, окрашенный в RAL 7016",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        }
+      ]
+    }
+  ]
+}

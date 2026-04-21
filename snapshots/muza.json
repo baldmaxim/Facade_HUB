@@ -1,0 +1,723 @@
+{
+  "file": "Муза_Финал.xlsx",
+  "sections": [
+    {
+      "name": "Без раздела",
+      "positions": [
+        {
+          "code": "1450",
+          "name": "Устройство наружных стеклянных ограждений ; Ограждение стеклянное наружное Стекл",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "1451",
+          "name": "Устройство наружных стеклянных ограждений ; Ограждение стеклянное наружное Стекл",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "1466",
+          "name": "Монтаж подсистемы; Подсистема",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem"
+          ]
+        },
+        {
+          "code": "1467",
+          "name": "Утепление фасада (с учетом крепежных элементов)  Минераловатный утеплитель (спос",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "1468",
+          "name": "Утеплитель толщ. 150 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "1469",
+          "name": "Прочие материалы",
+          "role": "auxiliary",
+          "isHeader": false,
+          "templates": []
+        },
+        {
+          "code": "1470",
+          "name": "Утепление фасада (с учетом крепежных элементов) Минераловатный утеплитель (спосо",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "1471",
+          "name": "Утеплитель толщ. 150 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "1472",
+          "name": "Прочие материалы",
+          "role": "auxiliary",
+          "isHeader": false,
+          "templates": []
+        },
+        {
+          "code": "1473",
+          "name": "Утепление фасада (с учетом крепежных элементов)",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "1474",
+          "name": "Утеплитель Плита ПС теплоизоляционная D 100, 600 x 450 x 100 ГОСТ 33949-2016, ρ ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "1475",
+          "name": "Прочие материалы",
+          "role": "auxiliary",
+          "isHeader": false,
+          "templates": []
+        },
+        {
+          "code": "1476",
+          "name": "Облицовка фасада; облицовочные кассеты Алюминиевые фасадные кассеты на НВФ,¶RAL ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "1477",
+          "name": "Облицовка фасада; облицовочные кассеты Алюминиевые фасадные кассеты на НВФ,¶RAL ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "1478",
+          "name": "Облицовка фасада; Панель Фибробетон RAL 60 80 10 в развёртке - 2675,3 м2",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_fibrobeton",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "1480",
+          "name": "Утепление фасада  Минераловатный утеплитель (способ монтажа - клеевой с предвари",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "1481",
+          "name": "Утеплитель Фасад Баттс Стандарт Rockwool толщ.100 мм, плотность 100 кг/м3 (либо ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "1482",
+          "name": "Прочие материалы",
+          "role": "auxiliary",
+          "isHeader": false,
+          "templates": []
+        },
+        {
+          "code": "1483",
+          "name": "Отделка фасада Устройство декоративного слоя \"мокрого фасада\" (в т.ч. армирующег",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "wet_facade_finish"
+          ]
+        },
+        {
+          "code": "1484",
+          "name": "штукатурка цементная, с предварительной огрунтовкой поверхности",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "wet_facade"
+          ]
+        },
+        {
+          "code": "1485",
+          "name": "Краска атмосферостойкая (в 2 слоя), с предварительной огрунтовкой поверхности",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "wet_facade_paint"
+          ]
+        },
+        {
+          "code": "1486",
+          "name": "Прочие материалы",
+          "role": "auxiliary",
+          "isHeader": false,
+          "templates": []
+        },
+        {
+          "code": "1488",
+          "name": "Устройство стоечно-ригельной конструкции \"Теплое остекление\" ; Окно (витражная к",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "1489",
+          "name": "Устройство стоечно-ригельной конструкции \"Теплое остекление\"; Дверь Витражные дв",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "1491",
+          "name": "Монтаж оконных блоков ; Окно (оконный блок) Остекление этажей высотой 3040 глухо",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "1492",
+          "name": "Монтаж оконных блоков ; Окно (оконный блок) Остекление этажей с увеличенной высо",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "1493",
+          "name": "Монтаж оконных блоков ; Окно (оконный блок) Остекление этажей с увеличенной высо",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "1494",
+          "name": "Монтаж оконных блоков; Дверь Створка открывающаяся высотой 2500 (дверь 2500 мм, ",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "1496",
+          "name": "Устройство декоративных и вспомогательных элементов фасада; Решетка Фасадные вен",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "vent_grilles"
+          ]
+        },
+        {
+          "code": "1497",
+          "name": "Устройство отливов ; Отливы, откосы, водосток Металлические Откосы  RAL 60 80 10",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "flashings",
+            "pp_otsechi"
+          ]
+        },
+        {
+          "code": "1498",
+          "name": "Устройство отливов ; Отливы, откосы, водосток Металлические Откосы  RAL 60 60 10",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "flashings",
+            "pp_otsechi"
+          ]
+        },
+        {
+          "code": "1499",
+          "name": "Устройство парапетных крышек ; Отливы, откосы, водосток Отливы парапетов и межэт",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "flashings",
+            "pp_otsechi"
+          ]
+        },
+        {
+          "code": "1502",
+          "name": "Устройство наружных стеклянных ограждений; Ограждение стеклянное наружное Стекля",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "1503",
+          "name": "Устройство наружных стеклянных ограждений; Ограждение стеклянное наружное Стекля",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "1506",
+          "name": "Монтаж подсистемы; Подсистема",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem"
+          ]
+        },
+        {
+          "code": "1507",
+          "name": "Утепление фасада (с учетом крепежных элементов)  Минераловатный утеплитель (спос",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "1508",
+          "name": "Утеплитель толщ. 150 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "1509",
+          "name": "Прочие материалы",
+          "role": "auxiliary",
+          "isHeader": false,
+          "templates": []
+        },
+        {
+          "code": "1510",
+          "name": "Утепление фасада (с учетом крепежных элементов) Минераловатный утеплитель (спосо",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "1511",
+          "name": "Утеплитель толщ. 150 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "1512",
+          "name": "Прочие материалы",
+          "role": "auxiliary",
+          "isHeader": false,
+          "templates": []
+        },
+        {
+          "code": "1513",
+          "name": "Утепление фасада (с учетом крепежных элементов)",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "1514",
+          "name": "Утеплитель Плита ПС теплоизоляционная D 100, 600 x 450 x 100 ГОСТ 33949-2016, ρ ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "1515",
+          "name": "Прочие материалы",
+          "role": "auxiliary",
+          "isHeader": false,
+          "templates": []
+        },
+        {
+          "code": "1516",
+          "name": "Облицовка фасада; облицовочные кассеты Алюминиевые фасадные кассеты на НВФ,¶RAL ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "1517",
+          "name": "Облицовка фасада; облицовочные кассеты Алюминиевые фасадные кассеты на НВФ,¶RAL ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "1518",
+          "name": "Облицовка фасада; Панель Фибробетон RAL 60 80 10 в развёртке - 3422,05 м2",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_fibrobeton",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "1520",
+          "name": "Утепление фасада  Минераловатный утеплитель (способ монтажа - клеевой с предвари",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "1521",
+          "name": "Утеплитель Фасад Баттс Стандарт Rockwool толщ.100 мм, плотность 100 кг/м3 (либо ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        },
+        {
+          "code": "1522",
+          "name": "Прочие материалы",
+          "role": "auxiliary",
+          "isHeader": false,
+          "templates": []
+        },
+        {
+          "code": "1523",
+          "name": "Отделка фасада Устройство декоративного слоя \"мокрого фасада\" (в т.ч. армирующег",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "wet_facade_finish"
+          ]
+        },
+        {
+          "code": "1524",
+          "name": "штукатурка цементная, с предварительной огрунтовкой поверхности",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "wet_facade"
+          ]
+        },
+        {
+          "code": "1525",
+          "name": "Краска атмосферостойкая (в 2 слоя), с предварительной огрунтовкой поверхности",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "wet_facade_paint"
+          ]
+        },
+        {
+          "code": "1526",
+          "name": "Прочие материалы",
+          "role": "auxiliary",
+          "isHeader": false,
+          "templates": []
+        },
+        {
+          "code": "1528",
+          "name": "Устройство стоечно-ригельной конструкции \"Теплое остекление\"; Окно (витражная ко",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "1529",
+          "name": "Устройство стоечно-ригельной конструкции \"Теплое остекление\"; Дверь Витражные дв",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "1530",
+          "name": "Устройство стоечно-ригельной конструкции \"Теплое остекление\"; Окно (витражная ко",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "1531",
+          "name": "Устройство стоечно-ригельной конструкции \"Теплое остекление\"; Окно (витражная ко",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "1532",
+          "name": "Устройство стоечно-ригельной конструкции \"Теплое остекление\"; Окно (витражная ко",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "1533",
+          "name": "Устройство стоечно-ригельной конструкции \"Теплое остекление\"; Дверь Створка откр",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "1535",
+          "name": "Монтаж оконных блоков; Окно (оконный блок) Остекление этажей высотой 3040 глухое",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "1536",
+          "name": "Монтаж противопожарных оконных блоков ; Окно (оконный блок) Остекление этажей вы",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "1537",
+          "name": "Монтаж оконных блоков; Окно (оконный блок) Остекление этажей с увеличенной высот",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "1538",
+          "name": "Монтаж оконных блоков; Окно (оконный блок) Остекление этажей с увеличенной высот",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "1539",
+          "name": "Монтаж оконных блоков; Дверь Створка открывающаяся высотой 2500 (дверь 2500 мм, ",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "1541",
+          "name": "Устройство декоративных и вспомогательных элементов фасада; Решетка Фасадные вен",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "vent_grilles"
+          ]
+        },
+        {
+          "code": "1542",
+          "name": "Устройство декоративных и вспомогательных элементов фасада; Панель Шумозащитные ",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "1543",
+          "name": "Устройство отливов; Отливы, откосы, водосток Металлические Откосы  RAL 60 80 10 ",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "flashings",
+            "pp_otsechi"
+          ]
+        },
+        {
+          "code": "1544",
+          "name": "Устройство отливов; Отливы, откосы, водосток Металлические Откосы  RAL 60 60 10 ",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "flashings",
+            "pp_otsechi"
+          ]
+        },
+        {
+          "code": "1545",
+          "name": "Устройство парапетных крышек; Отливы, откосы, водосток Отливы парапетов и межэта",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "flashings",
+            "pp_otsechi"
+          ]
+        }
+      ]
+    }
+  ]
+}

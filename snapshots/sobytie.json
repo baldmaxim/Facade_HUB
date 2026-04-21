@@ -1,0 +1,2814 @@
+{
+  "file": "Событие 6.2 тест.xlsx",
+  "sections": [
+    {
+      "name": "Отделка фасадов вертикальная, включая несущий металл",
+      "positions": [
+        {
+          "code": "06.02.01.01",
+          "name": "Навесной вентилируемый фасад. Облицовка:  Керамические фасадные панели Paneltek:",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_ceramic",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "06.02.01.02",
+          "name": "Навесной вентилируемый фасад. Облицовка:  Керамические фасадные панели Paneltek:",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_ceramic",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "06.02.01.03",
+          "name": "Навесной вентилируемый фасад. Облицовка: Керамические фасадные панели Paneltek: ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_ceramic",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "06.02.01.04",
+          "name": "Навесной вентилируемый фасад. Облицовка: алюминиевые фасадные кассеты плоские, о",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "06.02.01.05",
+          "name": "Навесной вентилируемый фасад. Облицовка: алюминиевые фасадные кассеты плоские, о",
+          "role": "material",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "06.02.01.05.01",
+          "name": "Навесной вентилируемый фасад. Облицовка: алюминиевые фасадные кассеты плоские, о",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "06.02.01.05.02",
+          "name": "Навесной вентилируемый фасад, с  облицовкой алюминиевыми фасадными кассетами пло",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "06.02.01.06",
+          "name": "Навесной вентилируемый фасад. Облицовка: алюминиевые фасадные кассеты плоские, о",
+          "role": "material",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "06.02.01.06.01",
+          "name": "Навесной вентилируемый фасад. Облицовка: алюминиевые фасадные кассеты плоские, о",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "06.02.01.06.02",
+          "name": "Навесной вентилируемый фасад, с  облицовкой алюминиевыми фасадными кассетами пло",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "06.02.01.07",
+          "name": "Навесной вентилируемый фасад. Облицовка: фасадная клинкерная плитка \"под кирпич\"",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_clinker",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "06.02.01.08",
+          "name": "Навесной вентилируемый фасад. Облицовка: однокамерный стеклопакет со стемалитом ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.02.01.09",
+          "name": "Устройство мокрого фасада по системе ТЕХНОНИКОЛЬ ТН-ФАСАД Профи: утеплитель - пл",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "06.02.01.09.01",
+          "name": "Устройство мокрого фасада по системе ТЕХНОНИКОЛЬ ТН-ФАСАД Профи; без утеплителя;",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "wet_facade"
+          ]
+        },
+        {
+          "code": "06.02.01.10",
+          "name": "Цокольная часть стен. Устройство мокрого фасада по системе ТН-ФАСАД Комби; утепл",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "insulation",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "06.02.01.11",
+          "name": "Цокольная часть стен. Устройство мокрого фасада по системе ТН-ФАСАД Комби; утепл",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "insulation",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "06.02.01.12",
+          "name": "Цокольная часть стен на кровле (стены шахт): утеплитель: плиты экструдированного",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "insulation",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "06.02.01.13",
+          "name": "Цокольная часть стен на кровле ДОО (стены шахт): утеплитель - блоки из пеностекл",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "insulation",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "06.02.01.14",
+          "name": "Навесной вентилируемый фасад. Облицовка: алюминиевые фасадные кассеты плоские с ",
+          "role": "material",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "06.02.01.14.01",
+          "name": "Навесной вентилируемый фасад. Облицовка: алюминиевые фасадные кассеты плоские с ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_cladding_profiles_vertical"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Устройство прочих видов фасадов, включая несущий металл",
+      "positions": [
+        {
+          "code": "06.02.01.15.01",
+          "name": "Навесной вентилируемый фасад. Облицовка: алюминиевые фасадные кассеты плоские с ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "06.02.01.15.02",
+          "name": "Навесной вентилируемый фасад, криволинейные в плане участки. Облицовка: алюминие",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "06.02.01.15.03",
+          "name": "Навесной фасад из вертикальных алюминиевых прямоугольных профилей (200х50мм, шаг",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_cladding_profiles_vertical"
+          ]
+        },
+        {
+          "code": "06.02.01.15.04",
+          "name": "Решетки под техническими лоджиями и в подшивке над нишами для кондиционеров в те",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Устройство откосов, включая несущий металл",
+      "positions": [
+        {
+          "code": "06.02.01.16.01",
+          "name": "Наружные боковые и верхний откосы фасадных проёмов шириной 200 мм . Производител",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "flashings",
+            "pp_otsechi"
+          ]
+        },
+        {
+          "code": "06.02.01.16.02",
+          "name": "Наружные боковые и верхний откосы фасадных проёмов шириной 230 мм . Производител",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "flashings",
+            "pp_otsechi"
+          ]
+        },
+        {
+          "code": "06.02.01.16.03",
+          "name": "Наружные боковые и верхний откосы фасадных проёмов шириной 320 мм . Производител",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "flashings",
+            "pp_otsechi"
+          ]
+        },
+        {
+          "code": "06.02.01.16.04",
+          "name": "Наружные боковые и верхний откосы фасадных проёмов шириной 400 мм . Производител",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "flashings",
+            "pp_otsechi"
+          ]
+        },
+        {
+          "code": "06.02.01.16.05",
+          "name": "Наружные боковые и верхний откосы фасадных проёмов шириной 340 мм . Производител",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "flashings",
+            "pp_otsechi"
+          ]
+        },
+        {
+          "code": "06.02.01.16.06",
+          "name": "Наружные боковые и верхний откосы фасадных проёмов шириной 120 мм . Устройство м",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "wet_facade",
+            "flashings",
+            "pp_otsechi"
+          ]
+        },
+        {
+          "code": "06.02.01.16.07",
+          "name": "Наружные боковые и верхний откосы фасадных проёмов шириной 200 мм . Устройство м",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "wet_facade",
+            "flashings",
+            "pp_otsechi"
+          ]
+        },
+        {
+          "code": "06.02.01.16.08",
+          "name": "Наружные боковые и верхний откосы фасадных проёмов шириной 250 мм . Устройство м",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "wet_facade",
+            "flashings",
+            "pp_otsechi"
+          ]
+        },
+        {
+          "code": "06.02.01.16.09",
+          "name": "Наружные боковые и верхний откосы фасадных проёмов шириной 320 мм . Устройство м",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "wet_facade",
+            "flashings",
+            "pp_otsechi"
+          ]
+        },
+        {
+          "code": "06.02.01.16.10",
+          "name": "Наружные боковые и верхний откосы фасадных проёмов шириной 120 мм . Производител",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "flashings",
+            "pp_otsechi"
+          ]
+        },
+        {
+          "code": "06.02.01.16.11",
+          "name": "Наружные боковые и верхний откосы фасадных проёмов шириной 120 мм . Производител",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "flashings",
+            "pp_otsechi"
+          ]
+        },
+        {
+          "code": "06.02.01.16.12",
+          "name": "Наружные боковые и верхний откосы фасадных проёмов шириной 370 мм . Производител",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "flashings",
+            "pp_otsechi"
+          ]
+        },
+        {
+          "code": "06.02.01.16.13",
+          "name": "Наружные боковые и верхний откосы фасадных проёмов шириной 190 мм . Производител",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "flashings",
+            "pp_otsechi"
+          ]
+        },
+        {
+          "code": "06.02.01.16.14",
+          "name": "Наружные боковые и верхний откосы фасадных проёмов шириной 190 мм . Производител",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "flashings",
+            "pp_otsechi"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Устройство отливов, включая несущий металл",
+      "positions": [
+        {
+          "code": "06.02.01.17.01",
+          "name": "Устройство отлива из оцинкованной стали окраска с принтом под натуральный камень",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "flashings"
+          ]
+        },
+        {
+          "code": "06.02.01.17.02",
+          "name": "Устройство отлива из оцинкованной стали окраска с принтом под натуральный камень",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "flashings"
+          ]
+        },
+        {
+          "code": "06.02.01.17.03",
+          "name": "Устройство отлива из оцинкованной стали окраска с принтом под натуральный камень",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "flashings"
+          ]
+        },
+        {
+          "code": "06.02.01.17.04",
+          "name": "Устройство отлива из оцинкованной стали окраска с принтом под натуральный камень",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "flashings"
+          ]
+        },
+        {
+          "code": "06.02.01.17.05",
+          "name": "Устройство отлива из оцинкованной стали окраска с принтом под натуральный камень",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "flashings"
+          ]
+        },
+        {
+          "code": "06.02.01.17.06",
+          "name": "Устройство отлива из оцинкованной стали окраска с принтом под натуральный камень",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "flashings"
+          ]
+        },
+        {
+          "code": "06.02.01.17.07",
+          "name": "Устройство отлива из оцинкованной стали окраска с принтом под натуральный камень",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "flashings"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Отделка фасадов горизонтальная, включая несущий металл",
+      "positions": [
+        {
+          "code": "06.02.02.01",
+          "name": "Навесной вентилируемый фасад. Облицовка выступающих объемов снизу: керамические ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_ceramic",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "06.02.02.02",
+          "name": "Навесной вентилируемый фасад. Облицовка: алюминиевые фасадные кассеты плоские, о",
+          "role": "material",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "06.02.02.02.01",
+          "name": "Навесной вентилируемый фасад. Облицовка: алюминиевые фасадные кассеты плоские, о",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "06.02.02.03",
+          "name": "Навесной вентилируемый фасад. Облицовка: алюминиевые фасадные кассеты плоские, о",
+          "role": "material",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "06.02.02.03.01",
+          "name": "Навесной вентилируемый фасад. Облицовка: алюминиевые фасадные кассеты плоские, о",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "06.02.02.04",
+          "name": "Навесной вентилируемый фасад. Облицовка: алюминиевые фасадные кассеты плоские, о",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "06.02.02.05",
+          "name": "Навесной вентилируемый фасад. Облицовка: фасадная клинкерная плитка \"под кирпич\"",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_clinker",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "06.02.02.06",
+          "name": "Пол в технических лоджиях для установки наружных блоков кондиционирования кварти",
+          "role": "material",
+          "isHeader": false,
+          "templates": []
+        }
+      ]
+    },
+    {
+      "name": "Устройство навесных и декоративных элементов. Материалы уточняются по результатам согласования МОКАПа.\r\r\nВключая несущий металл",
+      "positions": [
+        {
+          "code": "06.02.03.01.01",
+          "name": "Устройство навесных элементов на витраж (пилоны и горизонтальные пояса) из алюми",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "scaffolding"
+          ]
+        },
+        {
+          "code": "06.02.03.01.02",
+          "name": "Устройство навесных элементов на витраж (пилоны и горизонтальные пояса) из алюми",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "scaffolding"
+          ]
+        },
+        {
+          "code": "06.02.03.01.03",
+          "name": "Устройство фасадных коробов для наружных блоков кондиционеров: стальной конструк",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "scaffolding"
+          ]
+        },
+        {
+          "code": "06.02.03.01.04",
+          "name": "Устройство фасадных коробов для наружных блоков кондиционеров: стальной конструк",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "scaffolding"
+          ]
+        },
+        {
+          "code": "06.02.03.01.05",
+          "name": "Устройство фасадных коробов для наружных блоков кондиционеров: стальной конструк",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "scaffolding"
+          ]
+        },
+        {
+          "code": "06.02.03.01.06",
+          "name": "Устройство фасадных коробов для наружных блоков кондиционеров: стальной конструк",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "scaffolding"
+          ]
+        },
+        {
+          "code": "06.02.03.01.07",
+          "name": "Устройство навесных элементов (пилоны и горизонтальные пояса) из алюминиевых фас",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "scaffolding"
+          ]
+        },
+        {
+          "code": "06.02.03.01.08",
+          "name": "Устройство навесных элементов (пилоны и горизонтальные пояса) из алюминиевых фас",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "scaffolding"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Перголы над техническими площадками.",
+      "positions": [
+        {
+          "code": "06.02.03.01.09.01",
+          "name": "Перголы на плите покрытия в уровне 14 этажа:\r\r\n1. Стойки и балки - труба пр. 200",
+          "role": "material",
+          "isHeader": false,
+          "templates": []
+        },
+        {
+          "code": "06.02.03.01.09.02",
+          "name": "Перголы на кровле ДОО:\r\r\n1. Стойки и балки h=3,6м - труба пр. 200х200х5мм - 652 ",
+          "role": "material",
+          "isHeader": false,
+          "templates": []
+        }
+      ]
+    },
+    {
+      "name": "Монтаж защитных экранов перед открывающимися створками из стеклянного триплекса, формула 1010.4 (10 мм Planibel Crystalvision (зак.) + 1,52 мм PVB-плёнка + 10 мм Planibel Crystalvision (зак.)).",
+      "positions": [
+        {
+          "code": "06.02.03.02.01",
+          "name": "Защитный экран 705x490(h) мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "06.02.03.02.02",
+          "name": "Защитный экран 705x540(h) мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "06.02.03.02.03",
+          "name": "Защитный экран 705x690(h) мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "06.02.03.02.04",
+          "name": "Защитный экран 705x740(h) мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "06.02.03.02.05",
+          "name": "Защитный экран 705x1140(h) мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Устройство ограждений террас и балконов на жилых этажах, включая несущий металл",
+      "positions": [
+        {
+          "code": "06.02.03.03.01",
+          "name": "Ограждение террас для жильцов из триплекса, высотой 1150 мм; формула 1010.4 (10 ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "06.02.03.03.02",
+          "name": "Ограждение террас для жильцов из триплекса, высотой 2020 мм; формула 1010.4 (10 ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "06.02.03.03.03",
+          "name": "Ограждение металлическое технических лоджий с вертикальными стойками и перилами ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Устройство декоративных элементов с устройством отливов, включая вентрешетки, включая несущий металл",
+      "positions": [
+        {
+          "code": "06.02.03.04.01",
+          "name": "Установка фасадных вентрешеток (вертикальных) из прямоугольного алюминиевого про",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "nvf_cladding_profiles_vertical"
+          ]
+        },
+        {
+          "code": "06.02.03.04.02",
+          "name": "Установка фасадных вентрешеток (горизонтальная) из прямоугольного алюминиевого п",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Устройство декоративных крышек на импостах, включая несущий металл",
+      "positions": [
+        {
+          "code": "06.02.03.05.01",
+          "name": "Декоративная крышка прямоугольная 50х200 мм накладная на импост витража, из алюм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_cladding_profiles_vertical"
+          ]
+        },
+        {
+          "code": "06.02.03.05.02",
+          "name": "Декоративная крышка прямоугольная 50х200 мм накладная на импост витража, из алюм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_cladding_profiles_vertical"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Устройство козырьков над входами в составе витражной системы: каркас из стального прямоугольного профиля в порошковой атмосферостойкой окраске RAL 7021 матовой, заполнение стеклянным триплексом формула 66.4 (6 мм Planibel Crystalvision (зак.) + 1,52 мм PVB-плёнка + 6 мм Planibel Crystalvision (зак.)). Козырьки консольно монтируются к вертикальным стойкам витража.\r\r\nВключая несущий металл",
+      "positions": [
+        {
+          "code": "06.02.04.01.01",
+          "name": "Козырек 1200х1150 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        },
+        {
+          "code": "06.02.04.01.02",
+          "name": "Козырек 1200х1340 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        },
+        {
+          "code": "06.02.04.01.03",
+          "name": "Козырек 1200х1500 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        },
+        {
+          "code": "06.02.04.01.04",
+          "name": "Козырек 1200х1600 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        },
+        {
+          "code": "06.02.04.01.05",
+          "name": "Козырек 1200х1830 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        },
+        {
+          "code": "06.02.04.01.06",
+          "name": "Козырек 1200х2130 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        },
+        {
+          "code": "06.02.04.01.07",
+          "name": "Козырек 1200х2300 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        },
+        {
+          "code": "06.02.04.01.08",
+          "name": "Козырек 1200х2400 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        },
+        {
+          "code": "06.02.04.01.09",
+          "name": "Козырек 1200х2440 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        },
+        {
+          "code": "06.02.04.01.10",
+          "name": "Козырек 1200х2450 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        },
+        {
+          "code": "06.02.04.01.11",
+          "name": "Козырек 1500х1600 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        },
+        {
+          "code": "06.02.04.01.12",
+          "name": "Козырек 1700х1600 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        },
+        {
+          "code": "06.02.04.01.13",
+          "name": "Козырек 1700х2150 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        },
+        {
+          "code": "06.02.04.01.14",
+          "name": "Козырек 1700х2300 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        },
+        {
+          "code": "06.02.04.01.15",
+          "name": "Козырек 1700х2450 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        },
+        {
+          "code": "06.02.04.01.16",
+          "name": "Козырек 1700х2700 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        },
+        {
+          "code": "06.02.04.01.17",
+          "name": "Козырек 1750х1400 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        },
+        {
+          "code": "06.02.04.01.18",
+          "name": "Козырек 1200х940 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Устройство декоративной отделки козырьков, включая несущий металл",
+      "positions": [
+        {
+          "code": "06.02.04.02.01",
+          "name": "Облицовка: алюминиевые фасадные кассеты плоские, окраска матовая RAL 7021, произ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "06.02.04.02.02",
+          "name": "Устройство покрытия козырька: покрытие стальным кровельным листом толщиной 0,7 м",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        },
+        {
+          "code": "06.02.04.02.03",
+          "name": "Лайтбокс: скрытая навесная система, облицовка триплексом с матовым ударопрочным ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Отделка фасадов вертикальная \"вторая нитка\", включая несущий металл",
+      "positions": [
+        {
+          "code": "06.02.05.01",
+          "name": "Навесной вентилируемый фасад. Облицовка: алюминиевые фасадные кассеты плоские, о",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "06.02.05.02",
+          "name": "Устройство каркасных ниш для наружных блоков кондиционеров: каркасная конструкци",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.02.05.03",
+          "name": "Устройство мокрого фасада по системе ТЕХНОНИКОЛЬ ТН-ФАСАД Профи: утеплитель - пл",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "wet_facade"
+          ]
+        },
+        {
+          "code": "06.02.05.04",
+          "name": "Обшивка каркасной конструкции из оцинкованных тонкостенных ст. профилей аквапане",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.02.05.05",
+          "name": "Устройство мокрого фасада по системе ТЕХНОНИКОЛЬ ТН-ФАСАД Профи: утеплитель - пл",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "wet_facade"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Отделка фасадов горизонтальная \"вторая нитка\", включая несущий металл",
+      "positions": [
+        {
+          "code": "06.02.06.01",
+          "name": "Лайтбокс: скрытая навесная система, облицовка триплексом с матовым ударопрочным ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        },
+        {
+          "code": "06.02.06.02",
+          "name": "Обшивка каркасной конструкции из оцинкованных тонкостенных ст. профилей аквапане",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.02.06.03",
+          "name": "Пол в технических лоджиях для установки наружных блоков кондиционирования кварти",
+          "role": "material",
+          "isHeader": false,
+          "templates": []
+        },
+        {
+          "code": "06.02.06.04",
+          "name": "Навесной вентилируемый фасад. Облицовка: алюминиевые фасадные кассеты плоские, о",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        },
+        {
+          "code": "06.02.07",
+          "name": "Монтаж оборудования и пуско-наладочные работы для обслуживания фасадов в период ",
+          "role": "work",
+          "isHeader": false,
+          "templates": []
+        }
+      ]
+    },
+    {
+      "name": "Витражи 1-го нежилого этажа.",
+      "positions": [
+        {
+          "code": "06.03.01.01",
+          "name": "Монтаж каркаса витражей из профиля АЛМО, окраска с обеих сторон в цвет RAL 7021",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        }
+      ]
+    },
+    {
+      "name": "Заполнение  витражных конструкций дверьми остеклёнными из профиля АЛМО (Стеклопакет: 8 LartaPro HP Neutral 60/40 зак (поз. 2) – 14 Ar “теплый край” – 6 LartaPro Premium T зак – 14 Ar “теплый край” – 6 ExtraClear зак.)",
+      "positions": [
+        {
+          "code": "06.03.01.01.01.01",
+          "name": "Дверь остекленная, раздвижная в составе витража 2100х2400(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.01.02",
+          "name": "Дверь остекленная, раздвижная в составе витража 2200х2400(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.01.03",
+          "name": "Дверь остекленная, раздвижная в составе витража 2250х2400(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.01.04",
+          "name": "Дверь остекленная, раздвижная в составе витража 2430х2400(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.01.05",
+          "name": "Дверь двупольная  остекленная в составе витража 1380х2380(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.01.06",
+          "name": "Дверь двупольная  остекленная в составе витража 1460х2380(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.01.07",
+          "name": "Дверь двупольная  остекленная в составе витража 1460х2550(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.01.08",
+          "name": "Дверь двупольная  остекленная в составе витража 1560х2080(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.01.09",
+          "name": "Дверь двупольная  остекленная в составе витража 1610х2380(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.01.10",
+          "name": "Дверь однопольная остекленная в составе витража 1060х2190(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.01.11",
+          "name": "Дверь однопольная остекленная в составе витража 1060х2380(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.01.12",
+          "name": "Дверь однопольная остекленная в составе витража 1160х2380(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.01.13",
+          "name": "Дверь однопольная остекленная в составе витража 1200х2380(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.01.14",
+          "name": "Дверь однопольная остекленная в составе витража 1210х2380(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.01.15",
+          "name": "Дверь однопольная остекленная в составе витража 1260х2380(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.01.16",
+          "name": "Дверь двупольная  глухая в составе витража 1460х2470(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Заполнение  окнами с открывающимися створками из оконного профиля АЛМО (6 LartaPro HP Neutral 60/40 зак (поз. 2) – 14 Ar “теплый край” – 6 LartaPro Premium T зак (поз. 4) – 14 Ar “теплый край” – 6 ExtraClear зак.)",
+      "positions": [
+        {
+          "code": "06.03.01.01.02.01",
+          "name": "Окно одностворчатое с одной поворотно откидной створкой без ограждения,  675х151",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.02.02",
+          "name": "Окно одностворчатое с одной поворотно откидной створкой без ограждения,  675х160",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.02.03",
+          "name": "Окно одностворчатое с одной поворотно откидной створкой без ограждения,  675х165",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.02.04",
+          "name": "Окно одностворчатое с одной поворотно откидной створкой без ограждения,  675х198",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.02.05",
+          "name": "Окно одностворчатое с одной поворотно откидной створкой без ограждения,  675х235",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.02.06",
+          "name": "Окно одностворчатое с одной поворотно откидной створкой без ограждения,  720х160",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.02.07",
+          "name": "Окно одностворчатое с одной поворотно откидной створкой без ограждения,  770х165",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.02.08",
+          "name": "Окно одностворчатое с одной поворотно откидной створкой без ограждения,  1000х16",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.02.09",
+          "name": "Окно одностворчатое с одной поворотно откидной створкой без ограждения,  1000х23",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.02.10",
+          "name": "Окно одностворчатое с одной поворотно откидной створкой без ограждения,  1020х15",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.02.11",
+          "name": "Окно одностворчатое с одной поворотно откидной створкой без ограждения,  1020х16",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.01.03",
+          "name": "Заполнение двухкамерным стеклопакетом с ударопрочным закаленным стеклом.  (10 La",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Витражи 1-2 этажей, участки с требованиями по огнестойкости с устройством двусторонней защиты.",
+      "positions": [
+        {
+          "code": "06.03.01.02",
+          "name": "Монтаж каркаса витражей из профиля АЛМО (в противопожарном исполнении), окраска ",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "06.03.01.02.01",
+          "name": "Заполнение дверью двупольной  остекленной противопожарной (EI30) из профиля АЛМО",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.02.02",
+          "name": "Заполнение двухкамерным стеклопакетом EI 30 с противопожарным ударопрочным стекл",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Теплые витражи тамбуров, 1 нежилой этаж с устройством двусторонней защиты.",
+      "positions": [
+        {
+          "code": "06.03.01.03",
+          "name": "Монтаж каркаса из профиля АЛМО, окраска с обеих сторон в цвет RAL 7021.",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        }
+      ]
+    },
+    {
+      "name": "Заполнение  витражных конструкций дверьми остеклёнными из профиля АЛМО (Стеклопакет: 8 LartaPro HP Neutral 60/40 зак (поз. 2) – 16 Ar “теплый край” – 6 LartaPro Premium T зак – 16 Ar “теплый край” – 6 ExtraClear зак.)",
+      "positions": [
+        {
+          "code": "06.03.01.03.01.01",
+          "name": "Дверь остекленная, раздвижная в составе витража вторая нитка 2100х2400(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.03.01.02",
+          "name": "Дверь остекленная, раздвижная в составе витража вторая нитка 2250х2400(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.03.01.03",
+          "name": "Дверь остекленная, раздвижная в составе витража вторая нитка 2430х2400(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.03.01.04",
+          "name": "Дверь остекленная, раздвижная в составе витража вторая нитка 2200х2400(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.03.01.05",
+          "name": "Дверь остекленная, раздвижная в составе витража вторая нитка 2000х2400(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.03.02",
+          "name": "Заполнение двухкамерным стеклопакетом с ударопрочным закаленным стеклом (Стеклоп",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Теплые витражи криволинейных в плане, 1 нежилой этаж с устройством двусторонней защиты.",
+      "positions": [
+        {
+          "code": "06.03.01.04",
+          "name": "Монтаж каркаса из профиля АЛМО, окраска с обеих сторон в цвет RAL 7021",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "06.03.01.04.01",
+          "name": "Заполнение двухкамерным стеклопакетом с молированным ударопрочным закаленным сте",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Теплые витражи на жилых этажах с устройством двусторонней защиты.",
+      "positions": [
+        {
+          "code": "06.03.01.05",
+          "name": "Монтаж каркаса из профиля АЛМО, окраска с обеих сторон в цвет RAL 7021",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        }
+      ]
+    },
+    {
+      "name": "Заполнение  витражных конструкций дверьми остеклёнными из профиля АЛМО (Стеклопакет: 8 LartaPro HP Neutral 60/40 зак (поз. 2) – 14 Ar “теплый край” – 6 LartaPro Premium T зак (поз. 4) – 14 Ar “теплый край” – 6 ExtraClear зак.) с устройством двусторонней защиты.",
+      "positions": [
+        {
+          "code": "06.03.01.05.01.01",
+          "name": "Дверь однопольная остекленная в составе витража 825х2100(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.05.01.02",
+          "name": "Дверь однопольная остекленная в составе витража 825х2160(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.05.01.03",
+          "name": "Дверь однопольная остекленная в составе витража 825х2280(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.05.01.04",
+          "name": "Дверь однопольная остекленная в составе витража 825х2110(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.05.01.05",
+          "name": "Дверь раздвижная остекленная в составе витража 2065х2280(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.05.01.06",
+          "name": "Дверь двупольная  остекленная в составе витража 1460х2080(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Заполнение  окнами с открывающимися створками из оконного профиля АЛМО (8 LartaPro HP Neutral 60/40 зак (поз. 2) – 14 Ar “теплый край” – 6 LartaPro Premium T зак (поз. 4) – 14 Ar “теплый край” – 6 ExtraClear зак.) с устройством двусторонней защиты.\r\r\nВключаю установку приточных вентиляционных клапанов",
+      "positions": [
+        {
+          "code": "06.03.01.05.02.01",
+          "name": "Окно одностворчатое с одной  поворотно откидной створкой с ограждением, 825х1460",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.05.02.02",
+          "name": "Окно одностворчатое с одной  поворотно откидной створкой с ограждением, 825х1510",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.05.02.03",
+          "name": "Окно одностворчатое с одной поворотно откидной створкой с ограждением, 825х1660(",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.05.02.04",
+          "name": "Окно одностворчатое с одной поворотно откидной створкой с ограждением, 825х1710(",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.05.02.05",
+          "name": "Окно одностворчатое с одной поворотно откидной створкой с ограждением, 825х1940(",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.05.02.06",
+          "name": "Окно одностворчатое с одной поворотно откидной створкой с ограждением, 825х2100(",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.05.02.07",
+          "name": "Окно одностворчатое с одной поворотно откидной створкой с ограждением, 825х2110(",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.05.02.08",
+          "name": "Окно одностворчатое с одной поворотно откидной створкой с ограждением, 825х2160(",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.05.02.09",
+          "name": "Окно одностворчатое с одной поворотно откидной створкой с ограждением, 825х2280(",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.05.02.10",
+          "name": "Окно одностворчатое с одной поворотно откидной створкой с ограждением, 825х2590(",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.05.02.11",
+          "name": "Окно одностворчатое с одной поворотно откидной створкой с ограждением, 825х2060(",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.05.02.12",
+          "name": "Окно одностворчатое с одной поворотно откидной створкой без ограждения, 825х2560",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.03.01.05.03",
+          "name": "Заполнение двухкамерным стеклопакетом с ударопрочным закаленным стеклом (8 Larta",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Теплые витражи жилые этажи, межэтажные пояса с устройством двусторонней защиты.",
+      "positions": [
+        {
+          "code": "06.03.01.06",
+          "name": "Монтаж каркаса из профиля АЛМО,  окраска с обоих сторон в цвет RAL 7021\r\r\nВключа",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "06.03.01.06.01",
+          "name": "Заполнение двухкамерным стеклопакетом (8 LartaPro HP Neutral 60/40 зак (поз. 2) ",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        },
+        {
+          "code": "06.03.01.06.02",
+          "name": "Заполнение двухкамерным стеклопакетом потивопожарным EI30",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Теплые витражи жилых этажей (криволинейные участки) с устройством двусторонней защиты.",
+      "positions": [
+        {
+          "code": "06.03.01.07",
+          "name": "Монтаж каркаса из профиля АЛМО, окраска с обеих сторон в цвет RAL 7021",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "06.03.01.07.01",
+          "name": "Заполнение двухкамерным стеклопакетом с молированным ударопрочным закаленным сте",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Теплые витражи жилых этажей (криволинейные участки межэтажных поясов) с устройством двусторонней защиты.",
+      "positions": [
+        {
+          "code": "06.03.01.08",
+          "name": "Монтаж каркаса из профиля АЛМО, окраска с обеих сторон в цвет RAL 7021",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "06.03.01.08.01",
+          "name": "Заполнение двухкамерным стеклопакетом (8 LartaPro HP Neutral 60/40 зак (поз. 2) ",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Витраж АИТ (легкосбрасываемая конструкция) с устройством двусторонней защиты",
+      "positions": [
+        {
+          "code": "06.03.01.09",
+          "name": "Монтаж окон АИТ из профиля АЛМО,  окраска с обоих сторон в цвет RAL 7021, с запо",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Теплые витражи на жилых этажах (вторая нитка остекления) с устройством двусторонней защиты.",
+      "positions": [
+        {
+          "code": "06.03.01.10",
+          "name": "Монтаж каркаса из профиля АЛМО, окраска с обеих сторон в цвет RAL 7021.",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "06.03.01.10.01",
+          "name": "Заполнение двухкамерным стеклопакетом с ударопрочным закаленным стеклом. Вторая ",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Теплые витражи на 1 нежилом этаже (непрозрачные участки)",
+      "positions": [
+        {
+          "code": "06.03.01.11",
+          "name": "Монтаж каркаса из профиля АЛМО, окраска с обоих сторон в цвет RAL 7021;",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "06.03.01.11.01",
+          "name": "Заполнение однокамерным стеклопакетом со стемалитом (Стеклопакет: 8 LartaPro HP ",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Теплые витражи на 1 нежилом этаже (непрозрачные, криволинейные участки)",
+      "positions": [
+        {
+          "code": "06.03.01.12",
+          "name": "Монтаж каркаса из профиля АЛМО, окраска с обоих сторон в цвет RAL 7021",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "06.03.01.12.01",
+          "name": "Заполнение однокамерным стеклопакетом с молированным стеклом и стемалитом RAL ус",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Теплые витражные конструкции на 1 нежилом этаже (цокольная часть) с устройством двусторонней защиты.",
+      "positions": [
+        {
+          "code": "06.03.01.13",
+          "name": "Монтаж каркаса из профиля АЛМО, окраска с обоих сторон в цвет RAL 7021",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "06.03.01.13.01",
+          "name": "Заполнение фасадной сэндвич-панелью с минераловатным утеплителем толщ. 30 мм.",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Теплые витражные конструкции на 1 нежилом этаже (цокольная часть, криволинейные участки) с устройством двусторонней защиты.",
+      "positions": [
+        {
+          "code": "06.03.01.14",
+          "name": "Монтаж каркаса из профиля АЛМО, окраска с обоих сторон в цвет RAL 7021",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "06.03.01.14.01",
+          "name": "Заполнение фасадной сэндвич-панелью с минераловатным утеплителем толщ. 30 мм, кр",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Теплые витражные конструкции на жилых этажах (непрозрачные участки).",
+      "positions": [
+        {
+          "code": "06.03.01.15",
+          "name": "Монтаж каркаса из профиля АЛМО, окраска с обоих сторон в цвет RAL 7021",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "06.03.01.15.01",
+          "name": "Заполнение: однокамерный стеклопакет со стемалитом RAL условно 7021, заполнение ",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Теплые витражные конструкции на жилых этажах (непрозрачные, криволинейные участки).",
+      "positions": [
+        {
+          "code": "06.03.01.16",
+          "name": "Монтаж каркаса из профиля АЛМО, окраска с обоих сторон в цвет RAL 7021",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "06.03.01.16.01",
+          "name": "Заполнение: однокамерный стеклопакет с молированным стеклом и стемалитом RAL усл",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Теплые витражные конструкции на жилых этажах (участки за навесными декоративными фасадными элементами и коробами для кондиционеров) с устройством двусторонней защиты.",
+      "positions": [
+        {
+          "code": "06.03.01.17",
+          "name": "Монтаж каркаса из профиля АЛМО, окраска с обоих сторон в цвет RAL 7021",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "06.03.01.17.01",
+          "name": "Заполнение: фасадная сэндвич-панель с минераловатным утеплителем толщ. 30 мм, за",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Теплые витражные конструкции на жилых этажах (непрозрачные участки), вторая нитка остекления.",
+      "positions": [
+        {
+          "code": "06.03.01.18",
+          "name": "Монтаж каркаса из профиля АЛМО, окраска с обоих сторон в цвет RAL 7021",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "06.03.01.18.01",
+          "name": "Заполнение однокамерным стеклопакетом со стемалитом RAL условно 7021, заполнение",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Холодные витражные конструкции в уровне надстроек кровли С5 с устройством двусторонней защиты.",
+      "positions": [
+        {
+          "code": "06.03.02",
+          "name": "Монтаж каркаса из профиля АЛМО, окраска с обоих сторон в цвет RAL 7021",
+          "role": "work",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "06.03.02.01",
+          "name": "Заполнение: фасадная сэндвич-панель с минераловатным утеплителем толщ. 30 мм, в ",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_glass"
+          ]
+        },
+        {
+          "code": "06.03.02.02",
+          "name": "Заполнение: однокамерный стеклопакет со стемалитом RAL условно 7021 \r\r\n(Стеклопа",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Светопрозрачных конструкций квартир (балконные блоки) с устройством двусторонней защиты.",
+      "positions": [
+        {
+          "code": "06.03.03",
+          "name": "Монтаж блоков балконных\r\r\nКаркас из профиля АЛМО, окраска с обоих сторон в цвет ",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Монтаж дверных блоков наружных",
+      "positions": [
+        {
+          "code": "06.04.01",
+          "name": "Дверь остекленная Каркас из профиля АЛМО (в противопожарном исполнении), открыва",
+          "role": "material",
+          "isHeader": true,
+          "templates": []
+        },
+        {
+          "code": "06.04.01.01",
+          "name": "Дверь остекленная из профиля АЛМО (в противопожарном исполнении), открывающиеся ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.04.02",
+          "name": "Дверь остекленная противопожарная из профиля АЛМО (в противопожарном исполнении)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.04.03",
+          "name": "Дверь остеклённая из профиля АЛМО, открывающиеся створки из профиля АЛМО, окраск",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.04.04",
+          "name": "Дверь стальная глухая остеклённая EIWS-60 EI60, однопольная, правого открывания,",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.04.05",
+          "name": "Дверь стальная  остеклённая EIWS-60, однопольная, левого открывания,1110х2080(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.04.06",
+          "name": "Дверь стальная остеклённая EIWS-60, однопольная, правого открывания,1110х2380(h)",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.04.07",
+          "name": "Дверь стальная остеклённая EIWS-60, однопольная, левого открывания,1260х2380(h)м",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.04.08",
+          "name": "Дверь остекленная Каркас из профиля АЛМО (в противопожарном исполнении), открыва",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.04.09",
+          "name": "Дверь стальная глухая, двупольная, правого открывания,1410х2370(h) мм.  Окраска ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.04.10",
+          "name": "Калитка металлическая в шумозащитном экране, однопольная, левого открывания,900х",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "06.04.11",
+          "name": "Калитка металлическая в шумозащитном экране, однопольная, правого открывания, 95",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "06.04.12",
+          "name": "Калитка металлическая в шумозащитном экране, однопольная, правого открывания, 95",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "06.04.13",
+          "name": "Калитка металлическая, однопольная, правого открывания, 1045х2150(h) мм. (На кро",
+          "role": "material",
+          "isHeader": false,
+          "templates": []
+        },
+        {
+          "code": "06.04.14",
+          "name": "Люк технический , однопольный, 900х1100(h) мм.",
+          "role": "material",
+          "isHeader": false,
+          "templates": []
+        },
+        {
+          "code": "06.04.15",
+          "name": "Ворота технические распашные; 2200 х2440(h)мм, окраска с обеих сторон в цвет RAL",
+          "role": "material",
+          "isHeader": false,
+          "templates": []
+        },
+        {
+          "code": "06.04.16",
+          "name": "Калитка металлическая, однопольная, правого открывания,880х2100(h) мм.",
+          "role": "material",
+          "isHeader": false,
+          "templates": []
+        },
+        {
+          "code": "06.04.17",
+          "name": "Дверь стальная глухая, двупольная, левого открывания,1410х2030(h) мм.  Окраска с",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.04.18",
+          "name": "Дверь стальная глухая, однопольная, левого открывания,1110х2080(h)мм. Окраска с ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        },
+        {
+          "code": "06.04.19",
+          "name": "Дверь стальная глухая, однопольная, правого открывания,1110х2380(h)мм. Окраска с",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Устройство ограждения кровли",
+      "positions": [
+        {
+          "code": "07.03.01",
+          "name": "Устройство ограждений на эксплуатируемой кровли из триплекса, высотой 2100 мм; ф",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "07.03.02",
+          "name": "Ограждение неэксплуатируемой кровли: металлическое, с вертикальными стойками и п",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "07.03.03",
+          "name": "Устройство ограждений вокруг инженерного оборудования: Декоративные /шумозащитны",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "07.03.04",
+          "name": "Устройство ограждений вокруг инженерного оборудования: Декоративные /шумозащитны",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "07.03.05",
+          "name": "Устройство ограждений вокруг инженерного оборудования: Декоративные /шумозащитны",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "07.03.06",
+          "name": "Устройство ограждений вокруг инженерного оборудования: Декоративные /шумозащитны",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "07.03.07",
+          "name": "Устройство ограждений вокруг инженерного оборудования: Декоративные /шумозащитны",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "07.03.08",
+          "name": "Устройство ограждений вокруг инженерного оборудования: Декоративные /шумозащитны",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "07.03.09",
+          "name": "Устройство ограждений вокруг инженерного оборудования: Декоративные /шумозащитны",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "07.03.10",
+          "name": "Устройство ограждений вокруг инженерного оборудования: Декоративные /шумозащитны",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "07.03.11",
+          "name": "Устройство ограждений вокруг инженерного оборудования: Декоративные /шумозащитны",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "07.03.12",
+          "name": "Устройство ограждений вокруг инженерного оборудования: Декоративные /шумозащитны",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "07.03.13",
+          "name": "Устройство ограждений вокруг инженерного оборудования: Декоративные /шумозащитны",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "07.03.14",
+          "name": "Устройство ограждений вокруг инженерного оборудования: Декоративные /шумозащитны",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "07.03.15",
+          "name": "Устройство ограждений вокруг инженерного оборудования: Декоративные /шумозащитны",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "07.03.16",
+          "name": "Устройство ограждений вокруг инженерного оборудования: Декоративные /шумозащитны",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "07.03.17",
+          "name": "Устройство ограждений вокруг инженерного оборудования: Декоративные /шумозащитны",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "07.03.18",
+          "name": "Устройство ограждений вокруг инженерного оборудования: Декоративные /шумозащитны",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "07.03.19",
+          "name": "Устройство ограждений вокруг инженерного оборудования: Декоративные /шумозащитны",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "07.03.20",
+          "name": "Устройство ограждений вокруг инженерного оборудования: Декоративные /шумозащитны",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        },
+        {
+          "code": "07.03.21",
+          "name": "Устройство ограждений вокруг дымохода. Каркас из ст. профилей, заполнение ст. ла",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Монтаж крышек парапетов",
+      "positions": [
+        {
+          "code": "07.04.01",
+          "name": "Покрытие парапетов. Стальной кровельный лист RAL 7021 толщина 0,7 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "flashings"
+          ]
+        },
+        {
+          "code": "07.04.02",
+          "name": "Покрытие парапетов. Стальной кровельный лист RAL 7021 ширина 400 мм толщина 0,7 ",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "flashings"
+          ]
+        }
+      ]
+    }
+  ]
+}

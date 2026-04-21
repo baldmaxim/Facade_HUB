@@ -1,0 +1,241 @@
+{
+  "file": "Тест Адмирал.xlsx",
+  "sections": [
+    {
+      "name": "Устройство штукатурных фасадов лоджий/балконов",
+      "positions": [
+        {
+          "code": "7.1.2.1",
+          "name": "Цементная декоративная штукатурка для наружных и внутренних работ , включая отко",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "wet_facade"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Монтаж системы вентилируемого фасада с облицовкой металлическими (алюминиевые) панелями",
+      "positions": [
+        {
+          "code": "7.1.3.1",
+          "name": "Навесная фасадная система с облицовкой металлическими (алюминиевые) панелями , в",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "flashings",
+            "pp_otsechi"
+          ]
+        },
+        {
+          "code": "7.1.3.2",
+          "name": "Подвесная система с облицовкой металлическими (алюминиевые) панелями , включая о",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_cassette",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Монтаж системы вентилируемого фасада с облицовкой бетонной плиткой",
+      "positions": [
+        {
+          "code": "7.1.4.1",
+          "name": "Навесная фасадная система с облицовкой бетонной плиткой , включая откосы и отлив",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "insulation",
+            "nvf_cladding_concrete_tile",
+            "scaffolding",
+            "kmd_nvf"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Монтаж козырька на точечных креплениях и растяжках",
+      "positions": [
+        {
+          "code": "7.1.5.1",
+          "name": "Стеклянный козырёк на подвесах",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_canopy"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Монтаж корзин для наружного блока кондиционера",
+      "positions": [
+        {
+          "code": "7.1.6.1",
+          "name": "Корзины для кондиционеров",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
+            "scaffolding"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Прочие работы",
+      "positions": [
+        {
+          "code": "7.1.6.1",
+          "name": "Мокап фасада",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "mockup"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Устройство разуклонки керамзитобетонной",
+      "positions": [
+        {
+          "code": "7.2.1.1",
+          "name": "Уклонообразующий слой из керамзита толщиной 50-250 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": []
+        }
+      ]
+    },
+    {
+      "name": "Устройство выравнивающей стяжки цементнопесчаной или бетонной",
+      "positions": [
+        {
+          "code": "7.2.2.1",
+          "name": "Стяжка цементно-песчаная М150, толщиной 50 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": []
+        }
+      ]
+    },
+    {
+      "name": "Монтаж теплоизоляции плитами из минеральной ваты",
+      "positions": [
+        {
+          "code": "7.2.3.3",
+          "name": "Плиты минераловатные толщиной 200 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "insulation"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Монтаж перильных ограждений со светопрозрачным заполнением",
+      "positions": [
+        {
+          "code": "7.9.2.1",
+          "name": "Ограждение стилобата h=900 мм",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "glass_railing"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Монтаж перильных ограждений металлических",
+      "positions": [
+        {
+          "code": "7.9.3.1",
+          "name": "Ограждение парапета h=1200",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "flashings"
+          ]
+        },
+        {
+          "code": "7.9.3.2",
+          "name": "Ограждение парапета h=600",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "flashings"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Устройство стоечно-ригельной витражной фасадной системы",
+      "positions": [
+        {
+          "code": "7.10.1.1",
+          "name": "Светопрозрачные термоизолированные витражи с остеклением крупноформатными стекло",
+          "role": "material",
+          "isHeader": false,
+          "templates": [
+            "spk_profile",
+            "doors_entrance",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Остекление балконов и лоджий",
+      "positions": [
+        {
+          "code": "7.10.2.1",
+          "name": "Установка оконно-дверного блока ПВХ балконного",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "pvh_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Монтаж светопрозрачных конструкций",
+      "positions": [
+        {
+          "code": "7.10.3.1",
+          "name": "Установка оконных блоков фасада ПВХ",
+          "role": "work",
+          "isHeader": false,
+          "templates": [
+            "pvh_profile",
+            "spk_glass",
+            "spk_broneplenka",
+            "scaffolding",
+            "kmd_spk"
+          ]
+        }
+      ]
+    }
+  ]
+}
