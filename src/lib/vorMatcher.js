@@ -42,52 +42,11 @@ export function isHeader(pos, allPositions = null, options = {}) {
   );
 }
 
-/**
- * Определяет шаблоны для конкретной позиции ВОР.
- * Первое совпадение правил побеждает.
- */
-export function matchPosition(positionName, noteCustomer = '') {
-  const searchText = (positionName + ' ' + (noteCustomer || '')).toLowerCase();
-  // Маркер "без утепления/утеплителя" — исключаем insulation из результата
-  const skipInsulation = /без\s+утепл|декоратив/i.test(searchText);
-  const matched = [];
-  const seen = new Set();
-
-  for (const rule of MATCH_RULES) {
-    // Правило, которое даёт ТОЛЬКО insulation — пропускаем, если "без утепл"
-    if (skipInsulation && rule.templates.length === 1 && rule.templates[0] === 'insulation') {
-      continue;
-    }
-    const hit = rule.keywords.some(kw => {
-      if (kw.includes('.*') || kw.includes('[')) return new RegExp(kw, 'i').test(searchText);
-      return searchText.includes(kw);
-    });
-    if (hit) {
-      for (const t of rule.templates) {
-        if (skipInsulation && t === 'insulation') continue;
-        if (!seen.has(t)) { matched.push(t); seen.add(t); }
-      }
-      for (const t of rule.secondary) {
-        if (skipInsulation && t === 'insulation') continue;
-        if (!seen.has(t)) { matched.push(t); seen.add(t); }
-      }
-      break;
-    }
-  }
-
-  return matched;
-}
-
-/**
- * Как matchPosition, но дополнительно возвращает сработавшее правило (индекс + ключевое слово).
- * Используется для отладки и отображения источника матчинга в UI.
- */
-export function matchPositionDetailed(positionName, noteCustomer = '') {
-  const searchText = (positionName + ' ' + (noteCustomer || '')).toLowerCase();
-  const skipInsulation = /без\s+утепл|декоратив/i.test(searchText);
-
-  for (let i = 0; i < MATCH_RULES.length; i++) {
-    const rule = MATCH_RULES[i];
+// Внутренний раннер правил: применяет массив правил к строке поиска.
+// Возвращает { templates, ruleIndex, keyword, isCustom } или null.
+function runRules(rules, searchText, skipInsulation, isCustom = false) {
+  for (let i = 0; i < rules.length; i++) {
+    const rule = rules[i];
     if (skipInsulation && rule.templates.length === 1 && rule.templates[0] === 'insulation') continue;
     const matchedKeyword = rule.keywords.find(kw => {
       if (kw.includes('.*') || kw.includes('[')) return new RegExp(kw, 'i').test(searchText);
@@ -104,10 +63,44 @@ export function matchPositionDetailed(positionName, noteCustomer = '') {
         if (skipInsulation && t === 'insulation') continue;
         if (!seen.has(t)) { templates.push(t); seen.add(t); }
       }
-      return { templates, ruleIndex: i, keyword: matchedKeyword };
+      return { templates, ruleIndex: i, keyword: matchedKeyword, isCustom };
     }
   }
-  return { templates: [], ruleIndex: -1, keyword: null };
+  return null;
+}
+
+/**
+ * Определяет шаблоны для позиции ВОР.
+ * customRules — опциональные custom-правила, применяются ПОСЛЕ кодовых (fallback).
+ * Первое совпадение побеждает.
+ */
+export function matchPosition(positionName, noteCustomer = '', customRules = []) {
+  const searchText = (positionName + ' ' + (noteCustomer || '')).toLowerCase();
+  const skipInsulation = /без\s+утепл|декоратив/i.test(searchText);
+
+  const codeHit = runRules(MATCH_RULES, searchText, skipInsulation, false);
+  if (codeHit) return codeHit.templates;
+
+  const customHit = runRules(customRules, searchText, skipInsulation, true);
+  if (customHit) return customHit.templates;
+
+  return [];
+}
+
+/**
+ * Как matchPosition, но возвращает сработавшее правило (keyword + признак custom/code).
+ */
+export function matchPositionDetailed(positionName, noteCustomer = '', customRules = []) {
+  const searchText = (positionName + ' ' + (noteCustomer || '')).toLowerCase();
+  const skipInsulation = /без\s+утепл|декоратив/i.test(searchText);
+
+  const codeHit = runRules(MATCH_RULES, searchText, skipInsulation, false);
+  if (codeHit) return codeHit;
+
+  const customHit = runRules(customRules, searchText, skipInsulation, true);
+  if (customHit) return customHit;
+
+  return { templates: [], ruleIndex: -1, keyword: null, isCustom: false };
 }
 
 /**

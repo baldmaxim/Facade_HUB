@@ -107,16 +107,19 @@ export function generateFilledVor(parsed, options = {}) {
   const hdrOpts = { priceAllWithQty: options.priceAllWithQty === true };
   const workPrices = options.workPrices || null; // Map<tplKey, Array<{name, price}>>
   const overrides = options.overrides || null;   // Map<positionObject, string[]> — ручной override шаблонов
+  const customTemplates = options.customTemplates || {}; // { key: tpl } — custom-шаблоны из БД
+  const customRules = options.customRules || [];         // fallback-правила из БД
+  const ALL_TEMPLATES = { ...TEMPLATES, ...customTemplates };
   let totalWorkPricesFilled = 0;
   const ws = {};
   let R = 0; // текущая строка
   const merges = [];
   const NC = 20; // число колонок
 
-  // Резолвим шаблоны: сначала override, потом стандартный matchPosition
+  // Резолвим шаблоны: сначала override, потом стандартный matchPosition (+ custom rules)
   function matchPos(pos) {
     if (overrides && overrides.has(pos)) return overrides.get(pos);
-    return matchPosition(pos.name, pos.noteCustomer || '');
+    return matchPosition(pos.name, pos.noteCustomer || '', customRules);
   }
 
   // ─── Заголовок ──────────────────────────────────────────────────
@@ -252,7 +255,7 @@ export function generateFilledVor(parsed, options = {}) {
       ];
       return { ...base, materials };
     }
-    return TEMPLATES[key];
+    return ALL_TEMPLATES[key];
   }
 
   for (const section of sections) {
@@ -391,7 +394,7 @@ export function generateFilledVor(parsed, options = {}) {
           const firstTplKey = clusterTemplates[0];
           const firstTpl = firstTplKey === 'insulation'
             ? adjustInsulationTemplate(clusterInsulationThickness)
-            : TEMPLATES[firstTplKey];
+            : ALL_TEMPLATES[firstTplKey];
           const firstTplWorks = firstTpl ? tplWorks(firstTpl) : [];
           if (firstTpl && firstTplWorks.length > 0) {
             const w = firstTplWorks[0];
@@ -416,7 +419,7 @@ export function generateFilledVor(parsed, options = {}) {
           for (const key of clusterTemplates) {
             const tpl = key === 'insulation'
               ? adjustInsulationTemplate(clusterInsulationThickness)
-              : TEMPLATES[key];
+              : ALL_TEMPLATES[key];
             if (!tpl) continue;
             for (const m of tplMaterials(tpl)) {
               if (m.kind !== 'вспомогат.') continue;

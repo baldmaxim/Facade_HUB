@@ -3,6 +3,7 @@ import { parseEmptyVor, generateFilledVor, downloadBlob } from '../lib/vorExcelG
 import { matchPositionDetailed, isHeader } from '../lib/vorMatcher';
 import { loadWorkPrices } from '../lib/vorPriceLoader';
 import { fetchWorkPrices, saveWorkPrices, countWorkPrices, entriesToPriceMap } from '../api/vorPrices';
+import { fetchCustomTemplates, customTemplatesToMap, customTemplatesToRules } from '../api/vorCustomTemplates';
 import './VorFillModal.css';
 
 const TPL_NAMES = {
@@ -61,6 +62,8 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
   const [stats, setStats]           = useState(null);
   const [overrides, setOverrides]   = useState(new Map()); // Map<positionRef, string[]>
   const [editingKey, setEditingKey] = useState(null);      // 'sectionIdx:posIdx' или null
+  const [customTemplates, setCustomTemplates] = useState({});   // map key→tpl
+  const [customRules, setCustomRules]         = useState([]);   // fallback-правила
 
   const vorInputRef    = useRef(null);
   const pricesInputRef = useRef(null);
@@ -69,12 +72,17 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
     let cancelled = false;
     (async () => {
       try {
-        const n = await countWorkPrices(objectId);
+        const [n, customRows] = await Promise.all([
+          countWorkPrices(objectId),
+          fetchCustomTemplates().catch(() => []),
+        ]);
         if (cancelled) return;
         setSavedCount(n);
         setPricesMode(n > 0 ? 'saved' : 'none');
+        setCustomTemplates(customTemplatesToMap(customRows));
+        setCustomRules(customTemplatesToRules(customRows));
       } catch (err) {
-        if (!cancelled) setError('Ошибка загрузки прайса: ' + err.message);
+        if (!cancelled) setError('Ошибка загрузки: ' + err.message);
       }
     })();
     return () => { cancelled = true; };
@@ -117,7 +125,7 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
       name: section.name,
       rows: section.positions.map((pos, posIdx) => {
         const hdr = isHeader(pos, allPositions, hdrOpts);
-        const autoMatch = hdr ? { templates: [], keyword: null } : matchPositionDetailed(pos.name, pos.noteCustomer || '');
+        const autoMatch = hdr ? { templates: [], keyword: null, isCustom: false } : matchPositionDetailed(pos.name, pos.noteCustomer || '', customRules);
         const override  = overrides.get(pos);
         const templates = override !== undefined ? override : autoMatch.templates;
         if (!hdr) { templates.length > 0 ? matched++ : unmatched++; }
@@ -128,6 +136,7 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
           name: pos.name,
           templates,
           keyword: autoMatch.keyword,
+          isCustom: autoMatch.isCustom || false,
           isHeader: hdr,
           isOverridden: override !== undefined,
         };
@@ -190,7 +199,7 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
         setSavedCount(newCount);
       }
 
-      const result = generateFilledVor(parsed, { priceAllWithQty: donstroy, workPrices, overrides });
+      const result = generateFilledVor(parsed, { priceAllWithQty: donstroy, workPrices, overrides, customTemplates, customRules });
       const baseName = (objectName || 'ВОР').replace(/[<>:"/\\|?*]+/g, '');
       const suffix   = donstroy ? '_Донстрой' : '';
       downloadBlob(result.blob, `${baseName}${suffix}_расценённый.xlsx`);
@@ -302,8 +311,8 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
                                 </span>
                               ))}
                               {row.keyword && row.templates.length > 0 && !row.isOverridden && (
-                                <span className="vfm-rule-hint" title={`Сработало правило: ${row.keyword}`}>
-                                  ⓘ
+                                <span className="vfm-rule-hint" title={`${row.isCustom ? 'Custom-шаблон. ' : ''}Сработало правило: ${row.keyword}`}>
+                                  {row.isCustom ? '⚡' : 'ⓘ'}
                                 </span>
                               )}
                               {row.isOverridden && (

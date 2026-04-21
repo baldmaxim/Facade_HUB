@@ -1,0 +1,167 @@
+.vctm {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 2px dashed var(--color-border, #e0e0e0);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.vctm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.vctm-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.vctm-count {
+  color: var(--color-text-secondary, #999);
+  font-weight: 400;
+  font-size: 14px;
+}
+
+.vctm-btn-primary {
+  padding: 8px 16px;
+  background: #7a3fc0;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 500;
+}
+.vctm-btn-primary:hover { background: #6830a8; }
+
+.vctm-info {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-secondary, #666);
+  background: #faf5ff;
+  padding: 10px 14px;
+  border-radius: 4px;
+  border-left: 3px solid #7a3fc0;
+}
+
+.vctm-error {
+  padding: 10px 14px;
+  background: #fee;
+  color: #c33;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.vctm-loading,
+.vctm-empty {
+  text-align: center;
+  color: var(--color-text-secondary, #888);
+  padding: 24px;
+  font-size: 13px;
+  background: #fafafa;
+  border-radius: 6px;
+}
+
+.vctm-cat {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vctm-cat-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text, #222);
+  padding: 4px 0;
+}
+
+.vctm-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vctm-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 14px;
+  background: #fff;
+  border: 1px solid var(--color-border, #e0e0e0);
+  border-radius: 6px;
+  border-left: 3px solid #7a3fc0;
+}
+
+.vctm-card-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vctm-card-label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.vctm-card-key {
+  font-size: 11px;
+  background: #faf5ff;
+  color: #7a3fc0;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-family: ui-monospace, Menlo, Monaco, monospace;
+  align-self: flex-start;
+}
+
+.vctm-card-path {
+  font-size: 12px;
+  color: var(--color-text-secondary, #666);
+  background: #eef5fa;
+  padding: 4px 8px;
+  border-radius: 3px;
+}
+
+.vctm-card-kw {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+.vctm-kw {
+  font-size: 11px;
+  background: #f0f0f0;
+  color: #555;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.vctm-kw-none {
+  font-size: 11px;
+  color: #c33;
+  font-style: italic;
+}
+
+.vctm-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.vctm-btn {
+  padding: 4px 10px;
+  background: #fff;
+  border: 1px solid var(--color-border, #ccc);
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--color-text, #333);
+}
+.vctm-btn:hover { background: #f5f5f5; }
+.vctm-btn-danger {
+  color: #c33;
+  padding: 4px 8px;
+  min-width: 28px;
+}
+.vctm-btn-danger:hover { background: #fee; border-color: #c33; }
