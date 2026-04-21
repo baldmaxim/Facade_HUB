@@ -11,7 +11,7 @@
 .vfm-dialog {
   background: var(--color-bg, #fff);
   border-radius: 8px;
-  width: 540px;
+  width: 720px;
   max-width: 95vw;
   max-height: 90vh;
   display: flex;
@@ -147,3 +147,88 @@
 }
 .vfm-btn-secondary:hover:not(:disabled) { background: #f5f5f5; }
 .vfm-btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ─── Матчинг-превью ───────────────────────────────────────────── */
+.vfm-analyzing {
+  text-align: center;
+  color: var(--color-text-secondary, #888);
+  font-size: 13px;
+  padding: 8px 0 16px;
+}
+
+.vfm-preview {
+  margin-bottom: 20px;
+  border: 1px solid var(--color-border, #e0e0e0);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.vfm-preview-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+.vfm-preview-summary.all-matched  { background: #f0f7f0; color: #2c6e2c; }
+.vfm-preview-summary.has-unmatched { background: #fff8e8; color: #7a5200; }
+.vfm-preview-summary b { font-weight: 700; }
+.vfm-preview-warn { color: #c05000; font-weight: 500; }
+
+.vfm-preview-table-wrap {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.vfm-preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.vfm-preview-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--color-bg-secondary, #f5f5f5);
+  padding: 5px 8px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 1px solid var(--color-border, #ddd);
+  white-space: nowrap;
+}
+
+.vfm-preview-table td {
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--color-border, #f0f0f0);
+  vertical-align: top;
+}
+
+.col-pcode { width: 72px; color: var(--color-text-secondary, #888); font-size: 11px; white-space: nowrap; }
+.col-pname { max-width: 220px; word-break: break-word; }
+.col-ptpl  { }
+
+/* Строки позиций */
+.vfm-sec-row td {
+  background: #f7e8b0;
+  font-weight: 600;
+  font-size: 11px;
+  padding: 4px 8px;
+  color: #5a4000;
+}
+.vfm-pos-header td { background: #fafafa; color: var(--color-text-secondary, #aaa); }
+.vfm-pos-matched td { background: #fff; }
+.vfm-pos-unmatched td { background: #fff5f5; }
+
+/* Чипы шаблонов */
+.vfm-chip {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  margin: 1px 2px 1px 0;
+  white-space: nowrap;
+}
+.vfm-chip-main { background: #dbeafe; color: #1e40af; }
+.vfm-chip-sec  { background: #f0f0f0; color: #555; }
+.vfm-chip-none { background: #fee; color: #c00; font-weight: 500; }
+.vfm-chip-hdr  { background: #f0f0f0; color: #999; font-style: italic; }
