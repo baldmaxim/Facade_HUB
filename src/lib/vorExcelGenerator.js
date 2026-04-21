@@ -301,25 +301,34 @@ export function generateFilledVor(parsed, options = {}) {
       }
     }
 
+    // Семейство шаблонов для кластеризации — wet_facade/_finish/_paint/_insulation считаются одним
+    function keyFamily(k) {
+      if (/^wet_facade/.test(k)) return 'wet_facade_family';
+      return k;
+    }
+    function toFamilySet(keys) {
+      return new Set(keys.map(keyFamily));
+    }
+
     // A 'work' position is clustered if a 'material' position with overlapping templates
     // exists between it and the next 'auxiliary' position
     function isClusteredWork(idx) {
-      const myKeys = new Set(posInfos[idx].tplKeys);
-      if (myKeys.size === 0) return false;
+      const myFam = toFamilySet(posInfos[idx].tplKeys);
+      if (myFam.size === 0) return false;
       for (let j = idx + 1; j < posInfos.length; j++) {
         if (posInfos[j].role === 'auxiliary') return false;
-        if (posInfos[j].role === 'material' && posInfos[j].tplKeys.some(k => myKeys.has(k))) return true;
+        if (posInfos[j].role === 'material' && posInfos[j].tplKeys.some(k => myFam.has(keyFamily(k)))) return true;
       }
       return false;
     }
 
     // A 'material' position is clustered if a matching 'work' exists BEFORE it (no aux boundary between)
     function isClusteredMaterial(idx) {
-      const myKeys = new Set(posInfos[idx].tplKeys);
-      if (myKeys.size === 0) return false;
+      const myFam = toFamilySet(posInfos[idx].tplKeys);
+      if (myFam.size === 0) return false;
       for (let j = idx - 1; j >= 0; j--) {
         if (posInfos[j].role === 'auxiliary') return false;
-        if (posInfos[j].role === 'work' && posInfos[j].tplKeys.some(k => myKeys.has(k))) return true;
+        if (posInfos[j].role === 'work' && posInfos[j].tplKeys.some(k => myFam.has(keyFamily(k)))) return true;
       }
       return false;
     }
