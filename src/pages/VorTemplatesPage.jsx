@@ -8,6 +8,8 @@ import {
   deleteAllVorTemplates,
   insertVorTemplates
 } from '../api/vorTemplates';
+import VorCodeTemplatesView from '../components/VorCodeTemplatesView';
+import { TEMPLATES } from '../lib/vorTemplates';
 import './VorTemplatesPage.css';
 
 const EMPTY_FORM = {
@@ -103,6 +105,7 @@ function VorTemplatesPage() {
   const [importPreview, setImportPreview] = useState(null);
   const [importing, setImporting] = useState(false);
   const [filterSection, setFilterSection] = useState('');
+  const [activeTab, setActiveTab] = useState('code'); // 'code' | 'db'
   const fileInputRef = useRef(null);
 
   useEffect(() => { loadTemplates(); }, []);
@@ -259,8 +262,26 @@ function VorTemplatesPage() {
           Здесь хранится структура компании: работы, материалы, нормы расхода.
         </p>
 
+        <div className="vort-tabs">
+          <button
+            className={`vort-tab ${activeTab === 'code' ? 'active' : ''}`}
+            onClick={() => setActiveTab('code')}
+          >
+            Шаблоны движка <span className="vort-tab-badge">{Object.keys(TEMPLATES).length}</span>
+          </button>
+          <button
+            className={`vort-tab ${activeTab === 'db' ? 'active' : ''}`}
+            onClick={() => setActiveTab('db')}
+          >
+            Из базы (устаревшее)
+          </button>
+        </div>
+
         {error && <div className="vort-error">{error}</div>}
 
+        {activeTab === 'code' && <VorCodeTemplatesView />}
+
+        {activeTab === 'db' && <>
         <div className="vort-toolbar">
           <select
             className="vort-filter"
@@ -375,6 +396,7 @@ function VorTemplatesPage() {
             </div>
           ))
         )}
+        </>}
       </div>
 
       {showForm && (

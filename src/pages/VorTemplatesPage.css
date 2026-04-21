@@ -3,6 +3,44 @@
   min-height: calc(100vh - 140px);
 }
 
+.vort-tabs {
+  display: flex;
+  gap: 4px;
+  margin: 16px 0;
+  border-bottom: 1px solid var(--color-border, #e0e0e0);
+}
+.vort-tab {
+  background: transparent;
+  border: none;
+  padding: 10px 18px;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--color-text-secondary, #777);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.vort-tab:hover { color: var(--color-text, #222); }
+.vort-tab.active {
+  color: var(--color-accent, #2c6e2c);
+  border-bottom-color: var(--color-accent, #2c6e2c);
+  font-weight: 600;
+}
+.vort-tab-badge {
+  background: #e3f2fd;
+  color: #1e40af;
+  font-size: 11px;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.vort-tab.active .vort-tab-badge {
+  background: #2c6e2c;
+  color: #fff;
+}
+
 .vort-container {
   max-width: 1200px;
   margin: 0 auto;
