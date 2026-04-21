@@ -376,6 +376,7 @@ export function generateFilledVor(parsed, options = {}) {
             wd[12] = 'RUB';
             const p = priceForWork(firstTplKey, w.name, firstTpl.costPath);
             if (p) wd[15] = p;
+            if (w.noteGp) wd[19] = w.noteGp;
             for (let c = 0; c < NC; c++) {
               ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], STYLE_WORK);
             }
@@ -450,6 +451,7 @@ export function generateFilledVor(parsed, options = {}) {
                 wd[12] = 'RUB';
                 const p = priceForWork(key, w.name, tpl.costPath);
                 if (p) wd[15] = p;
+                if (w.noteGp) wd[19] = w.noteGp;
                 for (let c = 0; c < NC; c++) {
                   ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], STYLE_WORK);
                 }
@@ -502,6 +504,7 @@ export function generateFilledVor(parsed, options = {}) {
               wd[12] = 'RUB';
               const p = priceForWork(key, w.name, tpl.costPath);
               if (p) wd[15] = p;
+              if (w.noteGp) wd[19] = w.noteGp;
               for (let c = 0; c < NC; c++) {
                 ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], STYLE_WORK);
               }
@@ -526,6 +529,7 @@ export function generateFilledVor(parsed, options = {}) {
               wd[12] = 'RUB';
               const p = priceForWork(key, w.name, tpl.costPath);
               if (p) wd[15] = p;
+              if (w.noteGp) wd[19] = w.noteGp;
               for (let c = 0; c < NC; c++) {
                 ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], STYLE_WORK);
               }
@@ -586,6 +590,7 @@ export function generateFilledVor(parsed, options = {}) {
             wd[12] = 'RUB';
             const p = priceForWork(key, w.name, tpl.costPath);
             if (p) wd[15] = p;
+            if (w.noteGp) wd[19] = w.noteGp;
             for (let c = 0; c < NC; c++) {
               ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], STYLE_WORK);
             }
