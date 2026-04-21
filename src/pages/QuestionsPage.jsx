@@ -1,32 +1,16 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { useState } from 'react';
+import useSWR from 'swr';
+import { fetchQuestions, createQuestion, updateQuestion, deleteQuestion } from '../api/questions';
 import './QuestionsPage.css';
 
 function QuestionsPage() {
-  const [questions, setQuestions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: questions = [], isLoading: loading, mutate } = useSWR('questions', fetchQuestions);
+
   const [showModal, setShowModal] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(null);
   const [formQuestion, setFormQuestion] = useState('');
   const [formCondition, setFormCondition] = useState('');
   const [saving, setSaving] = useState(false);
-
-  // Загрузка вопросов
-  useEffect(() => {
-    fetchQuestions();
-  }, []);
-
-  async function fetchQuestions() {
-    const { data, error } = await supabase
-      .from('questions')
-      .select('*')
-      .order('id', { ascending: true });
-
-    if (!error && data) {
-      setQuestions(data);
-    }
-    setLoading(false);
-  }
 
   // Открыть модалку для добавления
   function openAddModal() {
@@ -57,50 +41,29 @@ function QuestionsPage() {
     if (!formQuestion.trim()) return;
 
     setSaving(true);
-
-    if (editingQuestion) {
-      // Обновление
-      const { error } = await supabase
-        .from('questions')
-        .update({ question: formQuestion, condition: formCondition })
-        .eq('id', editingQuestion.id);
-
-      if (!error) {
-        setQuestions(questions.map(q =>
-          q.id === editingQuestion.id
-            ? { ...q, question: formQuestion, condition: formCondition }
-            : q
-        ));
-        closeModal();
+    try {
+      if (editingQuestion) {
+        await updateQuestion(editingQuestion.id, { question: formQuestion, condition: formCondition });
+      } else {
+        await createQuestion({ question: formQuestion, condition: formCondition });
       }
-    } else {
-      // Добавление
-      const { data, error } = await supabase
-        .from('questions')
-        .insert([{ question: formQuestion, condition: formCondition }])
-        .select()
-        .single();
-
-      if (!error && data) {
-        setQuestions([...questions, data]);
-        closeModal();
-      }
+      await mutate();
+      closeModal();
+    } catch (err) {
+      console.error('Ошибка сохранения вопроса:', err);
+    } finally {
+      setSaving(false);
     }
-
-    setSaving(false);
   }
 
   // Удаление вопроса
   async function handleDelete(id) {
     if (!confirm('Удалить этот вопрос?')) return;
-
-    const { error } = await supabase
-      .from('questions')
-      .delete()
-      .eq('id', id);
-
-    if (!error) {
-      setQuestions(questions.filter(q => q.id !== id));
+    try {
+      await deleteQuestion(id);
+      await mutate();
+    } catch (err) {
+      console.error('Ошибка удаления вопроса:', err);
     }
   }
 

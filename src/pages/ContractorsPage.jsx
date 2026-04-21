@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { useState } from 'react';
+import useSWR from 'swr';
+import { fetchContractors, createContractor, updateContractor, deleteContractor } from '../api/contractors';
 import './ContractorsPage.css';
 
 function ContractorsPage() {
-  const [contractors, setContractors] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // Кэш + автоматическая дедупликация через SWR
+  const { data: contractors = [], isLoading: loading, mutate } = useSWR('contractors', fetchContractors);
+
   const [showModal, setShowModal] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [formData, setFormData] = useState({
@@ -18,23 +20,6 @@ function ContractorsPage() {
   const [saving, setSaving] = useState(false);
   const [filterSection, setFilterSection] = useState('');
   const [expandedCompanies, setExpandedCompanies] = useState(new Set());
-
-  // Загрузка подрядчиков
-  useEffect(() => {
-    fetchContractors();
-  }, []);
-
-  async function fetchContractors() {
-    const { data, error } = await supabase
-      .from('contractors')
-      .select('*')
-      .order('id', { ascending: true });
-
-    if (!error && data) {
-      setContractors(data);
-    }
-    setLoading(false);
-  }
 
   // Получить уникальные разделы
   const sections = [...new Set(contractors.map(c => c.section))];
@@ -167,46 +152,29 @@ function ContractorsPage() {
     if (!formData.section.trim()) return;
 
     setSaving(true);
-
-    if (editingItem) {
-      const { error } = await supabase
-        .from('contractors')
-        .update(formData)
-        .eq('id', editingItem.id);
-
-      if (!error) {
-        setContractors(contractors.map(c =>
-          c.id === editingItem.id ? { ...c, ...formData } : c
-        ));
-        closeModal();
+    try {
+      if (editingItem) {
+        await updateContractor(editingItem.id, formData);
+      } else {
+        await createContractor(formData);
       }
-    } else {
-      const { data, error } = await supabase
-        .from('contractors')
-        .insert([formData])
-        .select()
-        .single();
-
-      if (!error && data) {
-        setContractors([...contractors, data]);
-        closeModal();
-      }
+      await mutate(); // перезагружаем данные через SWR
+      closeModal();
+    } catch (err) {
+      console.error('Ошибка сохранения:', err);
+    } finally {
+      setSaving(false);
     }
-
-    setSaving(false);
   }
 
   // Удаление
   async function handleDelete(id) {
     if (!confirm('Удалить этот контакт?')) return;
-
-    const { error } = await supabase
-      .from('contractors')
-      .delete()
-      .eq('id', id);
-
-    if (!error) {
-      setContractors(contractors.filter(c => c.id !== id));
+    try {
+      await deleteContractor(id);
+      await mutate();
+    } catch (err) {
+      console.error('Ошибка удаления:', err);
     }
   }
 

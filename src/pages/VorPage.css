@@ -340,3 +340,33 @@
 .col-volume { width: 110px; }
 .col-wprice { width: 120px; }
 .col-mprice { width: 120px; }
+
+.vor-history-section {
+  margin: 20px 0;
+  background: #fff;
+  border: 1px solid var(--color-border, #e0e0e0);
+  border-radius: 6px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.vor-history-summary {
+  padding: 12px 16px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-text, #222);
+  user-select: none;
+  background: #fafafa;
+  border-bottom: 1px solid transparent;
+}
+
+.vor-history-summary:hover { background: #f0f0f0; }
+
+.vor-history-section[open] .vor-history-summary {
+  border-bottom-color: var(--color-border, #e0e0e0);
+}
+
+.vor-history-section[open] > *:not(.vor-history-summary) {
+  padding: 12px 16px;
+}

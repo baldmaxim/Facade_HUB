@@ -1,33 +1,17 @@
-import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { useState } from 'react';
+import useSWR from 'swr';
+import { fetchPrompts, createPrompt, updatePrompt, deletePrompt } from '../api/prompts';
 import './PromptsPage.css';
 
 function PromptsPage() {
-  const [prompts, setPrompts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { data: prompts = [], isLoading: loading, mutate } = useSWR('prompts', fetchPrompts);
+
   const [showModal, setShowModal] = useState(false);
   const [editingPrompt, setEditingPrompt] = useState(null);
   const [formPurpose, setFormPurpose] = useState('');
   const [formPrompt, setFormPrompt] = useState('');
   const [saving, setSaving] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
-
-  // Загрузка промтов
-  useEffect(() => {
-    fetchPrompts();
-  }, []);
-
-  async function fetchPrompts() {
-    const { data, error } = await supabase
-      .from('prompts')
-      .select('*')
-      .order('id', { ascending: true });
-
-    if (!error && data) {
-      setPrompts(data);
-    }
-    setLoading(false);
-  }
 
   // Открыть модалку для добавления
   function openAddModal() {
@@ -58,50 +42,29 @@ function PromptsPage() {
     if (!formPurpose.trim() || !formPrompt.trim()) return;
 
     setSaving(true);
-
-    if (editingPrompt) {
-      // Обновление
-      const { error } = await supabase
-        .from('prompts')
-        .update({ purpose: formPurpose, prompt: formPrompt })
-        .eq('id', editingPrompt.id);
-
-      if (!error) {
-        setPrompts(prompts.map(p =>
-          p.id === editingPrompt.id
-            ? { ...p, purpose: formPurpose, prompt: formPrompt }
-            : p
-        ));
-        closeModal();
+    try {
+      if (editingPrompt) {
+        await updatePrompt(editingPrompt.id, { purpose: formPurpose, prompt: formPrompt });
+      } else {
+        await createPrompt({ purpose: formPurpose, prompt: formPrompt });
       }
-    } else {
-      // Добавление
-      const { data, error } = await supabase
-        .from('prompts')
-        .insert([{ purpose: formPurpose, prompt: formPrompt }])
-        .select()
-        .single();
-
-      if (!error && data) {
-        setPrompts([...prompts, data]);
-        closeModal();
-      }
+      await mutate();
+      closeModal();
+    } catch (err) {
+      console.error('Ошибка сохранения промта:', err);
+    } finally {
+      setSaving(false);
     }
-
-    setSaving(false);
   }
 
   // Удаление промта
   async function handleDelete(id) {
     if (!confirm('Удалить этот промт?')) return;
-
-    const { error } = await supabase
-      .from('prompts')
-      .delete()
-      .eq('id', id);
-
-    if (!error) {
-      setPrompts(prompts.filter(p => p.id !== id));
+    try {
+      await deletePrompt(id);
+      await mutate();
+    } catch (err) {
+      console.error('Ошибка удаления промта:', err);
     }
   }
 

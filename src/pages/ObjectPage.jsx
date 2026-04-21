@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { fetchObjectById, updateObject } from '../api/objects';
 import { fetchAllObjectStatuses } from '../api/objectStatus';
-import { supabase } from '../lib/supabase';
+import { uploadImage } from '../api/storage';
 import VorFillModal from '../components/VorFillModal';
 import './ObjectPage.css';
 
@@ -105,20 +105,7 @@ function ObjectPage() {
 
       // Загружаем новое изображение если выбрано
       if (editForm.image) {
-        const fileExt = editForm.image.name.split('.').pop();
-        const fileName = `${id}-${Date.now()}.${fileExt}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('object-images')
-          .upload(fileName, editForm.image);
-
-        if (uploadError) throw uploadError;
-
-        const { data: urlData } = supabase.storage
-          .from('object-images')
-          .getPublicUrl(fileName);
-
-        imageUrl = urlData.publicUrl;
+        imageUrl = await uploadImage(editForm.image);
       }
 
       // Обновляем объект через API

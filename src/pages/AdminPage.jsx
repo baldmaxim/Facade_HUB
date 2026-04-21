@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import { uploadImage } from '../api/storage';
 import './AdminPage.css';
 
 function AdminPage() {
@@ -502,24 +503,13 @@ function AdminPage() {
 
       // Upload photo if selected
       if (newTeamMember.photo) {
-        const fileExt = newTeamMember.photo.name.split('.').pop();
-        const fileName = `team/${Date.now()}.${fileExt}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('object-images')
-          .upload(fileName, newTeamMember.photo);
-
-        if (uploadError) {
+        try {
+          photoUrl = await uploadImage(newTeamMember.photo, 'team');
+        } catch (uploadError) {
           console.error('Ошибка загрузки фото:', uploadError);
           alert('Ошибка загрузки фото: ' + uploadError.message);
           throw uploadError;
         }
-
-        const { data: urlData } = supabase.storage
-          .from('object-images')
-          .getPublicUrl(fileName);
-
-        photoUrl = urlData.publicUrl;
       }
 
       const { error } = await supabase
@@ -559,24 +549,13 @@ function AdminPage() {
 
       // Upload new photo if selected
       if (editingTeamMember.photo) {
-        const fileExt = editingTeamMember.photo.name.split('.').pop();
-        const fileName = `team/${Date.now()}.${fileExt}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from('object-images')
-          .upload(fileName, editingTeamMember.photo);
-
-        if (uploadError) {
+        try {
+          photoUrl = await uploadImage(editingTeamMember.photo, 'team');
+        } catch (uploadError) {
           console.error('Ошибка загрузки фото:', uploadError);
           alert('Ошибка загрузки фото: ' + uploadError.message);
           throw uploadError;
         }
-
-        const { data: urlData } = supabase.storage
-          .from('object-images')
-          .getPublicUrl(fileName);
-
-        photoUrl = urlData.publicUrl;
       }
 
       const { error } = await supabase

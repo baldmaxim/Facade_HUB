@@ -3,8 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import { fetchObjectById } from '../api/objects';
 import { fetchVorRows, insertVorRows, deleteVorRows, updateVorRowField } from '../api/vor';
-import { fetchVorTemplates } from '../api/vorTemplates';
 import VorFillModal from '../components/VorFillModal';
+import VorHistoryList from '../components/VorHistoryList';
 import './VorPage.css';
 
 // ─── Парсер пустого ВОР заказчика ───────────────────────────────────
@@ -110,7 +110,6 @@ function VorPage() {
   const [importing, setImporting] = useState(false);
   const [importPreview, setImportPreview] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [filling, setFilling] = useState(false);
   const [error, setError] = useState(null);
   const [genStats, setGenStats] = useState(null);
   const [showFillModal, setShowFillModal] = useState(false);
@@ -181,100 +180,6 @@ function VorPage() {
     setError(null);
   }
 
-  // ─── Автозаполнение шаблонами ─────────────────────────────────
-  async function handleFillTemplates() {
-    const positions = rows.filter(r => r.row_type === 'position');
-    if (positions.length === 0) {
-      setError('Нет позиций для заполнения. Сначала импортируйте пустой ВОР.');
-      return;
-    }
-
-    // Проверяем, есть ли уже шаблонные строки
-    const hasTemplateRows = rows.some(r => r.row_type === 'work' || r.row_type === 'material');
-    if (hasTemplateRows) {
-      if (!confirm('Шаблонные строки уже есть. Удалить их и заполнить заново?')) return;
-    }
-
-    setFilling(true);
-    setError(null);
-
-    try {
-      const templates = await fetchVorTemplates();
-      if (templates.length === 0) {
-        setError('База шаблонов пуста. Загрузите шаблоны на странице "База шаблонов".');
-        setFilling(false);
-        return;
-      }
-
-      // Удаляем старые work/material строки, оставляем position
-      const existingWorkMat = rows.filter(r => r.row_type === 'work' || r.row_type === 'material');
-      if (existingWorkMat.length > 0) {
-        await deleteVorRows(id);
-        // Переимпортируем позиции
-        const positionsToInsert = positions.map(r => ({ ...r, object_id: id }));
-        const savedPositions = await insertVorRows(positionsToInsert);
-        positions.length = 0;
-        savedPositions.forEach(p => positions.push(p));
-      }
-
-      // Для каждой позиции — подбор шаблонов
-      const newRows = [];
-      let sortOrder = 1000; // начинаем после позиций
-
-      let matchedCount = 0;
-      let unmatchedPositions = [];
-
-      for (const pos of positions) {
-        const matched = findTemplatesForPosition(pos, templates);
-        if (matched.length === 0) {
-          unmatchedPositions.push(pos.name);
-          continue;
-        }
-
-        matchedCount++;
-        for (const tpl of matched) {
-          newRows.push({
-            object_id: id,
-            template_id: tpl.id,
-            section_name: pos.section_name || tpl.section_name,
-            row_type: tpl.row_type,
-            point_number: tpl.point_number || '',
-            category: tpl.category || '',
-            has_item: tpl.row_type === 'material',
-            row_kind: tpl.row_kind || '',
-            name: tpl.name,
-            unit: tpl.unit || '',
-            norm: tpl.norm,
-            coefficient: tpl.coefficient || 1,
-            in_price: tpl.in_price !== false,
-            volume: pos.qty_gp || pos.qty_customer || null,
-            work_price: null,
-            material_price: null,
-            sort_order: sortOrder++
-          });
-        }
-      }
-
-      if (newRows.length > 0) {
-        const saved = await insertVorRows(newRows);
-        // Перезагружаем все строки
-        const allRows = await fetchVorRows(id);
-        setRows(allRows);
-      }
-
-      let msg = `Заполнено: ${matchedCount} из ${positions.length} позиций, вставлено ${newRows.length} строк.`;
-      if (unmatchedPositions.length > 0) {
-        msg += ` Не найдены шаблоны для: ${unmatchedPositions.slice(0, 3).map(n => n.slice(0, 40)).join(', ')}`;
-        if (unmatchedPositions.length > 3) msg += ` и ещё ${unmatchedPositions.length - 3}`;
-      }
-      alert(msg);
-    } catch (err) {
-      setError('Ошибка заполнения: ' + err.message);
-    } finally {
-      setFilling(false);
-    }
-  }
-
   // ─── Редактирование ячеек ─────────────────────────────────────
   function handleFieldChange(rowId, field, value) {
     setRows(prev => prev.map(r => r.id === rowId ? { ...r, [field]: value } : r));
@@ -339,24 +244,6 @@ function VorPage() {
             <Link to="/vor-templates" className="vor-btn-secondary">
               База шаблонов
             </Link>
-            {positionCount > 0 && workCount === 0 && !importPreview && (
-              <button
-                className="vor-btn-fill"
-                onClick={handleFillTemplates}
-                disabled={filling}
-              >
-                {filling ? 'Заполнение...' : 'Заполнить шаблонами'}
-              </button>
-            )}
-            {positionCount > 0 && workCount > 0 && !importPreview && (
-              <button
-                className="vor-btn-secondary"
-                onClick={handleFillTemplates}
-                disabled={filling}
-              >
-                {filling ? 'Заполнение...' : 'Перезаполнить'}
-              </button>
-            )}
             <button
               className="vor-btn-fill"
               onClick={() => setShowFillModal(true)}
@@ -412,6 +299,11 @@ function VorPage() {
             </div>
           </div>
         )}
+
+        <details className="vor-history-section">
+          <summary className="vor-history-summary">История скачиваний ВОРа</summary>
+          <VorHistoryList objectId={id} />
+        </details>
 
         {displayRows.length === 0 ? (
           <div className="vor-empty">

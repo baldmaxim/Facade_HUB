@@ -4,6 +4,8 @@ import { matchPositionDetailed, isHeader } from '../lib/vorMatcher';
 import { loadWorkPrices } from '../lib/vorPriceLoader';
 import { fetchWorkPrices, saveWorkPrices, countWorkPrices, entriesToPriceMap } from '../api/vorPrices';
 import { fetchCustomTemplates, customTemplatesToMap, customTemplatesToRules } from '../api/vorCustomTemplates';
+import { saveVorHistory } from '../api/vorHistory';
+import { mutate as swrMutate } from 'swr';
 import './VorFillModal.css';
 
 const TPL_NAMES = {
@@ -202,8 +204,13 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
       const result = generateFilledVor(parsed, { priceAllWithQty: donstroy, workPrices, overrides, customTemplates, customRules });
       const baseName = (objectName || 'ВОР').replace(/[<>:"/\\|?*]+/g, '');
       const suffix   = donstroy ? '_Донстрой' : '';
-      downloadBlob(result.blob, `${baseName}${suffix}_расценённый.xlsx`);
+      const fileName = `${baseName}${suffix}_расценённый.xlsx`;
+      downloadBlob(result.blob, fileName);
       setStats(result.stats);
+      // Сохраняем в историю (не блокирует скачивание если упало)
+      saveVorHistory(objectId, result.blob, fileName, result.stats)
+        .then(() => swrMutate(['vor-history', objectId]))
+        .catch(err => console.error('Не удалось сохранить в историю:', err));
     } catch (err) {
       setError('Ошибка: ' + err.message);
     } finally {

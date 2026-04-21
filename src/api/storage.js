@@ -1,18 +1,25 @@
 import { supabase } from '../lib/supabase';
 
-export async function uploadObjectImage(file) {
+const BUCKET = 'object-images';
+
+// Универсальная загрузка картинки. folder — опциональный префикс пути (например "team").
+export async function uploadImage(file, folder = '') {
   const fileExt = file.name.split('.').pop();
-  const fileName = `${Date.now()}.${fileExt}`;
+  const name = `${Date.now()}.${fileExt}`;
+  const fileName = folder ? `${folder}/${name}` : name;
 
   const { error } = await supabase.storage
-    .from('object-images')
+    .from(BUCKET)
     .upload(fileName, file);
-
   if (error) throw error;
 
   const { data: { publicUrl } } = supabase.storage
-    .from('object-images')
+    .from(BUCKET)
     .getPublicUrl(fileName);
 
   return publicUrl;
+}
+
+export async function uploadObjectImage(file) {
+  return uploadImage(file);
 }
