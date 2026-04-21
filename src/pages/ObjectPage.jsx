@@ -4,6 +4,7 @@ import { fetchObjectById, updateObject } from '../api/objects';
 import { fetchAllObjectStatuses } from '../api/objectStatus';
 import { uploadImage } from '../api/storage';
 import VorFillModal from '../components/VorFillModal';
+import VorHistoryList from '../components/VorHistoryList';
 import './ObjectPage.css';
 
 function ObjectPage() {
@@ -283,6 +284,11 @@ function ObjectPage() {
               </div>
             )}
           </div>
+
+          <details className="vor-history-section">
+            <summary className="vor-history-summary">История скачиваний ВОРа</summary>
+            <VorHistoryList objectId={id} />
+          </details>
 
           <div className="profile-actions">
             <Link to="/objects" className="action-btn secondary">
