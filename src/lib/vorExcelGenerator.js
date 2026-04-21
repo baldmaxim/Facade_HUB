@@ -160,9 +160,13 @@ export function generateFilledVor(parsed, options = {}) {
     }
   }
 
-  // Убираем secondary шаблоны, но если ВСЕ шаблоны попадают под исключение — оставляем
-  function filterExcluded(tplKeys) {
+  // Убираем secondary шаблоны, но если ВСЕ шаблоны попадают под исключение — оставляем.
+  // Если позиция явно упоминает утепление — insulation не убираем.
+  function filterExcluded(tplKeys, posName = '') {
     if (excludeFromSecondary.size === 0) return tplKeys;
+    if (excludeFromSecondary.has('insulation') && /утеплен|утеплит/i.test(posName)) {
+      return tplKeys;
+    }
     const filtered = tplKeys.filter(k => !excludeFromSecondary.has(k));
     return filtered.length > 0 ? filtered : tplKeys;
   }
@@ -250,7 +254,7 @@ export function generateFilledVor(parsed, options = {}) {
     const posInfos = sectionHasAux ? section.positions.map(p => ({
       role: classifyRowRole(p.name),
       tplKeys: isHeader(p, allPositions, hdrOpts) ? [] :
-        filterExcluded(matchPosition(p.name, p.noteCustomer)),
+        filterExcluded(matchPosition(p.name, p.noteCustomer), p.name),
     })) : [];
 
     // Post-process: material rows after a wet_facade_insulation work inherit it
@@ -415,7 +419,7 @@ export function generateFilledVor(parsed, options = {}) {
         }
 
         // role === 'work' или 'material' — матчим
-        let tplKeys = filterExcluded(matchPosition(pos.name, pos.noteCustomer));
+        let tplKeys = filterExcluded(matchPosition(pos.name, pos.noteCustomer), pos.name);
         // Если в кластере уже wet_facade_insulation, 'insulation' (НВФ) заменяем на него
         if (clusterTemplates.includes('wet_facade_insulation')) {
           tplKeys = tplKeys.map(k => k === 'insulation' ? 'wet_facade_insulation' : k);
@@ -557,7 +561,7 @@ export function generateFilledVor(parsed, options = {}) {
 
       // ─── simple режим (Сокольники — существующая логика) ─────────
       // Матчинг — убираем шаблоны, у которых есть отдельные позиции
-      let tplKeys = filterExcluded(matchPosition(pos.name, pos.noteCustomer));
+      let tplKeys = filterExcluded(matchPosition(pos.name, pos.noteCustomer), pos.name);
       if (tplKeys.length === 0) {
         unmatched.push(pos.name.slice(0, 60));
         continue;

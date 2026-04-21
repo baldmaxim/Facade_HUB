@@ -296,6 +296,14 @@ export const TEMPLATES = {
       { name: 'Профиль дверной алюминиевый (по проекту)', unit: 'м2', kind: 'основн.', j: 1, k: 1.1 },
     ],
   },
+  pvh_profile: {
+    costPath: 'ФАСАДНЫЕ РАБОТЫ / Профиль ПВХ / Здание',
+    works: [{ name: 'Монтаж ПВХ окон', unit: 'м2' }],
+    materials: [
+      { name: 'Расходные материалы для ПВХ', unit: 'м2', kind: 'вспомогат.', j: 1, k: 1.1 },
+      { name: 'Профиль ПВХ (по проекту)', unit: 'м2', kind: 'основн.', j: 1, k: 1.1 },
+    ],
+  },
   spk_hardware: {
     costPath: 'ФАСАДНЫЕ РАБОТЫ / Фурнитура / Здание',
     works: [],
@@ -464,6 +472,13 @@ const MATCH_RULES = [
 
   // Тамбура — отдельный costPath (ВЫШЕ стоечно-ригельн)
   { keywords: ['тамбур'],
+    templates: ['spk_profile', 'doors_tambour', 'spk_glass', 'spk_broneplenka'], secondary: ['scaffolding', 'kmd_spk'] },
+  // ПВХ окна — ВЫШЕ дверных правил (чтобы "блоки балконные дверные из ПВХ" не уходили в двери)
+  { keywords: ['пвх', 'pvh', 'brusbox', 'остеклени.*лоджи', 'остеклени.*балкон', 'профил.*пвх', 'пвх.*профил'],
+    templates: ['pvh_profile', 'spk_glass', 'spk_broneplenka'], secondary: ['scaffolding', 'kmd_spk'] },
+
+  // Внутренние двери = тамбурные (ВЫШЕ входных)
+  { keywords: ['двер.*внутренн', 'внутренн.*двер'],
     templates: ['spk_profile', 'doors_tambour', 'spk_glass', 'spk_broneplenka'], secondary: ['scaffolding', 'kmd_spk'] },
   // Двери входные (витражные, БКФН) — ВЫШЕ стоечно-ригельн
   { keywords: ['двер.*входн', 'входн.*двер', 'БКФН', 'бкфн', 'двер.*витражн', 'витражн.*двер'],
@@ -638,7 +653,7 @@ export function isHeader(pos, allPositions = null, options = {}) {
 export function matchPosition(positionName, noteCustomer = '') {
   const searchText = (positionName + ' ' + (noteCustomer || '')).toLowerCase();
   // Маркер "без утепления/утеплителя" — исключаем insulation из результата
-  const skipInsulation = /без\s+утепл/i.test(searchText);
+  const skipInsulation = /без\s+утепл|декоратив/i.test(searchText);
   const matched = [];
   const seen = new Set();
 
