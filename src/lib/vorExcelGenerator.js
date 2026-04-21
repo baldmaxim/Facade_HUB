@@ -219,6 +219,16 @@ export function generateFilledVor(parsed, options = {}) {
       { work: works[works.length - 1], materials: mats },
     ];
   }
+  // Плоский список работ / материалов. Единый источник истины —
+  // workMaterials если есть, иначе works/materials (старый формат).
+  function tplWorks(tpl) {
+    if (tpl.workMaterials) return tpl.workMaterials.map(wm => wm.work).filter(Boolean);
+    return tpl.works || [];
+  }
+  function tplMaterials(tpl) {
+    if (tpl.workMaterials) return tpl.workMaterials.flatMap(wm => wm.materials);
+    return tpl.materials || [];
+  }
 
   function getTemplate(key, posName, posNote, clusterThickness) {
     if (key === 'insulation') {
@@ -382,8 +392,9 @@ export function generateFilledVor(parsed, options = {}) {
           const firstTpl = firstTplKey === 'insulation'
             ? adjustInsulationTemplate(clusterInsulationThickness)
             : TEMPLATES[firstTplKey];
-          if (firstTpl && firstTpl.works.length > 0) {
-            const w = firstTpl.works[0];
+          const firstTplWorks = firstTpl ? tplWorks(firstTpl) : [];
+          if (firstTpl && firstTplWorks.length > 0) {
+            const w = firstTplWorks[0];
             const wd = new Array(NC).fill('');
             wd[2] = firstTpl.costPath;
             wd[4] = 'суб-раб';
@@ -407,7 +418,7 @@ export function generateFilledVor(parsed, options = {}) {
               ? adjustInsulationTemplate(clusterInsulationThickness)
               : TEMPLATES[key];
             if (!tpl) continue;
-            for (const m of tpl.materials) {
+            for (const m of tplMaterials(tpl)) {
               if (m.kind !== 'вспомогат.') continue;
               if (seen.has(m.name)) continue;
               seen.add(m.name);
@@ -511,7 +522,7 @@ export function generateFilledVor(parsed, options = {}) {
           for (const key of tplKeys) {
             const tpl = getTemplate(key, pos.name, pos.noteCustomer, posInfos[posIdx] && posInfos[posIdx].insulationThickness);
             if (!tpl) continue;
-            for (const w of tpl.works) {
+            for (const w of tplWorks(tpl)) {
               const wd = new Array(NC).fill('');
               wd[2] = tpl.costPath;
               wd[4] = 'суб-раб';
@@ -535,8 +546,9 @@ export function generateFilledVor(parsed, options = {}) {
             if (!tpl) continue;
 
             // Пустая работа для привязки
-            if (tpl.works.length > 0) {
-              const w = tpl.works[0];
+            const tplW = tplWorks(tpl);
+            if (tplW.length > 0) {
+              const w = tplW[0];
               const wd = new Array(NC).fill('');
               wd[2] = tpl.costPath;
               wd[4] = 'суб-раб';
@@ -554,7 +566,7 @@ export function generateFilledVor(parsed, options = {}) {
             }
 
             // Только основные материалы
-            for (const m of tpl.materials) {
+            for (const m of tplMaterials(tpl)) {
               if (m.kind !== 'основн.') continue;
               const md = new Array(NC).fill('');
               md[2] = tpl.costPath;
