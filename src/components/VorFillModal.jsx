@@ -59,6 +59,8 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
   const [busy, setBusy]             = useState(false);
   const [error, setError]           = useState(null);
   const [stats, setStats]           = useState(null);
+  const [overrides, setOverrides]   = useState(new Map()); // Map<positionRef, string[]>
+  const [editingKey, setEditingKey] = useState(null);      // 'sectionIdx:posIdx' или null
 
   const vorInputRef    = useRef(null);
   const pricesInputRef = useRef(null);
@@ -85,6 +87,8 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
     setParsedVor(null);
     setStats(null);
     setError(null);
+    setOverrides(new Map());
+    setEditingKey(null);
     if (!file) return;
     setBusy(true);
     try {
@@ -102,23 +106,52 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
     }
   }
 
-  // Матчинг-превью — вычисляется из parsedVor + donstroy (синхронно)
+  // Матчинг-превью — вычисляется из parsedVor + donstroy + overrides (синхронно)
   let matchPreview = null;
   if (parsedVor) {
     const hdrOpts     = { priceAllWithQty: donstroy };
     const allPositions = parsedVor.sections.flatMap(s => s.positions);
     let matched = 0, unmatched = 0;
 
-    const sections = parsedVor.sections.map(section => ({
+    const sections = parsedVor.sections.map((section, sectionIdx) => ({
       name: section.name,
-      rows: section.positions.map(pos => {
+      rows: section.positions.map((pos, posIdx) => {
         const hdr = isHeader(pos, allPositions, hdrOpts);
-        const detail = hdr ? { templates: [], keyword: null } : matchPositionDetailed(pos.name, pos.noteCustomer || '');
-        if (!hdr) { detail.templates.length > 0 ? matched++ : unmatched++; }
-        return { code: pos.code, name: pos.name, templates: detail.templates, keyword: detail.keyword, isHeader: hdr };
+        const autoMatch = hdr ? { templates: [], keyword: null } : matchPositionDetailed(pos.name, pos.noteCustomer || '');
+        const override  = overrides.get(pos);
+        const templates = override !== undefined ? override : autoMatch.templates;
+        if (!hdr) { templates.length > 0 ? matched++ : unmatched++; }
+        return {
+          pos,
+          rowKey: `${sectionIdx}:${posIdx}`,
+          code: pos.code,
+          name: pos.name,
+          templates,
+          keyword: autoMatch.keyword,
+          isHeader: hdr,
+          isOverridden: override !== undefined,
+        };
       }),
     }));
     matchPreview = { sections, matched, unmatched, total: matched + unmatched };
+  }
+
+  function toggleOverrideTpl(pos, key) {
+    setOverrides(prev => {
+      const next = new Map(prev);
+      const cur = next.get(pos) || [];
+      const idx = cur.indexOf(key);
+      const updated = idx >= 0 ? cur.filter(k => k !== key) : [...cur, key];
+      next.set(pos, updated);
+      return next;
+    });
+  }
+  function resetOverride(pos) {
+    setOverrides(prev => {
+      const next = new Map(prev);
+      next.delete(pos);
+      return next;
+    });
   }
 
   async function handleGenerate() {
@@ -157,7 +190,7 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
         setSavedCount(newCount);
       }
 
-      const result = generateFilledVor(parsed, { priceAllWithQty: donstroy, workPrices });
+      const result = generateFilledVor(parsed, { priceAllWithQty: donstroy, workPrices, overrides });
       const baseName = (objectName || 'ВОР').replace(/[<>:"/\\|?*]+/g, '');
       const suffix   = donstroy ? '_Донстрой' : '';
       downloadBlob(result.blob, `${baseName}${suffix}_расценённый.xlsx`);
@@ -240,12 +273,13 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
                         <tr key={`sec-${section.name}`} className="vfm-sec-row">
                           <td colSpan={3}>{section.name}</td>
                         </tr>
-                        {section.rows.map((row, i) => (
+                        {section.rows.map((row) => (
                           <tr
-                            key={`${section.name}-${i}`}
+                            key={row.rowKey}
                             className={
                               row.isHeader ? 'vfm-pos-header' :
                               row.templates.length === 0 ? 'vfm-pos-unmatched' :
+                              row.isOverridden ? 'vfm-pos-override' :
                               'vfm-pos-matched'
                             }
                           >
@@ -262,15 +296,56 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
                                 <span
                                   key={t}
                                   className={`vfm-chip ${SECONDARY.has(t) ? 'vfm-chip-sec' : 'vfm-chip-main'}`}
-                                  title={row.keyword ? `Правило: ${row.keyword}` : ''}
+                                  title={row.isOverridden ? 'Ручной override' : (row.keyword ? `Правило: ${row.keyword}` : '')}
                                 >
                                   {tplLabel(t)}
                                 </span>
                               ))}
-                              {row.keyword && row.templates.length > 0 && (
+                              {row.keyword && row.templates.length > 0 && !row.isOverridden && (
                                 <span className="vfm-rule-hint" title={`Сработало правило: ${row.keyword}`}>
                                   ⓘ
                                 </span>
+                              )}
+                              {row.isOverridden && (
+                                <span className="vfm-override-badge" title="Ручной выбор шаблонов">✎</span>
+                              )}
+                              {!row.isHeader && (
+                                <button
+                                  type="button"
+                                  className="vfm-edit-btn"
+                                  onClick={() => setEditingKey(editingKey === row.rowKey ? null : row.rowKey)}
+                                  title="Изменить шаблоны"
+                                >
+                                  ✏
+                                </button>
+                              )}
+                              {editingKey === row.rowKey && (
+                                <div className="vfm-edit-popup" onClick={e => e.stopPropagation()}>
+                                  <div className="vfm-edit-popup-header">
+                                    <span>Выбери шаблоны</span>
+                                    <button type="button" className="vfm-edit-close" onClick={() => setEditingKey(null)}>×</button>
+                                  </div>
+                                  <div className="vfm-edit-popup-list">
+                                    {Object.keys(TPL_NAMES).sort((a, b) => tplLabel(a).localeCompare(tplLabel(b), 'ru')).map(k => (
+                                      <label key={k} className="vfm-edit-row">
+                                        <input
+                                          type="checkbox"
+                                          checked={row.templates.includes(k)}
+                                          onChange={() => toggleOverrideTpl(row.pos, k)}
+                                        />
+                                        <span className={SECONDARY.has(k) ? 'vfm-edit-sec' : ''}>{tplLabel(k)}</span>
+                                      </label>
+                                    ))}
+                                  </div>
+                                  <div className="vfm-edit-popup-footer">
+                                    {row.isOverridden && (
+                                      <button type="button" className="vfm-btn-secondary vfm-edit-reset" onClick={() => { resetOverride(row.pos); setEditingKey(null); }}>
+                                        Сбросить к авто
+                                      </button>
+                                    )}
+                                    <button type="button" className="vfm-btn-primary" onClick={() => setEditingKey(null)}>Готово</button>
+                                  </div>
+                                </div>
                               )}
                             </td>
                           </tr>

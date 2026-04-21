@@ -106,11 +106,18 @@ export function generateFilledVor(parsed, options = {}) {
   const { sections } = parsed;
   const hdrOpts = { priceAllWithQty: options.priceAllWithQty === true };
   const workPrices = options.workPrices || null; // Map<tplKey, Array<{name, price}>>
+  const overrides = options.overrides || null;   // Map<positionObject, string[]> — ручной override шаблонов
   let totalWorkPricesFilled = 0;
   const ws = {};
   let R = 0; // текущая строка
   const merges = [];
   const NC = 20; // число колонок
+
+  // Резолвим шаблоны: сначала override, потом стандартный matchPosition
+  function matchPos(pos) {
+    if (overrides && overrides.has(pos)) return overrides.get(pos);
+    return matchPosition(pos.name, pos.noteCustomer || '');
+  }
 
   // ─── Заголовок ──────────────────────────────────────────────────
   for (let c = 0; c < NC; c++) {
@@ -153,7 +160,7 @@ export function generateFilledVor(parsed, options = {}) {
   // Если есть отдельная позиция утеплителя (только insulation, без НВФ-облицовки) —
   // не добавлять insulation как вторичный шаблон к другим позициям
   for (const p of allPositions) {
-    const keys = matchPosition(p.name, p.noteCustomer || '');
+    const keys = matchPos(p);
     if (keys.length === 1 && keys[0] === 'insulation') {
       excludeFromSecondary.add('insulation');
       break;
@@ -254,7 +261,7 @@ export function generateFilledVor(parsed, options = {}) {
     const posInfos = sectionHasAux ? section.positions.map(p => ({
       role: classifyRowRole(p.name),
       tplKeys: isHeader(p, allPositions, hdrOpts) ? [] :
-        filterExcluded(matchPosition(p.name, p.noteCustomer), p.name),
+        filterExcluded(matchPos(p), p.name),
     })) : [];
 
     // Post-process: material rows after a wet_facade_insulation work inherit it
@@ -429,7 +436,7 @@ export function generateFilledVor(parsed, options = {}) {
         }
 
         // role === 'work' или 'material' — матчим
-        let tplKeys = filterExcluded(matchPosition(pos.name, pos.noteCustomer), pos.name);
+        let tplKeys = filterExcluded(matchPos(pos), pos.name);
         // Если в кластере уже wet_facade_insulation, 'insulation' (НВФ) заменяем на него
         if (clusterTemplates.includes('wet_facade_insulation')) {
           tplKeys = tplKeys.map(k => k === 'insulation' ? 'wet_facade_insulation' : k);

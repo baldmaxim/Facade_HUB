@@ -242,3 +242,94 @@
   opacity: 0.7;
 }
 .vfm-rule-hint:hover { opacity: 1; color: #1e40af; }
+
+/* Кнопка редактирования и попап оверрайда */
+.vfm-edit-btn {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 0 4px;
+  font-size: 11px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: #999;
+  cursor: pointer;
+  border-radius: 3px;
+  line-height: 1.4;
+}
+.vfm-edit-btn:hover {
+  background: #f0f0f0;
+  color: #1e40af;
+  border-color: #ddd;
+}
+
+.vfm-override-badge {
+  display: inline-block;
+  margin-left: 2px;
+  color: #7a3fc0;
+  font-size: 11px;
+  font-weight: 700;
+}
+.vfm-pos-override td { background: #faf5ff; }
+
+.vfm-edit-popup {
+  position: absolute;
+  right: 12px;
+  z-index: 100;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  width: 280px;
+  max-height: 360px;
+  display: flex;
+  flex-direction: column;
+}
+.vfm-edit-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--color-border, #eee);
+  font-size: 12px;
+  font-weight: 600;
+}
+.vfm-edit-close {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #888;
+  padding: 0 4px;
+  line-height: 1;
+}
+.vfm-edit-close:hover { color: #333; }
+
+.vfm-edit-popup-list {
+  overflow-y: auto;
+  flex: 1;
+  padding: 6px 10px;
+}
+.vfm-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+  font-size: 12px;
+  cursor: pointer;
+}
+.vfm-edit-row:hover { background: #f5f5f5; }
+.vfm-edit-row input { margin: 0; }
+.vfm-edit-sec { color: #777; font-style: italic; }
+
+.vfm-edit-popup-footer {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  padding: 8px 10px;
+  border-top: 1px solid var(--color-border, #eee);
+}
+.vfm-edit-popup-footer button { padding: 4px 10px; font-size: 12px; }
+.vfm-edit-reset { margin-right: auto; }
+
+/* Делаем ячейку относительной, чтобы попап позиционировался */
+.col-ptpl { position: relative; }
