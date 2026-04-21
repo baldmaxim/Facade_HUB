@@ -714,6 +714,38 @@ export function matchPosition(positionName, noteCustomer = '') {
 }
 
 /**
+ * Как matchPosition, но дополнительно возвращает сработавшее правило (индекс + ключевое слово).
+ * Используется для отладки и отображения источника матчинга в UI.
+ */
+export function matchPositionDetailed(positionName, noteCustomer = '') {
+  const searchText = (positionName + ' ' + (noteCustomer || '')).toLowerCase();
+  const skipInsulation = /без\s+утепл|декоратив/i.test(searchText);
+
+  for (let i = 0; i < MATCH_RULES.length; i++) {
+    const rule = MATCH_RULES[i];
+    if (skipInsulation && rule.templates.length === 1 && rule.templates[0] === 'insulation') continue;
+    const matchedKeyword = rule.keywords.find(kw => {
+      if (kw.includes('.*') || kw.includes('[')) return new RegExp(kw, 'i').test(searchText);
+      return searchText.includes(kw);
+    });
+    if (matchedKeyword) {
+      const templates = [];
+      const seen = new Set();
+      for (const t of rule.templates) {
+        if (skipInsulation && t === 'insulation') continue;
+        if (!seen.has(t)) { templates.push(t); seen.add(t); }
+      }
+      for (const t of rule.secondary) {
+        if (skipInsulation && t === 'insulation') continue;
+        if (!seen.has(t)) { templates.push(t); seen.add(t); }
+      }
+      return { templates, ruleIndex: i, keyword: matchedKeyword };
+    }
+  }
+  return { templates: [], ruleIndex: -1, keyword: null };
+}
+
+/**
  * Определяет стиль ВОР: simple (Сокольники) или split-3 (Муза).
  * Сканирует все названия позиций. Если есть "прочие материалы" / "вспомогательные материалы" → split-3.
  */

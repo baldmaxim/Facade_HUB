@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { parseEmptyVor, generateFilledVor, downloadBlob } from '../lib/vorExcelGenerator';
-import { matchPosition, isHeader } from '../lib/vorMatcher';
+import { matchPositionDetailed, isHeader } from '../lib/vorMatcher';
 import { loadWorkPrices } from '../lib/vorPriceLoader';
 import { fetchWorkPrices, saveWorkPrices, countWorkPrices, entriesToPriceMap } from '../api/vorPrices';
 import './VorFillModal.css';
@@ -113,9 +113,9 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
       name: section.name,
       rows: section.positions.map(pos => {
         const hdr = isHeader(pos, allPositions, hdrOpts);
-        const templates = hdr ? [] : matchPosition(pos.name, pos.noteCustomer || '');
-        if (!hdr) { templates.length > 0 ? matched++ : unmatched++; }
-        return { code: pos.code, name: pos.name, templates, isHeader: hdr };
+        const detail = hdr ? { templates: [], keyword: null } : matchPositionDetailed(pos.name, pos.noteCustomer || '');
+        if (!hdr) { detail.templates.length > 0 ? matched++ : unmatched++; }
+        return { code: pos.code, name: pos.name, templates: detail.templates, keyword: detail.keyword, isHeader: hdr };
       }),
     }));
     matchPreview = { sections, matched, unmatched, total: matched + unmatched };
@@ -262,10 +262,16 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
                                 <span
                                   key={t}
                                   className={`vfm-chip ${SECONDARY.has(t) ? 'vfm-chip-sec' : 'vfm-chip-main'}`}
+                                  title={row.keyword ? `Правило: ${row.keyword}` : ''}
                                 >
                                   {tplLabel(t)}
                                 </span>
                               ))}
+                              {row.keyword && row.templates.length > 0 && (
+                                <span className="vfm-rule-hint" title={`Сработало правило: ${row.keyword}`}>
+                                  ⓘ
+                                </span>
+                              )}
                             </td>
                           </tr>
                         ))}
