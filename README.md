@@ -11,9 +11,11 @@
 5. Основные материалы идут без цены (прайсинг позже из КП), вспомогательные — с заполненной ценой
 
 ```
-src/lib/vorMatcher.js         → шаблоны фасадных работ + правила матчинга
-src/lib/vorExcelGenerator.js  → парсинг и генерация Excel
-src/pages/VorPage.jsx         → UI
+src/lib/vorMatcher.js               → шаблоны фасадных работ + правила матчинга
+src/lib/vorExcelGenerator.js        → парсинг и генерация Excel
+src/components/VorFillModal.jsx     → модалка заполнения (матчинг-превью + AI-ревью)
+src/pages/VorPage.jsx               → UI
+supabase/functions/vor-review/      → Edge Function, AI-ревью подбора (Gemini 2.5 Flash)
 ```
 
 ---
@@ -143,6 +145,29 @@ node test_sobytie.mjs      # Событие 6.2 → test_output_sobytie.xlsx
 node diff_sobytie.mjs      # сравнение с правильным файлом
 node test_muza.mjs         # Муза
 node test_sokolniki.mjs    # Сокольники
+```
+
+---
+
+## AI-ревью подбора шаблонов
+
+После матчинга в модалке «Заполнение ВОРа» можно нажать **«Проверить подбор AI»** — второй проход через Gemini 2.5 Flash. Для каждой распознанной позиции модель возвращает:
+
+- **Вердикт** — `green` (верно) / `yellow` (сомнительно) / `red` (не то)
+- **Процент уверенности** (0–100)
+- **Комментарий** на русском, одно-два предложения
+
+В превью результат виден кружком цвета вердикта и процентом рядом. При скачивании Excel добавляется 21-я колонка **«Проверка АИ»** формата `🟢 95% — комментарий` (только если ревью запускали).
+
+**Как устроено:**
+- Supabase Edge Function `vor-review` (`supabase/functions/vor-review/index.ts`)
+- Модель: `google/gemini-2.5-flash` через OpenRouter
+- Секрет функции: `OPENROUTER_API_KEY` (настраивается в Dashboard → Edge Functions → Secrets)
+- В system-prompt встроены каталог шаблонов, 11 ключевых правил и 14 эталонных примеров из `sobytie_correct.txt`, `sokolniki_comparison.txt`, `muza_final_comparison.txt` — in-context обучение на наших реальных ВОР
+
+**Деплой функции:**
+```bash
+supabase functions deploy vor-review --project-ref <project-ref>
 ```
 
 ---

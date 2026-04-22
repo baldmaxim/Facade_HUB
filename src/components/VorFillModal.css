@@ -333,3 +333,61 @@
 
 /* Делаем ячейку относительной, чтобы попап позиционировался */
 .col-ptpl { position: relative; }
+
+/* ─── AI-ревью ─────────────────────────────────────────────────── */
+.vfm-review-btn {
+  margin-left: auto;
+  padding: 4px 12px;
+  border-radius: 4px;
+  border: 1px solid #7a3fc0;
+  background: #fff;
+  color: #7a3fc0;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.vfm-review-btn:hover:not(:disabled) { background: #faf5ff; }
+.vfm-review-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.vfm-review-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  border-top: 1px solid var(--color-border, #eee);
+}
+.vfm-review-banner-running { background: #f5f0ff; color: #5a2a9c; }
+.vfm-review-banner-done    { background: #f0f7f0; color: #2c6e2c; }
+.vfm-review-banner-err     { background: #fee; color: #c33; }
+
+.vfm-review-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid #d5c2f0;
+  border-top-color: #7a3fc0;
+  border-radius: 50%;
+  animation: vfm-spin 0.8s linear infinite;
+  display: inline-block;
+}
+@keyframes vfm-spin {
+  to { transform: rotate(360deg); }
+}
+
+.vfm-verdict-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 4px;
+  font-size: 11px;
+  line-height: 1;
+  cursor: help;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.vfm-verdict-dot { font-size: 14px; }
+.vfm-verdict-pct { font-weight: 600; font-size: 10px; opacity: 0.85; }
+.vfm-verdict-green  { color: #2c9c2c; }
+.vfm-verdict-yellow { color: #d4a500; }
+.vfm-verdict-red    { color: #d03030; }

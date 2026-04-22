@@ -6,6 +6,7 @@ import { fetchWorkPrices, saveWorkPrices, countWorkPrices, entriesToPriceMap } f
 import { fetchCustomTemplates, customTemplatesToMap, customTemplatesToRules } from '../api/vorCustomTemplates';
 import { saveVorHistory } from '../api/vorHistory';
 import { mutate as swrMutate } from 'swr';
+import { supabase } from '../lib/supabase';
 import './VorFillModal.css';
 
 const TPL_NAMES = {
@@ -66,6 +67,10 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
   const [editingKey, setEditingKey] = useState(null);      // 'sectionIdx:posIdx' или null
   const [customTemplates, setCustomTemplates] = useState({});   // map key→tpl
   const [customRules, setCustomRules]         = useState([]);   // fallback-правила
+  const [reviews, setReviews]                 = useState(new Map()); // Map<pos, {verdict, comment}>
+  const [reviewing, setReviewing]             = useState(false);
+  const [reviewProgress, setReviewProgress]   = useState({ done: 0, total: 0 });
+  const [reviewError, setReviewError]         = useState(null);
 
   const vorInputRef    = useRef(null);
   const pricesInputRef = useRef(null);
@@ -99,6 +104,9 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
     setError(null);
     setOverrides(new Map());
     setEditingKey(null);
+    setReviews(new Map());
+    setReviewError(null);
+    setReviewProgress({ done: 0, total: 0 });
     if (!file) return;
     setBusy(true);
     try {
@@ -147,10 +155,12 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
     matchPreview = { sections, matched, unmatched, total: matched + unmatched };
   }
 
-  function toggleOverrideTpl(pos, key) {
+  function toggleOverrideTpl(pos, key, currentTemplates) {
     setOverrides(prev => {
       const next = new Map(prev);
-      const cur = next.get(pos) || [];
+      // Если override ещё не заводили — стартуем от текущего (авто) набора,
+      // чтобы первый же клик по галке не сбросил подобранные движком шаблоны.
+      const cur = next.has(pos) ? next.get(pos) : [...(currentTemplates || [])];
       const idx = cur.indexOf(key);
       const updated = idx >= 0 ? cur.filter(k => k !== key) : [...cur, key];
       next.set(pos, updated);
@@ -163,6 +173,57 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
       next.delete(pos);
       return next;
     });
+  }
+
+  async function handleReviewAll() {
+    if (!matchPreview) return;
+    // Собираем позиции к ревью: не заголовок + есть хоть один шаблон
+    const targets = [];
+    for (const section of matchPreview.sections) {
+      for (const row of section.rows) {
+        if (row.isHeader) continue;
+        if (!row.templates || row.templates.length === 0) continue;
+        targets.push({ pos: row.pos, tplKeys: [...row.templates], posCode: row.code || '' });
+      }
+    }
+    if (targets.length === 0) {
+      setReviewError('Нет позиций для ревью');
+      return;
+    }
+    setReviewing(true);
+    setReviewError(null);
+    setReviewProgress({ done: 0, total: targets.length });
+    setReviews(new Map());
+
+    const results = new Map();
+    for (let i = 0; i < targets.length; i++) {
+      const { pos, tplKeys, posCode } = targets[i];
+      try {
+        const { data, error } = await supabase.functions.invoke('vor-review', {
+          body: {
+            noteCustomer: pos.noteCustomer || pos.name || '',
+            tplKeys,
+            posCode,
+          },
+        });
+        if (error) {
+          results.set(pos, { verdict: 'yellow', confidence: 0, comment: 'Ошибка: ' + error.message });
+        } else if (data?.verdict) {
+          results.set(pos, {
+            verdict: data.verdict,
+            confidence: typeof data.confidence === 'number' ? data.confidence : 0,
+            comment: data.comment || '',
+          });
+        } else {
+          results.set(pos, { verdict: 'yellow', confidence: 0, comment: 'Пустой ответ модели' });
+        }
+      } catch (err) {
+        results.set(pos, { verdict: 'yellow', confidence: 0, comment: 'Сбой сети: ' + (err?.message || err) });
+      }
+      setReviews(new Map(results));
+      setReviewProgress({ done: i + 1, total: targets.length });
+    }
+    setReviewing(false);
   }
 
   async function handleGenerate() {
@@ -201,7 +262,7 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
         setSavedCount(newCount);
       }
 
-      const result = generateFilledVor(parsed, { priceAllWithQty: donstroy, workPrices, overrides, customTemplates, customRules });
+      const result = generateFilledVor(parsed, { priceAllWithQty: donstroy, workPrices, overrides, customTemplates, customRules, reviews });
       const baseName = (objectName || 'ВОР').replace(/[<>:"/\\|?*]+/g, '');
       const suffix   = donstroy ? '_Донстрой' : '';
       const fileName = `${baseName}${suffix}_расценённый.xlsx`;
@@ -267,7 +328,35 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
                     · {matchPreview.unmatched} не распознано
                   </span>
                 )}
+                <button
+                  type="button"
+                  className="vfm-review-btn"
+                  onClick={handleReviewAll}
+                  disabled={reviewing || busy || matchPreview.matched === 0}
+                  title="Проверить подбор шаблонов с помощью Gemini 2.5 Flash"
+                >
+                  {reviewing ? 'Ревью идёт…' : (reviews.size > 0 ? 'Прогнать ещё раз' : 'Проверить подбор AI')}
+                </button>
               </div>
+
+              {reviewing && (
+                <div className="vfm-review-banner vfm-review-banner-running">
+                  <span className="vfm-review-spinner" />
+                  <span>
+                    Gemini проверяет позиции… <b>{reviewProgress.done}</b> из <b>{reviewProgress.total}</b>
+                  </span>
+                </div>
+              )}
+              {!reviewing && reviews.size > 0 && (
+                <div className="vfm-review-banner vfm-review-banner-done">
+                  <span>✓ Gemini проверил <b>{reviews.size}</b> {reviews.size === 1 ? 'позицию' : 'позиций'}. Наведите на кружок справа, чтобы увидеть комментарий.</span>
+                </div>
+              )}
+              {reviewError && (
+                <div className="vfm-review-banner vfm-review-banner-err">
+                  {reviewError}
+                </div>
+              )}
 
               <div className="vfm-preview-table-wrap">
                 <table className="vfm-preview-table">
@@ -325,6 +414,17 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
                               {row.isOverridden && (
                                 <span className="vfm-override-badge" title="Ручной выбор шаблонов">✎</span>
                               )}
+                              {(() => {
+                                const r = reviews.get(row.pos);
+                                if (!r) return null;
+                                const tip = `${r.confidence ?? 0}% уверенности\n${r.comment || ''}`;
+                                return (
+                                  <span className={`vfm-verdict-wrap vfm-verdict-${r.verdict}`} title={tip}>
+                                    <span className="vfm-verdict-dot">●</span>
+                                    <span className="vfm-verdict-pct">{r.confidence ?? 0}%</span>
+                                  </span>
+                                );
+                              })()}
                               {!row.isHeader && (
                                 <button
                                   type="button"
@@ -347,7 +447,7 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
                                         <input
                                           type="checkbox"
                                           checked={row.templates.includes(k)}
-                                          onChange={() => toggleOverrideTpl(row.pos, k)}
+                                          onChange={() => toggleOverrideTpl(row.pos, k, row.templates)}
                                         />
                                         <span className={SECONDARY.has(k) ? 'vfm-edit-sec' : ''}>{tplLabel(k)}</span>
                                       </label>

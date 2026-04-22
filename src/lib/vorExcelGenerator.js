@@ -6,7 +6,7 @@ import XLSX from 'xlsx-js-style';
 import { TEMPLATES, matchPosition, matchPositionDetailed, isHeader, detectVorStyle, classifyRowRole, detectInsulationThickness, detectInsulationType, adjustInsulationTemplate, detectInsulationLayers } from './vorMatcher.js';
 import { findWorkPrice } from './vorPriceLoader.js';
 
-const HEADERS = [
+const BASE_HEADERS = [
   'Номер позиции', '№ п/п', 'Затрата на строительство', 'Наличие',
   'Тип элемента', 'Тип материала', 'Наименование', 'Ед. изм.',
   'Кол-во заказчика', 'Коэфф. перевода', 'Коэфф. расхода',
@@ -15,7 +15,14 @@ const HEADERS = [
   'Примечание заказчика', 'Примечание ГП',
 ];
 
-const COL_WIDTHS = [14, 6, 40, 8, 10, 12, 55, 8, 14, 12, 12, 14, 8, 12, 12, 14, 16, 20, 20, 20];
+const BASE_COL_WIDTHS = [14, 6, 40, 8, 10, 12, 55, 8, 14, 12, 12, 14, 8, 12, 12, 14, 16, 20, 20, 20];
+
+const REVIEW_HEADER = 'Проверка АИ';
+const REVIEW_COL_WIDTH = 50;
+
+function verdictIcon(v) {
+  return v === 'green' ? '🟢' : v === 'red' ? '🔴' : '🟡';
+}
 
 // Точные цвета из реального ВОР
 const STYLE_HEADER   = { fill: { fgColor: { rgb: 'E0E0E0' } }, font: { bold: true, sz: 10 }, alignment: { wrapText: true } };
@@ -109,12 +116,15 @@ export function generateFilledVor(parsed, options = {}) {
   const overrides = options.overrides || null;   // Map<positionObject, string[]> — ручной override шаблонов
   const customTemplates = options.customTemplates || {}; // { key: tpl } — custom-шаблоны из БД
   const customRules = options.customRules || [];         // fallback-правила из БД
+  const reviews = options.reviews instanceof Map && options.reviews.size > 0 ? options.reviews : null;
   const ALL_TEMPLATES = { ...TEMPLATES, ...customTemplates };
   let totalWorkPricesFilled = 0;
   const ws = {};
   let R = 0; // текущая строка
   const merges = [];
-  const NC = 20; // число колонок
+  const HEADERS    = reviews ? [...BASE_HEADERS, REVIEW_HEADER] : BASE_HEADERS;
+  const COL_WIDTHS = reviews ? [...BASE_COL_WIDTHS, REVIEW_COL_WIDTH] : BASE_COL_WIDTHS;
+  const NC = HEADERS.length; // 20 или 21
 
   // Резолвим шаблоны: сначала override, потом стандартный matchPosition (+ custom rules)
   function matchPos(pos) {
@@ -376,8 +386,18 @@ export function generateFilledVor(parsed, options = {}) {
       if (pos.qtyGp != null) posData[11] = pos.qtyGp;
       if (pos.noteCustomer) posData[18] = pos.noteCustomer;
       if (pos.noteGp) posData[19] = pos.noteGp;
+      if (reviews) {
+        const r = reviews.get(pos);
+        if (r) {
+          posData[20] = `${verdictIcon(r.verdict)} ${r.confidence ?? 0}% — ${r.comment || ''}`.trim();
+        }
+      }
       for (let c = 0; c < NC; c++) {
-        ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(posData[c], STYLE_POSITION);
+        const cell = styledCell(posData[c], STYLE_POSITION);
+        if (c === 20 && reviews) {
+          cell.s = { ...cell.s, alignment: { wrapText: true, vertical: 'top' } };
+        }
+        ws[XLSX.utils.encode_cell({ r: R, c })] = cell;
       }
       R++;
 
