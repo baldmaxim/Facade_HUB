@@ -1,4 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -74,22 +75,23 @@ ${REFERENCE}
 — не перепутан ли тип (мокрый ↔ НВФ, тамбур ↔ вход, декор. профиль ↔ СПК-профиль);
 — нужны ли вторичные шаблоны (scaffolding, kmd_*) в этой ситуации.
 
-Ответ — СТРОГО валидный JSON без комментариев и без markdown:
-{"verdict":"green"|"yellow"|"red","confidence":0-100,"comment":"..."}
+Ответ — СТРОГО валидный JSON без комментариев и без markdown. ПОЛЯ В ТОЧНО ТАКОМ ПОРЯДКЕ:
+{"reasoning":"...","score":0-100,"comment":"..."}
 
-verdict:
-• green — подбор верный
-• yellow — сомнительно, стоит проверить вручную
-• red — явно не то
+reasoning — ОБЯЗАТЕЛЬНО пиши ПЕРВЫМ. Пошаговый разбор позиции, 3-6 предложений, 300-600 символов. Формат: (1) что это за конструкция по описанию заказчика (НВФ / мокрый / СПК / откос / ограждение / ...), (2) какие признаки ты видишь (материал облицовки, наличие/отсутствие утеплителя, явные бренды/системы), (3) какие правила из справочника применимы, (4) что в подобранном наборе шаблонов движком правильно, что сомнительно, чего не хватает или что лишнее. Думай как инженер-сметчик, а не как машина — учитывай контекст всей позиции, а не только ключевые слова.
 
-confidence — целое число 0..100, насколько ты уверен в своём вердикте (не в правильности подбора — именно в своём выводе).
+score — ОДНО ЧИСЛО 0..100, оценка КАЧЕСТВА подбора (не уверенности!). Шкала:
+• 90-100 — идеальный подбор, все шаблоны на месте, лишнего нет
+• 70-89  — в целом верно, возможны мелкие недочёты (лишний вторичный, пропущенный второстепенный)
+• 40-69  — сомнительно, серьёзно стоит проверить вручную (неправильный тип облицовки / спорный утеплитель / пересечение шаблонов)
+• 15-39  — ошибка, большая часть подбора неверна (например, мокрый записан как НВФ, тамбур как витраж)
+• 0-14   — полный мисс, ничего общего с тем что нужно
 
-comment — ОДНО-ДВА предложения, максимум 220 символов.
+Вердикт (🟢/🟡/🔴) клиент выводит сам из score по диапазонам — тебе отдельно ставить его НЕ НУЖНО. Чем хуже подбор — тем ниже score.
 
-ЖЁСТКОЕ ПРАВИЛО ЯЗЫКА: comment ТОЛЬКО по-русски, без единого английского слова, без латиницы кроме tplKey-ключей и брендов (Rockwool, Технониколь и т.п.). Не пиши "OK", "correct", "mismatch" и подобное — пиши "верно", "ошибка", "не подходит".
+comment — одно-два предложения, максимум 220 символов, краткое резюме из reasoning: если score высокий — суть совпадения, если низкий — что именно не так и как правильно.
 
-Если вердикт yellow/red — в comment назови конкретную проблему (что лишнее / чего не хватает / чем заменить).
-Если green — в comment коротко подтверди причину ("керамика + подсистема + утеплитель 180 — полный НВФ").`;
+ЖЁСТКОЕ ПРАВИЛО ЯЗЫКА: ВСЕ поля (reasoning и comment) ТОЛЬКО по-русски, без единого английского слова, без латиницы кроме tplKey-ключей и брендов (Rockwool, Технониколь, ROCKglue и т.п.). Не пиши "OK", "correct", "mismatch", "verify" — пиши "верно", "ошибка", "не подходит", "проверить".`;
 
 type Payload = {
   noteCustomer?: string;
@@ -106,16 +108,74 @@ function jsonResponse(body: unknown, status = 200): Response {
   });
 }
 
-// Ошибка возвращается как валидный ответ (HTTP 200) с verdict=yellow и причиной в comment —
+// Ошибка возвращается как валидный ответ (HTTP 200) с score=50 (жёлтый) и причиной в comment —
 // supabase-js не может прочитать тело non-2xx ответа, а нам нужно видеть причину на клиенте.
 function errorResult(reason: string, posCode?: string | null) {
   return jsonResponse({
+    score: 50,
     verdict: "yellow",
-    confidence: 0,
     comment: `Отладка: ${reason}`.slice(0, 300),
+    reasoning: "",
     posCode: posCode ?? null,
     tokens: { input: null, output: null },
   });
+}
+
+function verdictFromScore(s: number): "green" | "yellow" | "red" {
+  if (s >= 70) return "green";
+  if (s >= 40) return "yellow";
+  return "red";
+}
+
+type FeedbackRow = {
+  note_customer: string | null;
+  pos_name: string | null;
+  engine_tpl_keys: string[] | null;
+  correct_tpl_keys: string[] | null;
+  user_is_correct: boolean;
+  user_comment: string | null;
+};
+
+async function loadSimilarFeedback(req: Request, query: string): Promise<FeedbackRow[]> {
+  try {
+    const url = Deno.env.get("SUPABASE_URL");
+    const key = Deno.env.get("SUPABASE_ANON_KEY");
+    if (!url || !key) return [];
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const client = createClient(url, key, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data, error } = await client.rpc("find_similar_feedback", {
+      query_text: query,
+      lim: 3,
+    });
+    if (error) {
+      console.log("find_similar_feedback error:", error.message);
+      return [];
+    }
+    return Array.isArray(data) ? (data as FeedbackRow[]) : [];
+  } catch (err) {
+    console.log("loadSimilarFeedback exception:", String(err));
+    return [];
+  }
+}
+
+function formatSimilarFeedback(rows: FeedbackRow[]): string {
+  if (rows.length === 0) return "";
+  const lines: string[] = [];
+  lines.push("\nПОХОЖИЕ СЛУЧАИ ИЗ ИСТОРИИ ЭТОГО ПОЛЬЗОВАТЕЛЯ (учитывай их — пользователь уже размечал похожие позиции):");
+  rows.forEach((r, i) => {
+    const descr = (r.pos_name || r.note_customer || "").slice(0, 140);
+    const engine = (r.engine_tpl_keys || []).join(", ");
+    if (r.user_is_correct) {
+      lines.push(`${i + 1}. [ВЕРНО ✓] "${descr}" — движок подбирал [${engine}], пользователь подтвердил.`);
+    } else {
+      const correct = (r.correct_tpl_keys || []).join(", ");
+      const note = r.user_comment ? ` Коммент: "${r.user_comment}"` : "";
+      lines.push(`${i + 1}. [ОШИБКА ✗] "${descr}" — движок подбирал [${engine}], правильно было: [${correct}].${note}`);
+    }
+  });
+  return lines.join("\n");
 }
 
 function extractJson(text: string): string | null {
@@ -157,12 +217,17 @@ Deno.serve(async (req: Request) => {
     return errorResult("в секретах функции нет OPENROUTER_API_KEY", posCode);
   }
 
+  // RAG: тянем похожие размеченные случаи и подмешиваем в user-message
+  const similar = await loadSimilarFeedback(req, noteCustomer);
+  const similarBlock = formatSimilarFeedback(similar);
+
   const userMessage = [
     `Позиция: ${posCode ?? "без кода"}`,
     `Описание заказчика: "${noteCustomer}"`,
     `Подобранные шаблоны движка: [${keys.join(", ")}]`,
     `Путь затрат: ${costPath ?? "не указан"}`,
-  ].join("\n");
+    similarBlock,
+  ].filter(Boolean).join("\n");
 
   let orRes: Response;
   try {
@@ -181,7 +246,7 @@ Deno.serve(async (req: Request) => {
           { role: "user", content: userMessage },
         ],
         temperature: 0.2,
-        max_tokens: 400,
+        max_tokens: 700,
       }),
     });
   } catch (err) {
@@ -199,7 +264,7 @@ Deno.serve(async (req: Request) => {
     return errorResult(`пустой ответ модели: ${JSON.stringify(orData).slice(0, 200)}`, posCode);
   }
 
-  let parsed: { verdict?: string; confidence?: number; comment?: string };
+  let parsed: { reasoning?: string; score?: number; comment?: string };
   try {
     parsed = JSON.parse(content);
   } catch {
@@ -215,25 +280,27 @@ Deno.serve(async (req: Request) => {
     }
   }
 
-  const verdict =
-    parsed.verdict === "green" || parsed.verdict === "red"
-      ? parsed.verdict
-      : "yellow";
-
-  let confidence =
-    typeof parsed.confidence === "number" ? Math.round(parsed.confidence) : 0;
-  if (!Number.isFinite(confidence) || confidence < 0) confidence = 0;
-  if (confidence > 100) confidence = 100;
+  let score =
+    typeof parsed.score === "number" ? Math.round(parsed.score) : 50;
+  if (!Number.isFinite(score) || score < 0) score = 0;
+  if (score > 100) score = 100;
+  const verdict = verdictFromScore(score);
 
   const comment =
     typeof parsed.comment === "string" && parsed.comment.trim()
       ? parsed.comment.trim().slice(0, 300)
       : "Не удалось прочитать ответ модели.";
 
+  const reasoning =
+    typeof parsed.reasoning === "string" && parsed.reasoning.trim()
+      ? parsed.reasoning.trim().slice(0, 1200)
+      : "";
+
   return jsonResponse({
+    score,
     verdict,
-    confidence,
     comment,
+    reasoning,
     posCode: posCode ?? null,
     tokens: {
       input: orData?.usage?.prompt_tokens ?? null,

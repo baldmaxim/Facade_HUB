@@ -1,57 +1,16 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Fragment } from 'react';
 import { parseEmptyVor, generateFilledVor, downloadBlob } from '../lib/vorExcelGenerator';
 import { matchPositionDetailed, isHeader } from '../lib/vorMatcher';
 import { loadWorkPrices } from '../lib/vorPriceLoader';
 import { fetchWorkPrices, saveWorkPrices, countWorkPrices, entriesToPriceMap } from '../api/vorPrices';
 import { fetchCustomTemplates, customTemplatesToMap, customTemplatesToRules } from '../api/vorCustomTemplates';
 import { saveVorHistory } from '../api/vorHistory';
+import { saveReviewFeedback } from '../api/vorReviewFeedback';
 import { mutate as swrMutate } from 'swr';
 import { supabase } from '../lib/supabase';
+import { TPL_NAMES, SECONDARY, tplLabel } from '../lib/vorTplNames';
+import VorReviewRow from './VorReviewRow';
 import './VorFillModal.css';
-
-const TPL_NAMES = {
-  spk_profile:                  'Профиль стойка-ригель',
-  spk_glass:                    'Стеклопакет',
-  spk_broneplenka:              'Бронеплёнка',
-  pvh_profile:                  'Профиль ПВХ',
-  nvf_subsystem:                'Подсистема НВФ',
-  insulation:                   'Утеплитель',
-  nvf_cladding_clinker:         'Клинкер',
-  nvf_cladding_cassette:        'Кассеты',
-  nvf_cladding_concrete_tile:   'Бетонная плитка',
-  nvf_cladding_fibrobeton:      'Фибробетон',
-  nvf_cladding_ceramic:         'Керамика',
-  nvf_cladding_porcelain:       'Керамогранит',
-  nvf_cladding_natural_stone:   'Натур. камень',
-  nvf_cladding_akp:             'АКП',
-  nvf_cladding_fcp:             'ФЦП',
-  nvf_cladding_galvanized:      'Оцинков. лист',
-  nvf_cladding_arch_concrete:   'Арх. бетон',
-  nvf_cladding_brick:           'Кирпич',
-  nvf_cladding_profiles_vertical: 'Верт. профили',
-  wet_facade:                   'Мокрый фасад',
-  wet_facade_insulation:        'Мокрый (утеплитель)',
-  wet_facade_finish:            'Штукатурный слой',
-  wet_facade_paint:             'Окраска',
-  flashings:                    'Откосы/отливы',
-  pp_otsechi:                   'П/П отсечки',
-  glass_railing:                'Стекл. ограждения',
-  glass_railing_molled:         'Молл. ограждения',
-  glass_canopy:                 'Козырёк (триплекс)',
-  vent_grilles:                 'Вентрешётки',
-  scaffolding:                  'Леса',
-  kmd_spk:                      'КМД СПК',
-  kmd_nvf:                      'КМД НВФ',
-  doors_entrance:               'Двери входные',
-  doors_tambour:                'Тамбурные двери',
-  mockup:                       'Мокап',
-};
-
-const SECONDARY = new Set(['scaffolding', 'kmd_spk', 'kmd_nvf']);
-
-function tplLabel(key) {
-  return TPL_NAMES[key] || key;
-}
 
 export default function VorFillModal({ objectId, objectName, onClose }) {
   const [vorFile, setVorFile]       = useState(null);
@@ -67,10 +26,13 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
   const [editingKey, setEditingKey] = useState(null);      // 'sectionIdx:posIdx' или null
   const [customTemplates, setCustomTemplates] = useState({});   // map key→tpl
   const [customRules, setCustomRules]         = useState([]);   // fallback-правила
-  const [reviews, setReviews]                 = useState(new Map()); // Map<pos, {verdict, comment}>
+  const [reviews, setReviews]                 = useState(new Map()); // Map<pos, {verdict, score, comment, reasoning}>
   const [reviewing, setReviewing]             = useState(false);
   const [reviewProgress, setReviewProgress]   = useState({ done: 0, total: 0 });
   const [reviewError, setReviewError]         = useState(null);
+  const [expandedReasoning, setExpandedReasoning] = useState(new Set()); // Set<rowKey>
+  const [feedbackStatus, setFeedbackStatus]       = useState(new Map()); // Map<rowKey, 'saving'|'saved'|'error'>
+  const [feedbackForm, setFeedbackForm]           = useState(null);      // {rowKey, correctTpls: string[], comment: string} | null
 
   const vorInputRef    = useRef(null);
   const pricesInputRef = useRef(null);
@@ -107,6 +69,9 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
     setReviews(new Map());
     setReviewError(null);
     setReviewProgress({ done: 0, total: 0 });
+    setExpandedReasoning(new Set());
+    setFeedbackStatus(new Map());
+    setFeedbackForm(null);
     if (!file) return;
     setBusy(true);
     try {
@@ -153,6 +118,48 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
       }),
     }));
     matchPreview = { sections, matched, unmatched, total: matched + unmatched };
+  }
+
+  async function submitFeedback(row, isCorrect, correctTpls, userComment) {
+    const review = reviews.get(row.pos);
+    if (!review) return;
+    setFeedbackStatus(prev => new Map(prev).set(row.rowKey, 'saving'));
+    try {
+      await saveReviewFeedback({
+        noteCustomer:    row.pos.noteCustomer || row.pos.name || '',
+        posName:         row.pos.name || '',
+        engineTplKeys:   row.templates || [],
+        correctTplKeys:  isCorrect ? null : (correctTpls || []),
+        aiVerdict:       review.verdict,
+        aiConfidence:    review.score, // в БД колонка называется ai_confidence, семантика = score 0..100
+        aiComment:       review.comment,
+        aiReasoning:     review.reasoning,
+        userIsCorrect:   isCorrect,
+        userComment:     userComment || null,
+        objectId,
+      });
+      setFeedbackStatus(prev => new Map(prev).set(row.rowKey, 'saved'));
+      setFeedbackForm(null);
+    } catch (err) {
+      setFeedbackStatus(prev => new Map(prev).set(row.rowKey, 'error'));
+      console.error('saveReviewFeedback:', err);
+    }
+  }
+
+  function openIncorrectForm(row) {
+    setFeedbackForm({
+      rowKey: row.rowKey,
+      correctTpls: [...(row.templates || [])],   // старт от того, что сейчас в строке
+      comment: '',
+    });
+  }
+
+  function toggleReasoning(rowKey) {
+    setExpandedReasoning(prev => {
+      const next = new Set(prev);
+      if (next.has(rowKey)) next.delete(rowKey); else next.add(rowKey);
+      return next;
+    });
   }
 
   function toggleOverrideTpl(pos, key, currentTemplates) {
@@ -216,18 +223,19 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
               if (body) detail = body.slice(0, 400);
             }
           } catch { /* ignore */ }
-          results.set(pos, { verdict: 'yellow', confidence: 0, comment: 'Ошибка: ' + detail });
+          results.set(pos, { verdict: 'yellow', score: 50, comment: 'Ошибка: ' + detail, reasoning: '' });
         } else if (data?.verdict) {
           results.set(pos, {
             verdict: data.verdict,
-            confidence: typeof data.confidence === 'number' ? data.confidence : 0,
+            score: typeof data.score === 'number' ? data.score : 50,
             comment: data.comment || '',
+            reasoning: data.reasoning || '',
           });
         } else {
-          results.set(pos, { verdict: 'yellow', confidence: 0, comment: 'Пустой ответ модели' });
+          results.set(pos, { verdict: 'yellow', score: 50, comment: 'Пустой ответ модели', reasoning: '' });
         }
       } catch (err) {
-        results.set(pos, { verdict: 'yellow', confidence: 0, comment: 'Сбой сети: ' + (err?.message || err) });
+        results.set(pos, { verdict: 'yellow', score: 50, comment: 'Сбой сети: ' + (err?.message || err), reasoning: '' });
       }
       setReviews(new Map(results));
       setReviewProgress({ done: i + 1, total: targets.length });
@@ -358,7 +366,7 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
               )}
               {!reviewing && reviews.size > 0 && (
                 <div className="vfm-review-banner vfm-review-banner-done">
-                  <span>✓ Gemini проверил <b>{reviews.size}</b> {reviews.size === 1 ? 'позицию' : 'позиций'}. Наведите на кружок справа, чтобы увидеть комментарий.</span>
+                  <span>✓ Gemini проверил <b>{reviews.size}</b> {reviews.size === 1 ? 'позицию' : 'позиций'}. Наведите на кружок — короткий комментарий, клик — развёрнутое рассуждение.</span>
                 </div>
               )}
               {reviewError && (
@@ -383,13 +391,13 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
                   </thead>
                   <tbody>
                     {matchPreview.sections.map(section => (
-                      <>
-                        <tr key={`sec-${section.name}`} className="vfm-sec-row">
+                      <Fragment key={`sec-${section.name}`}>
+                        <tr className="vfm-sec-row">
                           <td colSpan={3}>{section.name}</td>
                         </tr>
                         {section.rows.map((row) => (
+                          <Fragment key={row.rowKey}>
                           <tr
-                            key={row.rowKey}
                             className={
                               row.isHeader ? 'vfm-pos-header' :
                               row.templates.length === 0 ? 'vfm-pos-unmatched' :
@@ -426,12 +434,21 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
                               {(() => {
                                 const r = reviews.get(row.pos);
                                 if (!r) return null;
-                                const tip = `${r.confidence ?? 0}% уверенности\n${r.comment || ''}`;
+                                const score = r.score ?? 0;
+                                const tip = `Оценка подбора: ${score}/100\n${r.comment || ''}${r.reasoning ? '\n\n(клик — развёрнутый разбор)' : ''}`;
+                                const expanded = expandedReasoning.has(row.rowKey);
                                 return (
-                                  <span className={`vfm-verdict-wrap vfm-verdict-${r.verdict}`} title={tip}>
+                                  <button
+                                    type="button"
+                                    className={`vfm-verdict-wrap vfm-verdict-${r.verdict}`}
+                                    title={tip}
+                                    onClick={() => r.reasoning && toggleReasoning(row.rowKey)}
+                                    disabled={!r.reasoning}
+                                  >
                                     <span className="vfm-verdict-dot">●</span>
-                                    <span className="vfm-verdict-pct">{r.confidence ?? 0}%</span>
-                                  </span>
+                                    <span className="vfm-verdict-pct">{score}</span>
+                                    {r.reasoning && <span className="vfm-verdict-caret">{expanded ? '▾' : '▸'}</span>}
+                                  </button>
                                 );
                               })()}
                               {!row.isHeader && (
@@ -474,8 +491,19 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
                               )}
                             </td>
                           </tr>
+                          <VorReviewRow
+                            review={reviews.get(row.pos)}
+                            expanded={expandedReasoning.has(row.rowKey)}
+                            feedbackStatus={feedbackStatus.get(row.rowKey)}
+                            feedbackForm={feedbackForm && feedbackForm.rowKey === row.rowKey ? feedbackForm : null}
+                            onFormChange={next => setFeedbackForm(typeof next === 'function' ? next(feedbackForm) : next)}
+                            onSubmitCorrect={() => submitFeedback(row, true, null, null)}
+                            onOpenIncorrect={() => openIncorrectForm(row)}
+                            onSubmitIncorrect={() => submitFeedback(row, false, feedbackForm.correctTpls, feedbackForm.comment)}
+                          />
+                          </Fragment>
                         ))}
-                      </>
+                      </Fragment>
                     ))}
                   </tbody>
                 </table>

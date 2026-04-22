@@ -18,10 +18,12 @@ const BASE_HEADERS = [
 const BASE_COL_WIDTHS = [14, 6, 40, 8, 10, 12, 55, 8, 14, 12, 12, 14, 8, 12, 12, 14, 16, 20, 20, 20];
 
 const REVIEW_HEADER = 'Проверка АИ';
-const REVIEW_COL_WIDTH = 50;
+const REVIEW_COL_WIDTH = 70;
 
-function verdictIcon(v) {
-  return v === 'green' ? '🟢' : v === 'red' ? '🔴' : '🟡';
+function formatReviewCell(r) {
+  const icon = r.verdict === 'green' ? '🟢' : r.verdict === 'red' ? '🔴' : '🟡';
+  const head = `${icon} Оценка: ${r.score ?? 0}/100 — ${r.comment || ''}`.trim();
+  return r.reasoning && r.reasoning.trim() ? `${head}\n\nРазбор:\n${r.reasoning.trim()}` : head;
 }
 
 // Точные цвета из реального ВОР
@@ -389,7 +391,7 @@ export function generateFilledVor(parsed, options = {}) {
       if (reviews) {
         const r = reviews.get(pos);
         if (r) {
-          posData[20] = `${verdictIcon(r.verdict)} ${r.confidence ?? 0}% — ${r.comment || ''}`.trim();
+          posData[20] = formatReviewCell(r);
         }
       }
       for (let c = 0; c < NC; c++) {

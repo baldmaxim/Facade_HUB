@@ -11,9 +11,9 @@
 .vfm-dialog {
   background: var(--color-bg, #fff);
   border-radius: 8px;
-  width: 720px;
-  max-width: 95vw;
-  max-height: 90vh;
+  width: 1100px;
+  max-width: 96vw;
+  max-height: 92vh;
   display: flex;
   flex-direction: column;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
@@ -176,7 +176,7 @@
 .vfm-preview-warn { color: #c05000; font-weight: 500; }
 
 .vfm-preview-table-wrap {
-  max-height: 320px;
+  max-height: 480px;
   overflow-y: auto;
 }
 
@@ -380,14 +380,107 @@
   align-items: center;
   gap: 3px;
   margin-left: 4px;
+  padding: 1px 4px;
   font-size: 11px;
   line-height: 1;
-  cursor: help;
+  cursor: pointer;
   vertical-align: middle;
   white-space: nowrap;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
 }
+.vfm-verdict-wrap:hover:not(:disabled) { background: #f5f5f5; border-color: #ddd; }
+.vfm-verdict-wrap:disabled { cursor: help; }
 .vfm-verdict-dot { font-size: 14px; }
 .vfm-verdict-pct { font-weight: 600; font-size: 10px; opacity: 0.85; }
+.vfm-verdict-caret { font-size: 10px; opacity: 0.7; }
 .vfm-verdict-green  { color: #2c9c2c; }
 .vfm-verdict-yellow { color: #d4a500; }
 .vfm-verdict-red    { color: #d03030; }
+
+.vfm-reasoning-row td { background: #fafbff; padding: 0; }
+.vfm-reasoning-cell {
+  padding: 8px 12px !important;
+  border-left: 3px solid #bbb;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.vfm-reasoning-green .vfm-reasoning-cell  { border-left-color: #2c9c2c; background: #f4faf4 !important; }
+.vfm-reasoning-yellow .vfm-reasoning-cell { border-left-color: #d4a500; background: #fffcf0 !important; }
+.vfm-reasoning-red .vfm-reasoning-cell    { border-left-color: #d03030; background: #fff5f5 !important; }
+.vfm-reasoning-head { margin-bottom: 4px; }
+.vfm-reasoning-label { font-weight: 600; color: #444; font-size: 11px; }
+.vfm-reasoning-text { color: #333; white-space: pre-wrap; }
+.vfm-reasoning-comment { margin-top: 6px; padding-top: 6px; border-top: 1px dashed #ddd; color: #555; font-size: 11px; }
+
+/* ─── Feedback (кнопки 👍/👎 + форма коррекции) ──────────────── */
+.vfm-feedback-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px dashed #ddd;
+  font-size: 11px;
+}
+.vfm-btn-thumb {
+  padding: 3px 10px;
+  border-radius: 4px;
+  border: 1px solid;
+  background: #fff;
+  font-size: 11px;
+  cursor: pointer;
+}
+.vfm-btn-up   { color: #2c9c2c; border-color: #9ccf9c; }
+.vfm-btn-up:hover   { background: #f0faf0; }
+.vfm-btn-down { color: #c03030; border-color: #e8a0a0; }
+.vfm-btn-down:hover { background: #fff0f0; }
+.vfm-feedback-saved  { color: #2c6e2c; font-weight: 500; }
+.vfm-feedback-saving { color: #888; font-style: italic; }
+.vfm-feedback-err    { color: #c33; }
+
+.vfm-feedback-form {
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+.vfm-feedback-form-label { font-weight: 600; font-size: 11px; margin-bottom: 6px; color: #333; }
+.vfm-feedback-checkboxes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 4px;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  margin-bottom: 6px;
+}
+.vfm-feedback-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  cursor: pointer;
+}
+.vfm-feedback-checkbox:hover { background: #f5f5f5; }
+.vfm-feedback-checkbox input { margin: 0; }
+.vfm-feedback-comment {
+  width: 100%;
+  font-family: inherit;
+  font-size: 11px;
+  padding: 4px 6px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  resize: vertical;
+}
+.vfm-feedback-form-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+.vfm-feedback-form-actions button { padding: 4px 12px; font-size: 11px; }
