@@ -106,6 +106,29 @@ function jsonResponse(body: unknown, status = 200): Response {
   });
 }
 
+// Ошибка возвращается как валидный ответ (HTTP 200) с verdict=yellow и причиной в comment —
+// supabase-js не может прочитать тело non-2xx ответа, а нам нужно видеть причину на клиенте.
+function errorResult(reason: string, posCode?: string | null) {
+  return jsonResponse({
+    verdict: "yellow",
+    confidence: 0,
+    comment: `Отладка: ${reason}`.slice(0, 300),
+    posCode: posCode ?? null,
+    tokens: { input: null, output: null },
+  });
+}
+
+function extractJson(text: string): string | null {
+  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fenced && fenced[1]) return fenced[1].trim();
+  const firstBrace = text.indexOf("{");
+  const lastBrace = text.lastIndexOf("}");
+  if (firstBrace >= 0 && lastBrace > firstBrace) {
+    return text.slice(firstBrace, lastBrace + 1);
+  }
+  return null;
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: CORS_HEADERS });
@@ -118,7 +141,7 @@ Deno.serve(async (req: Request) => {
   try {
     payload = await req.json();
   } catch {
-    return jsonResponse({ error: "Invalid JSON body" }, 400);
+    return errorResult("неверный JSON в теле запроса");
   }
 
   const { noteCustomer, tplKey, tplKeys, costPath, posCode } = payload;
@@ -126,18 +149,12 @@ Deno.serve(async (req: Request) => {
     ? tplKeys
     : (tplKey ? [tplKey] : []);
   if (!noteCustomer || keys.length === 0) {
-    return jsonResponse(
-      { error: "noteCustomer and tplKeys are required" },
-      400,
-    );
+    return errorResult("пустые noteCustomer или tplKeys", posCode);
   }
 
   const apiKey = Deno.env.get("OPENROUTER_API_KEY");
   if (!apiKey) {
-    return jsonResponse(
-      { error: "OPENROUTER_API_KEY is not configured in function secrets" },
-      500,
-    );
+    return errorResult("в секретах функции нет OPENROUTER_API_KEY", posCode);
   }
 
   const userMessage = [
@@ -163,43 +180,39 @@ Deno.serve(async (req: Request) => {
           { role: "system", content: SYSTEM_PROMPT },
           { role: "user", content: userMessage },
         ],
-        response_format: { type: "json_object" },
         temperature: 0.2,
-        max_tokens: 300,
+        max_tokens: 400,
       }),
     });
   } catch (err) {
-    return jsonResponse(
-      { error: "Network error to OpenRouter", details: String(err) },
-      502,
-    );
+    return errorResult(`сеть до OpenRouter: ${String(err).slice(0, 160)}`, posCode);
   }
 
   if (!orRes.ok) {
     const details = await orRes.text().catch(() => "");
-    return jsonResponse(
-      { error: `OpenRouter HTTP ${orRes.status}`, details },
-      502,
-    );
+    return errorResult(`OpenRouter HTTP ${orRes.status}: ${details.slice(0, 200)}`, posCode);
   }
 
   const orData = await orRes.json().catch(() => null);
   const content = orData?.choices?.[0]?.message?.content;
   if (typeof content !== "string") {
-    return jsonResponse(
-      { error: "Empty or malformed response from model", raw: orData },
-      502,
-    );
+    return errorResult(`пустой ответ модели: ${JSON.stringify(orData).slice(0, 200)}`, posCode);
   }
 
   let parsed: { verdict?: string; confidence?: number; comment?: string };
   try {
     parsed = JSON.parse(content);
   } catch {
-    return jsonResponse(
-      { error: "Model returned non-JSON", raw: content },
-      502,
-    );
+    const extracted = extractJson(content);
+    if (extracted) {
+      try {
+        parsed = JSON.parse(extracted);
+      } catch {
+        return errorResult(`модель вернула не-JSON: ${content.slice(0, 200)}`, posCode);
+      }
+    } else {
+      return errorResult(`модель вернула не-JSON: ${content.slice(0, 200)}`, posCode);
+    }
   }
 
   const verdict =

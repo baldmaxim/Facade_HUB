@@ -207,7 +207,16 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
           },
         });
         if (error) {
-          results.set(pos, { verdict: 'yellow', confidence: 0, comment: 'Ошибка: ' + error.message });
+          // supabase-js прячет тело ответа в error.context — вытаскиваем, чтобы увидеть причину
+          let detail = error.message || 'unknown';
+          try {
+            const ctx = error.context;
+            if (ctx && typeof ctx.text === 'function') {
+              const body = await ctx.text();
+              if (body) detail = body.slice(0, 400);
+            }
+          } catch { /* ignore */ }
+          results.set(pos, { verdict: 'yellow', confidence: 0, comment: 'Ошибка: ' + detail });
         } else if (data?.verdict) {
           results.set(pos, {
             verdict: data.verdict,
