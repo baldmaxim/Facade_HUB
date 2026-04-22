@@ -3,7 +3,7 @@
  * Использует xlsx-js-style для цветных ячеек.
  */
 import XLSX from 'xlsx-js-style';
-import { TEMPLATES, matchPosition, isHeader, detectVorStyle, classifyRowRole, detectInsulationThickness, detectInsulationType, adjustInsulationTemplate, detectInsulationLayers } from './vorMatcher.js';
+import { TEMPLATES, matchPosition, matchPositionDetailed, isHeader, detectVorStyle, classifyRowRole, detectInsulationThickness, detectInsulationType, adjustInsulationTemplate, detectInsulationLayers } from './vorMatcher.js';
 import { findWorkPrice } from './vorPriceLoader.js';
 
 const HEADERS = [
@@ -121,6 +121,11 @@ export function generateFilledVor(parsed, options = {}) {
     if (overrides && overrides.has(pos)) return overrides.get(pos);
     return matchPosition(pos.name, pos.noteCustomer || '', customRules);
   }
+  // То же, но с деталями правила (ruleDefaultThickness и т.д.)
+  function matchPosDetailed(pos) {
+    if (overrides && overrides.has(pos)) return { templates: overrides.get(pos), ruleDefaultThickness: undefined };
+    return matchPositionDetailed(pos.name, pos.noteCustomer || '', customRules);
+  }
 
   // ─── Заголовок ──────────────────────────────────────────────────
   for (let c = 0; c < NC; c++) {
@@ -233,15 +238,15 @@ export function generateFilledVor(parsed, options = {}) {
     return tpl.materials || [];
   }
 
-  function getTemplate(key, posName, posNote, clusterThickness) {
+  function getTemplate(key, posName, posNote, clusterThickness, ruleDefaultThickness) {
     if (key === 'insulation') {
-      const t = clusterThickness || (posName ? detectInsulationThickness(posName, posNote) : 150);
+      const t = clusterThickness || (posName ? (detectInsulationThickness(posName, posNote) ?? ruleDefaultThickness ?? 150) : ruleDefaultThickness ?? 150);
       const type = posName ? detectInsulationType(posName, posNote) : 'mineral';
       const layers = posName ? detectInsulationLayers(posName, posNote) : null;
       return adjustInsulationTemplate(t, type, layers);
     }
     if (key === 'wet_facade') {
-      const t = clusterThickness || (posName ? detectInsulationThickness(posName, posNote) : 150);
+      const t = clusterThickness || (posName ? (detectInsulationThickness(posName, posNote) ?? ruleDefaultThickness ?? 150) : ruleDefaultThickness ?? 150);
       const type = posName ? detectInsulationType(posName, posNote) : 'mineral';
       const layers = posName ? detectInsulationLayers(posName, posNote) : null;
       const insTpl = adjustInsulationTemplate(t, type, layers);
@@ -271,11 +276,15 @@ export function generateFilledVor(parsed, options = {}) {
     const sectionHasAux = section.positions.some(p => classifyRowRole(p.name) === 'auxiliary');
 
     // Pre-compute roles and matches for cluster detection
-    const posInfos = sectionHasAux ? section.positions.map(p => ({
-      role: classifyRowRole(p.name),
-      tplKeys: isHeader(p, allPositions, hdrOpts) ? [] :
-        filterExcluded(matchPos(p), p.name),
-    })) : [];
+    const posInfos = sectionHasAux ? section.positions.map(p => {
+      const det = matchPosDetailed(p);
+      return {
+        role: classifyRowRole(p.name),
+        tplKeys: isHeader(p, allPositions, hdrOpts) ? [] :
+          filterExcluded(det.templates, p.name),
+        ruleDefaultThickness: det.ruleDefaultThickness,
+      };
+    }) : [];
 
     // Post-process: material rows after a wet_facade_insulation work inherit it
     // (заменяем НВФ insulation на мокрый, если предыдущая работа — клеевое утепление)
@@ -306,7 +315,7 @@ export function generateFilledVor(parsed, options = {}) {
             const p = section.positions[j];
             const t = detectInsulationThickness(p.name, p.noteCustomer);
             const hasExplicit = /(\d{2,3})\s*мм|толщ/i.test(p.name + ' ' + (p.noteCustomer || ''));
-            if (hasExplicit) { clusterThickness = t; break; }
+            if (hasExplicit && t != null) { clusterThickness = t; break; }
           }
         }
         // Применяем ко всем insulation позициям кластера
@@ -468,7 +477,7 @@ export function generateFilledVor(parsed, options = {}) {
         if (isStandalone) {
           // ─── Standalone: чередованный рендеринг работа→материалы ───
           for (const key of tplKeys) {
-            const tpl = getTemplate(key, pos.name, pos.noteCustomer, posInfos[posIdx] && posInfos[posIdx].insulationThickness);
+            const tpl = getTemplate(key, pos.name, pos.noteCustomer, posInfos[posIdx] && posInfos[posIdx].insulationThickness, posInfos[posIdx] && posInfos[posIdx].ruleDefaultThickness);
             if (!tpl) continue;
             const costPath = tpl.costPath;
             for (const { work: w, materials: wMats } of getWorkGroups(tpl)) {
@@ -494,7 +503,7 @@ export function generateFilledVor(parsed, options = {}) {
                 md[3] = 'да';
                 md[4] = 'суб-мат';
                 md[5] = m.kind || 'основн.';
-                md[6] = (key.startsWith('nvf_cladding') && m.kind === 'основн.' && !m.noOverride) ? getCustomerMaterialName(pos) : m.name;
+                md[6] = (key.startsWith('nvf_cladding') && m.kind === 'основн.' && !m.noOverride && !tpl.preserveTemplateName) ? getCustomerMaterialName(pos) : m.name;
                 md[7] = m.unit;
                 if (m.j != null) md[9] = m.j;
                 if (m.k != null) md[10] = m.k;
@@ -516,14 +525,15 @@ export function generateFilledVor(parsed, options = {}) {
         for (const k of tplKeys) {
           if (!clusterTemplates.includes(k)) clusterTemplates.push(k);
           if (k === 'insulation') {
-            clusterInsulationThickness = detectInsulationThickness(pos.name, pos.noteCustomer);
+            const posRuleDef = posInfos[posIdx] && posInfos[posIdx].ruleDefaultThickness;
+            clusterInsulationThickness = detectInsulationThickness(pos.name, pos.noteCustomer) ?? posRuleDef ?? 150;
           }
         }
 
         if (role === 'work') {
           // ТОЛЬКО работы (без материалов)
           for (const key of tplKeys) {
-            const tpl = getTemplate(key, pos.name, pos.noteCustomer, posInfos[posIdx] && posInfos[posIdx].insulationThickness);
+            const tpl = getTemplate(key, pos.name, pos.noteCustomer, posInfos[posIdx] && posInfos[posIdx].insulationThickness, posInfos[posIdx] && posInfos[posIdx].ruleDefaultThickness);
             if (!tpl) continue;
             for (const w of tplWorks(tpl)) {
               const wd = new Array(NC).fill('');
@@ -545,7 +555,7 @@ export function generateFilledVor(parsed, options = {}) {
         } else {
           // role === 'material': пустая работа + только основные материалы
           for (const key of tplKeys) {
-            const tpl = getTemplate(key, pos.name, pos.noteCustomer, posInfos[posIdx] && posInfos[posIdx].insulationThickness);
+            const tpl = getTemplate(key, pos.name, pos.noteCustomer, posInfos[posIdx] && posInfos[posIdx].insulationThickness, posInfos[posIdx] && posInfos[posIdx].ruleDefaultThickness);
             if (!tpl) continue;
 
             // Пустая работа для привязки
@@ -576,7 +586,7 @@ export function generateFilledVor(parsed, options = {}) {
               md[3] = 'да';
               md[4] = 'суб-мат';
               md[5] = m.kind;
-              md[6] = key.startsWith('nvf_cladding') ? getCustomerMaterialName(pos) : m.name;
+              md[6] = (key.startsWith('nvf_cladding') && !tpl.preserveTemplateName) ? getCustomerMaterialName(pos) : m.name;
               md[7] = m.unit;
               if (m.j != null) md[9] = m.j;
               if (m.k != null) md[10] = m.k;
@@ -596,16 +606,18 @@ export function generateFilledVor(parsed, options = {}) {
 
       // ─── simple режим (Сокольники — существующая логика) ─────────
       // Матчинг — убираем шаблоны, у которых есть отдельные позиции
-      let tplKeys = filterExcluded(matchPosition(pos.name, pos.noteCustomer), pos.name);
+      const simpleMatch = matchPosDetailed(pos);
+      let tplKeys = filterExcluded(simpleMatch.templates, pos.name);
       if (tplKeys.length === 0) {
         unmatched.push(pos.name.slice(0, 60));
         continue;
       }
 
       totalMatched++;
+      const simpleRuleDef = simpleMatch.ruleDefaultThickness;
 
       for (const key of tplKeys) {
-        const tpl = getTemplate(key, pos.name, pos.noteCustomer, posInfos[posIdx] && posInfos[posIdx].insulationThickness);
+        const tpl = getTemplate(key, pos.name, pos.noteCustomer, undefined, simpleRuleDef);
         if (!tpl) continue;
 
         const costPath = tpl.costPath;
@@ -634,7 +646,7 @@ export function generateFilledVor(parsed, options = {}) {
             md[3] = 'да';
             md[4] = 'суб-мат';
             md[5] = m.kind || 'основн.';
-            md[6] = (key.startsWith('nvf_cladding') && m.kind === 'основн.' && !m.noOverride) ? getCustomerMaterialName(pos) : m.name;
+            md[6] = (key.startsWith('nvf_cladding') && m.kind === 'основн.' && !m.noOverride && !tpl.preserveTemplateName) ? getCustomerMaterialName(pos) : m.name;
             md[7] = m.unit;
             if (m.j != null) md[9] = m.j;
             if (m.k != null) md[10] = m.k;

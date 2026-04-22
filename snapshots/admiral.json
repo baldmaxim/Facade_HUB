@@ -26,7 +26,6 @@
           "templates": [
             "nvf_subsystem",
             "nvf_cladding_cassette",
-            "flashings",
             "pp_otsechi"
           ]
         },

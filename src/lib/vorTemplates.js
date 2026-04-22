@@ -367,10 +367,11 @@ export const TEMPLATES = {
   },
   nvf_cladding_profiles_vertical: {
     costPath: 'ФАСАДНЫЕ РАБОТЫ / Облицовка НВФ / Здание',
+    preserveTemplateName: true,
     workMaterials: [
       {
         work: { name: 'Монтаж декоративных прямоугольных профилей', unit: 'м.п.' },
-        materials: [{ name: 'Декоративный профиль прямоугольный (по проекту)', unit: 'м.п.', kind: 'основн.', j: 1, k: 1.2 }],
+        materials: [{ name: 'Декоративная крышка прямоугольная 50х200 мм', unit: 'м.п.', kind: 'основн.', j: 1, k: 1.2 }],
       },
       {
         work: { name: 'Монтаж креплений', unit: 'м.п.' },

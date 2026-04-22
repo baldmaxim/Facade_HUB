@@ -11,7 +11,7 @@
  */
 
 import { TEMPLATES } from './vorTemplates.js';
-import { MATCH_RULES } from './vorRules.js';
+import { MATCH_RULES } from './rules/vorRules.js';
 
 export { TEMPLATES };
 
@@ -63,7 +63,7 @@ function runRules(rules, searchText, skipInsulation, isCustom = false) {
         if (skipInsulation && t === 'insulation') continue;
         if (!seen.has(t)) { templates.push(t); seen.add(t); }
       }
-      return { templates, ruleIndex: i, keyword: matchedKeyword, isCustom };
+      return { templates, ruleIndex: i, keyword: matchedKeyword, isCustom, ruleDefaultThickness: rule.defaultThickness };
     }
   }
   return null;
@@ -131,29 +131,38 @@ export function classifyRowRole(name) {
 /**
  * Определяет толщину утеплителя из названия позиции и примечания.
  * Приоритет: название > примечание > дефолт 150мм.
+ *
+ * Логика поиска:
+ *  1. Контекстный паттерн: число считается толщиной ТОЛЬКО если перед ним
+ *     (~30 символов) стоит слово-корень утеплителя (утепл/теплоизол/изоляц/минват/каменн.*ват/базальт).
+ *  2. Паттерн "толщ + число" (без привязки к слову утепл).
+ *  3. Если ничего — возвращаем undefined (не угадываем).
+ * Диапазон допустимых значений: 30–300 мм.
  */
 export function detectInsulationThickness(name, note) {
   const nameStr = name || '';
   const noteStr = note || '';
 
-  // Паттерн 1: явное "NNN мм" (основной)
-  const patternMm = /(\d{2,3})\s*мм/;
-  // Паттерн 2: "толщ" + число (без "мм")
-  const patternTolsch = /толщ\.?\s*(\d{2,3})/i;
-  // Паттерн 3: габариты "x NNN" — последнее число = толщина
-  const patternDim = /\d+\s*[xх×]\s*\d+\s*[xх×]\s*(\d{2,3})/i;
+  // Паттерн 1 (главный): слово-корень утеплителя → число мм
+  const patternContext = /(?:утепл|теплоизол|изоляц|минват|каменн.{0,5}ват|базальт)[^0-9]{0,30}(\d{2,3})\s*мм/i;
+  // Паттерн 2: "толщ" + число (с мм или без)
+  const patternTolsch = /толщ\.?\s*(\d{1,3})/i;
 
-  // Любая толщина в разумном диапазоне (30-300мм)
   for (const str of [nameStr, noteStr]) {
-    for (const pat of [patternMm, patternTolsch, patternDim]) {
-      const m = str.match(pat);
-      if (m) {
-        const mm = parseInt(m[1]);
-        if (mm >= 30 && mm <= 300) return mm;
-      }
+    // Паттерн 1
+    const m1 = str.match(patternContext);
+    if (m1) {
+      const mm = parseInt(m1[1]);
+      if (mm >= 30 && mm <= 300) return mm;
+    }
+    // Паттерн 2
+    const m2 = str.match(patternTolsch);
+    if (m2) {
+      const mm = parseInt(m2[1]);
+      if (mm >= 30 && mm <= 300) return mm;
     }
   }
-  return 150;
+  return undefined;
 }
 
 /**

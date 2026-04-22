@@ -50,11 +50,11 @@ export const MATCH_RULES = [
 
   // Откосы с мокрым фасадом (ВЫШЕ общего откос)
   { keywords: ['откос.*мокр', 'мокр.*фасад.*откос', 'откос.*штукатурн'],
-    templates: ['wet_facade', 'flashings', 'pp_otsechi'], secondary: [] },
+    templates: ['wet_facade', 'pp_otsechi'], secondary: [] },
 
   // Откосы с кассетами / алюминиевым фасадом (ВЫШЕ общего откос)
   { keywords: ['откос.*кассет', 'кассет.*откос', 'откос.*алюминиев.*фасад'],
-    templates: ['nvf_subsystem', 'nvf_cladding_cassette', 'flashings', 'pp_otsechi'], secondary: [] },
+    templates: ['nvf_subsystem', 'nvf_cladding_cassette', 'pp_otsechi'], secondary: [] },
 
   // Навесные элементы на витраж (пилоны) → кассеты без утеплителя (ВЫШЕ витраж)
   { keywords: ['навесн.*элемент.*витраж', 'пилон.*горизонт', 'пилон.*навесн', 'навесн.*пилон'],
@@ -66,7 +66,8 @@ export const MATCH_RULES = [
 
   // Решётки под лоджиями → полный НВФ с кассетами
   { keywords: ['решетк.*лоджи', 'решетк.*ниш.*кондиционер', 'решетк.*технич.*лодж'],
-    templates: ['nvf_subsystem', 'insulation', 'nvf_cladding_cassette'], secondary: ['scaffolding', 'kmd_nvf'] },
+    templates: ['nvf_subsystem', 'insulation', 'nvf_cladding_cassette'], secondary: ['scaffolding', 'kmd_nvf'],
+    defaultThickness: 180 },
 
   // Вертикальные прямоугольные профили
   { keywords: ['вертикальн.*прямоугольн.*профил', 'прямоугольн.*профил.*вертикальн', 'декоратив.*прямоугольн.*профил'],
