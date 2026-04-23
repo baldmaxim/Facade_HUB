@@ -1,15 +1,17 @@
 import { useState, useRef, useEffect, Fragment } from 'react';
+import { mutate as swrMutate } from 'swr';
 import { parseEmptyVor, generateFilledVor, downloadBlob } from '../lib/vorExcelGenerator';
 import { matchPositionDetailed, isHeader } from '../lib/vorMatcher';
 import { loadWorkPrices } from '../lib/vorPriceLoader';
+import { TPL_NAMES, SECONDARY, tplLabel } from '../lib/vorTplNames';
+import { runReview, runPropose, collectProposeTargets } from '../lib/vorProposeRunner';
 import { fetchWorkPrices, saveWorkPrices, countWorkPrices, entriesToPriceMap } from '../api/vorPrices';
 import { fetchCustomTemplates, customTemplatesToMap, customTemplatesToRules } from '../api/vorCustomTemplates';
 import { saveVorHistory } from '../api/vorHistory';
 import { saveReviewFeedback } from '../api/vorReviewFeedback';
-import { mutate as swrMutate } from 'swr';
-import { supabase } from '../lib/supabase';
-import { TPL_NAMES, SECONDARY, tplLabel } from '../lib/vorTplNames';
 import VorReviewRow from './VorReviewRow';
+import VorAltRow from './VorAltRow';
+import VorAiPanel from './VorAiPanel';
 import './VorFillModal.css';
 
 export default function VorFillModal({ objectId, objectName, onClose }) {
@@ -33,10 +35,13 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
   const [expandedReasoning, setExpandedReasoning] = useState(new Set()); // Set<rowKey>
   const [feedbackStatus, setFeedbackStatus]       = useState(new Map()); // Map<rowKey, 'saving'|'saved'|'error'>
   const [feedbackForm, setFeedbackForm]           = useState(null);      // {rowKey, correctTpls: string[], comment: string} | null
+  const [proposals, setProposals]                 = useState(new Map()); // Map<pos, {tplKeys, score, reasoning, comment}>
+  const [proposing, setProposing]                 = useState(false);
+  const [proposeProgress, setProposeProgress]     = useState({ done: 0, total: 0 });
+  const [expandedAlt, setExpandedAlt]             = useState(new Set()); // Set<rowKey> — раскрытые строки альтернатив
 
-  const vorInputRef    = useRef(null);
+  const vorInputRef = useRef(null);
   const pricesInputRef = useRef(null);
-
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -72,6 +77,9 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
     setExpandedReasoning(new Set());
     setFeedbackStatus(new Map());
     setFeedbackForm(null);
+    setProposals(new Map());
+    setProposeProgress({ done: 0, total: 0 });
+    setExpandedAlt(new Set());
     if (!file) return;
     setBusy(true);
     try {
@@ -95,7 +103,6 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
     const hdrOpts     = { priceAllWithQty: donstroy };
     const allPositions = parsedVor.sections.flatMap(s => s.positions);
     let matched = 0, unmatched = 0;
-
     const sections = parsedVor.sections.map((section, sectionIdx) => ({
       name: section.name,
       rows: section.positions.map((pos, posIdx) => {
@@ -126,17 +133,13 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
     setFeedbackStatus(prev => new Map(prev).set(row.rowKey, 'saving'));
     try {
       await saveReviewFeedback({
-        noteCustomer:    row.pos.noteCustomer || row.pos.name || '',
-        posName:         row.pos.name || '',
-        engineTplKeys:   row.templates || [],
-        correctTplKeys:  isCorrect ? null : (correctTpls || []),
-        aiVerdict:       review.verdict,
-        aiConfidence:    review.score, // в БД колонка называется ai_confidence, семантика = score 0..100
-        aiComment:       review.comment,
-        aiReasoning:     review.reasoning,
-        userIsCorrect:   isCorrect,
-        userComment:     userComment || null,
-        objectId,
+        noteCustomer: row.pos.noteCustomer || row.pos.name || '',
+        posName: row.pos.name || '',
+        engineTplKeys: row.templates || [],
+        correctTplKeys: isCorrect ? null : (correctTpls || []),
+        aiVerdict: review.verdict, aiConfidence: review.score,
+        aiComment: review.comment, aiReasoning: review.reasoning,
+        userIsCorrect: isCorrect, userComment: userComment || null, objectId,
       });
       setFeedbackStatus(prev => new Map(prev).set(row.rowKey, 'saved'));
       setFeedbackForm(null);
@@ -184,63 +187,54 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
 
   async function handleReviewAll() {
     if (!matchPreview) return;
-    // Собираем позиции к ревью: не заголовок + есть хоть один шаблон
-    const targets = [];
-    for (const section of matchPreview.sections) {
-      for (const row of section.rows) {
-        if (row.isHeader) continue;
-        if (!row.templates || row.templates.length === 0) continue;
-        targets.push({ pos: row.pos, tplKeys: [...row.templates], posCode: row.code || '' });
-      }
-    }
-    if (targets.length === 0) {
-      setReviewError('Нет позиций для ревью');
-      return;
-    }
-    setReviewing(true);
-    setReviewError(null);
-    setReviewProgress({ done: 0, total: targets.length });
-    setReviews(new Map());
-
-    const results = new Map();
-    for (let i = 0; i < targets.length; i++) {
-      const { pos, tplKeys, posCode } = targets[i];
-      try {
-        const { data, error } = await supabase.functions.invoke('vor-review', {
-          body: {
-            noteCustomer: pos.noteCustomer || pos.name || '',
-            tplKeys,
-            posCode,
-          },
-        });
-        if (error) {
-          // supabase-js прячет тело ответа в error.context — вытаскиваем, чтобы увидеть причину
-          let detail = error.message || 'unknown';
-          try {
-            const ctx = error.context;
-            if (ctx && typeof ctx.text === 'function') {
-              const body = await ctx.text();
-              if (body) detail = body.slice(0, 400);
-            }
-          } catch { /* ignore */ }
-          results.set(pos, { verdict: 'yellow', score: 50, comment: 'Ошибка: ' + detail, reasoning: '' });
-        } else if (data?.verdict) {
-          results.set(pos, {
-            verdict: data.verdict,
-            score: typeof data.score === 'number' ? data.score : 50,
-            comment: data.comment || '',
-            reasoning: data.reasoning || '',
-          });
-        } else {
-          results.set(pos, { verdict: 'yellow', score: 50, comment: 'Пустой ответ модели', reasoning: '' });
-        }
-      } catch (err) {
-        results.set(pos, { verdict: 'yellow', score: 50, comment: 'Сбой сети: ' + (err?.message || err), reasoning: '' });
-      }
-      setReviews(new Map(results));
-      setReviewProgress({ done: i + 1, total: targets.length });
-    }
+    setReviewing(true); setReviewError(null); setReviews(new Map());
+    await runReview(matchPreview, {
+      onStart:    total        => setReviewProgress({ done: 0, total }),
+      onEmpty:    ()           => setReviewError('Нет позиций для ревью'),
+      onResult:   map          => setReviews(map),
+      onProgress: (done, total)=> setReviewProgress({ done, total }),
+    });
     setReviewing(false);
+  }
+  async function handleProposeAll() {
+    if (!matchPreview) return;
+    setProposing(true);
+    setProposals(new Map());
+    await runPropose(
+      matchPreview,
+      {
+        onStart:   total      => setProposeProgress({ done: 0, total }),
+        onResult:  map        => setProposals(map),
+        onProgress:(done,total)=> setProposeProgress({ done, total }),
+      },
+      { reviews, scoreThreshold: 70 },
+    );
+    setProposing(false);
+  }
+
+  function applyProposal(pos, tplKeys, mode = 'replace', currentTemplates = []) {
+    if (!tplKeys || tplKeys.length === 0) return;
+    const next = mode === 'merge'
+      ? Array.from(new Set([...(currentTemplates || []), ...tplKeys]))
+      : [...tplKeys];
+    setOverrides(prev => {
+      const n = new Map(prev);
+      n.set(pos, next);
+      return n;
+    });
+    setProposals(prev => {
+      const n = new Map(prev);
+      n.delete(pos);
+      return n;
+    });
+  }
+
+  function toggleAlt(rowKey) {
+    setExpandedAlt(prev => {
+      const n = new Set(prev);
+      if (n.has(rowKey)) n.delete(rowKey); else n.add(rowKey);
+      return n;
+    });
   }
 
   async function handleGenerate() {
@@ -334,44 +328,26 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
             <div className="vfm-analyzing">Анализирую позиции...</div>
           )}
 
-          {matchPreview && (
+          {matchPreview && (() => {
+            const proposeCount = collectProposeTargets(matchPreview, reviews, 70).length;
+            return (
             <div className="vfm-preview">
-              <div className={`vfm-preview-summary ${matchPreview.unmatched > 0 ? 'has-unmatched' : 'all-matched'}`}>
-                <span>
-                  Распознано: <b>{matchPreview.matched}</b> из <b>{matchPreview.total}</b>
-                </span>
-                {matchPreview.unmatched > 0 && (
-                  <span className="vfm-preview-warn">
-                    · {matchPreview.unmatched} не распознано
-                  </span>
-                )}
-                <button
-                  type="button"
-                  className="vfm-review-btn"
-                  onClick={handleReviewAll}
-                  disabled={reviewing || busy || matchPreview.matched === 0}
-                  title="Проверить подбор шаблонов с помощью Gemini 2.5 Flash"
-                >
-                  {reviewing ? 'Ревью идёт…' : (reviews.size > 0 ? 'Прогнать ещё раз' : 'Проверить подбор AI')}
-                </button>
-              </div>
-
-              {reviewing && (
-                <div className="vfm-review-banner vfm-review-banner-running">
-                  <span className="vfm-review-spinner" />
-                  <span>
-                    Gemini проверяет позиции… <b>{reviewProgress.done}</b> из <b>{reviewProgress.total}</b>
-                  </span>
-                </div>
-              )}
-              {!reviewing && reviews.size > 0 && (
+              <VorAiPanel
+                matchPreview={matchPreview}
+                reviewsCount={reviews.size}
+                proposeCount={proposeCount}
+                reviewing={reviewing}
+                proposing={proposing}
+                busy={busy}
+                onReview={handleReviewAll}
+                onPropose={handleProposeAll}
+                reviewProgress={reviewProgress}
+                proposeProgress={proposeProgress}
+                reviewError={reviewError}
+              />
+              {!proposing && proposals.size > 0 && (
                 <div className="vfm-review-banner vfm-review-banner-done">
-                  <span>✓ Gemini проверил <b>{reviews.size}</b> {reviews.size === 1 ? 'позицию' : 'позиций'}. Наведите на кружок — короткий комментарий, клик — развёрнутое рассуждение.</span>
-                </div>
-              )}
-              {reviewError && (
-                <div className="vfm-review-banner vfm-review-banner-err">
-                  {reviewError}
+                  <span>🤖 Gemini предложил шаблоны для <b>{proposals.size}</b> позиций. Нераспознанные — кнопка «Применить» в строке; для распознанных — значок 🤖 рядом с кружком.</span>
                 </div>
               )}
 
@@ -412,7 +388,41 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
                             <td className="col-ptpl">
                               {row.isHeader && <span className="vfm-chip vfm-chip-hdr">заголовок</span>}
                               {!row.isHeader && row.templates.length === 0 && (
-                                <span className="vfm-chip vfm-chip-none">× не распознано</span>
+                                (() => {
+                                  const pr = proposals.get(row.pos);
+                                  if (!pr) {
+                                    return <span className="vfm-chip vfm-chip-none">× не распознано</span>;
+                                  }
+                                  if (pr.tplKeys.length === 0) {
+                                    return (
+                                      <span className="vfm-chip vfm-chip-none" title={pr.comment || ''}>
+                                        🤖 Gemini: нет подходящих шаблонов
+                                      </span>
+                                    );
+                                  }
+                                  return (
+                                    <>
+                                      <span className="vfm-propose-label" title={`${pr.score}/100 — ${pr.comment}`}>🤖 Предлагает ({pr.score}/100):</span>
+                                      {pr.tplKeys.map(t => (
+                                        <span
+                                          key={t}
+                                          className={`vfm-chip vfm-chip-propose ${SECONDARY.has(t) ? 'vfm-chip-sec' : ''}`}
+                                          title={pr.reasoning || pr.comment || ''}
+                                        >
+                                          {tplLabel(t)}
+                                        </span>
+                                      ))}
+                                      <button
+                                        type="button"
+                                        className="vfm-propose-apply"
+                                        onClick={() => applyProposal(row.pos, pr.tplKeys, 'replace', row.templates)}
+                                        title="Принять предложение Gemini (добавить в override)"
+                                      >
+                                        Применить
+                                      </button>
+                                    </>
+                                  );
+                                })()
                               )}
                               {row.templates.map(t => (
                                 <span
@@ -448,6 +458,23 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
                                     <span className="vfm-verdict-dot">●</span>
                                     <span className="vfm-verdict-pct">{score}</span>
                                     {r.reasoning && <span className="vfm-verdict-caret">{expanded ? '▾' : '▸'}</span>}
+                                  </button>
+                                );
+                              })()}
+                              {(() => {
+                                if (row.isHeader || row.templates.length === 0) return null;
+                                const pr = proposals.get(row.pos);
+                                if (!pr || !pr.tplKeys || pr.tplKeys.length === 0) return null;
+                                const open = expandedAlt.has(row.rowKey);
+                                return (
+                                  <button
+                                    type="button"
+                                    className="vfm-alt-badge"
+                                    title={`Gemini предлагает альтернативный подбор (${pr.score}/100). Клик — показать.`}
+                                    onClick={() => toggleAlt(row.rowKey)}
+                                  >
+                                    🤖 <span className="vfm-alt-score">{pr.score}</span>
+                                    <span className="vfm-verdict-caret">{open ? '▾' : '▸'}</span>
                                   </button>
                                 );
                               })()}
@@ -501,6 +528,16 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
                             onOpenIncorrect={() => openIncorrectForm(row)}
                             onSubmitIncorrect={() => submitFeedback(row, false, feedbackForm.correctTpls, feedbackForm.comment)}
                           />
+                          {!row.isHeader && row.templates.length > 0 && (
+                            <VorAltRow
+                              row={row}
+                              proposal={proposals.get(row.pos)}
+                              expanded={expandedAlt.has(row.rowKey)}
+                              onReplace={() => { applyProposal(row.pos, proposals.get(row.pos).tplKeys, 'replace', row.templates); toggleAlt(row.rowKey); }}
+                              onMerge={() => { applyProposal(row.pos, proposals.get(row.pos).tplKeys, 'merge', row.templates); toggleAlt(row.rowKey); }}
+                              onCancel={() => toggleAlt(row.rowKey)}
+                            />
+                          )}
                           </Fragment>
                         ))}
                       </Fragment>
@@ -509,7 +546,8 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
                 </table>
               </div>
             </div>
-          )}
+            );
+          })()}
 
           {/* 3. Прайс работ */}
           <div className="vfm-field">

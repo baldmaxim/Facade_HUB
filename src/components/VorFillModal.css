@@ -11,9 +11,9 @@
 .vfm-dialog {
   background: var(--color-bg, #fff);
   border-radius: 8px;
-  width: 1100px;
-  max-width: 96vw;
-  max-height: 92vh;
+  width: 1400px;
+  max-width: 97vw;
+  max-height: 94vh;
   display: flex;
   flex-direction: column;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
@@ -175,6 +175,32 @@
 .vfm-preview-summary b { font-weight: 700; }
 .vfm-preview-warn { color: #c05000; font-weight: 500; }
 
+/* ─── AI-пульт (шапка превью) ────────────────────────── */
+.vfm-ai-panel {
+  background: linear-gradient(to right, #f5f0ff, #f0f7ff);
+  border-bottom: 1px solid var(--color-border, #e0e0e0);
+  padding: 10px 14px;
+}
+.vfm-ai-panel-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #5a2a9c;
+  margin-bottom: 6px;
+}
+.vfm-ai-panel-summary {
+  font-size: 13px;
+  color: #333;
+  margin-bottom: 8px;
+}
+.vfm-ai-panel-summary b { font-weight: 700; }
+.vfm-ai-panel-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .vfm-preview-table-wrap {
   max-height: 480px;
   overflow-y: auto;
@@ -232,6 +258,108 @@
 .vfm-chip-sec  { background: #f0f0f0; color: #555; }
 .vfm-chip-none { background: #fee; color: #c00; font-weight: 500; }
 .vfm-chip-hdr  { background: #f0f0f0; color: #999; font-style: italic; }
+.vfm-chip-propose { background: #e8deff; color: #5a2a9c; border: 1px dashed #7a3fc0; }
+
+.vfm-propose-label {
+  display: inline-block;
+  margin-right: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #5a2a9c;
+  cursor: help;
+}
+
+.vfm-propose-apply {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 1px 8px;
+  font-size: 11px;
+  border-radius: 3px;
+  background: #7a3fc0;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+.vfm-propose-apply:hover { background: #6930a8; }
+
+/* ─── Значок альтернативы + строка сравнения ───────── */
+.vfm-alt-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: 6px;
+  padding: 1px 6px;
+  font-size: 11px;
+  border-radius: 3px;
+  background: #e8deff;
+  color: #5a2a9c;
+  border: 1px dashed #7a3fc0;
+  cursor: pointer;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+.vfm-alt-badge:hover { background: #d5c2f0; }
+.vfm-alt-score { font-weight: 600; font-size: 10px; }
+
+.vfm-alt-row td { background: #faf5ff; padding: 0; }
+.vfm-alt-cell {
+  padding: 10px 12px !important;
+  border-left: 3px solid #7a3fc0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.vfm-alt-head { margin-bottom: 6px; }
+.vfm-alt-label { font-weight: 600; color: #5a2a9c; font-size: 11px; }
+.vfm-alt-compare {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 6px;
+  padding: 6px 8px;
+  background: #fff;
+  border-radius: 4px;
+  border: 1px solid #eadffa;
+}
+.vfm-alt-line {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.vfm-alt-lbl {
+  font-size: 10px;
+  font-weight: 600;
+  color: #666;
+  min-width: 75px;
+  text-transform: uppercase;
+}
+.vfm-alt-reason {
+  color: #333;
+  background: #fff;
+  padding: 6px 8px;
+  border-radius: 4px;
+  border: 1px solid #eadffa;
+  margin-bottom: 6px;
+  white-space: pre-wrap;
+}
+.vfm-alt-comment { margin-bottom: 8px; color: #555; font-size: 11px; }
+.vfm-alt-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+.vfm-btn-alt-replace, .vfm-btn-alt-merge {
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+}
+.vfm-btn-alt-replace { background: #d14343; }
+.vfm-btn-alt-replace:hover { background: #b73030; }
+.vfm-btn-alt-merge { background: #2c9c5a; }
+.vfm-btn-alt-merge:hover { background: #247a48; }
 
 .vfm-rule-hint {
   display: inline-block;
@@ -349,6 +477,20 @@
 }
 .vfm-review-btn:hover:not(:disabled) { background: #faf5ff; }
 .vfm-review-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.vfm-propose-btn {
+  padding: 4px 12px;
+  border-radius: 4px;
+  border: 1px solid #1565c0;
+  background: #fff;
+  color: #1565c0;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.vfm-propose-btn:hover:not(:disabled) { background: #f0f7ff; }
+.vfm-propose-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .vfm-review-banner {
   display: flex;
