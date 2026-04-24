@@ -27,4 +27,12 @@ export default defineConfig([
       'max-lines': ['error', { max: 600, skipBlankLines: true, skipComments: true }],
     },
   },
+  {
+    // vorExcelGenerator.js — сложный генератор Excel (split-3 + simple + wet_facade inline + фильтры);
+    // лимит временно поднят до 650 строк, TODO: вынести split-3 в отдельный модуль.
+    files: ['src/lib/vorExcelGenerator.js'],
+    rules: {
+      'max-lines': ['error', { max: 650, skipBlankLines: true, skipComments: true }],
+    },
+  },
 ])

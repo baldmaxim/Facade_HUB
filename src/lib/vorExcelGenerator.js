@@ -375,6 +375,7 @@ export function generateFilledVor(parsed, options = {}) {
     }
 
     let clusterInsulationThickness = 150; // per-cluster insulation thickness
+    let clusterMaterialUnits = new Set(); // per-cluster: units of material-role positions (для фильтра auxiliary)
 
     for (let posIdx = 0; posIdx < section.positions.length; posIdx++) {
       const pos = section.positions[posIdx];
@@ -445,7 +446,7 @@ export function generateFilledVor(parsed, options = {}) {
             totalWorks++;
           }
 
-          // Все вспомогательные материалы из кластера (без дубликатов)
+          // Все материалы кластера с unit, не совпадающим с unit material-позиций (мембрана+крепёж уходят сюда; сам утеплитель расценён выше). Дедуп по name|unit|j|k.
           const seen = new Set();
           for (const key of clusterTemplates) {
             const tpl = key === 'insulation'
@@ -453,14 +454,16 @@ export function generateFilledVor(parsed, options = {}) {
               : ALL_TEMPLATES[key];
             if (!tpl) continue;
             for (const m of tplMaterials(tpl)) {
-              if (m.kind !== 'вспомогат.') continue;
-              if (seen.has(m.name)) continue;
-              seen.add(m.name);
+              const mUnit = (m.unit || '').toString().toLowerCase();
+              if (clusterMaterialUnits.size > 0 && clusterMaterialUnits.has(mUnit)) continue;
+              const dedupKey = `${m.name}|${mUnit}|${m.j ?? ''}|${m.k ?? ''}`;
+              if (seen.has(dedupKey)) continue;
+              seen.add(dedupKey);
               const md = new Array(NC).fill('');
               md[2] = tpl.costPath;
               md[3] = 'да';
               md[4] = 'суб-мат';
-              md[5] = m.kind;
+              md[5] = m.kind || 'основн.';
               md[6] = m.name;
               md[7] = m.unit;
               if (m.j != null) md[9] = m.j;
@@ -477,6 +480,7 @@ export function generateFilledVor(parsed, options = {}) {
           }
           clusterTemplates = [];
           clusterInsulationThickness = 150; // reset for next cluster
+          clusterMaterialUnits = new Set(); // reset for next cluster
           continue;
         }
 
@@ -575,7 +579,9 @@ export function generateFilledVor(parsed, options = {}) {
             }
           }
         } else {
-          // role === 'material': пустая работа + только основные материалы
+          // role === 'material': пустая работа + основные материалы с unit == pos.unit (мембрана/крепёж с другим unit уйдут в auxiliary-позицию).
+          const posUnit = (pos.unit || '').toString().toLowerCase();
+          if (posUnit) clusterMaterialUnits.add(posUnit);
           for (const key of tplKeys) {
             const tpl = getTemplate(key, pos.name, pos.noteCustomer, posInfos[posIdx] && posInfos[posIdx].insulationThickness, posInfos[posIdx] && posInfos[posIdx].ruleDefaultThickness);
             if (!tpl) continue;
@@ -600,9 +606,9 @@ export function generateFilledVor(parsed, options = {}) {
               totalWorks++;
             }
 
-            // Только основные материалы
             for (const m of tplMaterials(tpl)) {
               if (m.kind !== 'основн.') continue;
+              if (posUnit && (m.unit || '').toString().toLowerCase() !== posUnit) continue;
               const md = new Array(NC).fill('');
               md[2] = tpl.costPath;
               md[3] = 'да';
