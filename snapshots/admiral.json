@@ -26,7 +26,8 @@
           "templates": [
             "nvf_subsystem",
             "nvf_cladding_cassette",
-            "pp_otsechi"
+            "pp_otsechi",
+            "flashings"
           ]
         },
         {
@@ -39,7 +40,9 @@
             "insulation",
             "nvf_cladding_cassette",
             "scaffolding",
-            "kmd_nvf"
+            "kmd_nvf",
+            "pp_otsechi",
+            "flashings"
           ]
         }
       ]
@@ -57,7 +60,9 @@
             "insulation",
             "nvf_cladding_concrete_tile",
             "scaffolding",
-            "kmd_nvf"
+            "kmd_nvf",
+            "pp_otsechi",
+            "flashings"
           ]
         }
       ]
@@ -85,9 +90,11 @@
           "role": "material",
           "isHeader": false,
           "templates": [
+            "wet_facade",
             "nvf_subsystem",
             "nvf_cladding_cassette",
-            "scaffolding"
+            "scaffolding",
+            "kmd_nvf"
           ]
         }
       ]

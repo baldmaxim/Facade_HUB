@@ -63,6 +63,16 @@ function runRules(rules, searchText, skipInsulation, isCustom = false) {
         if (skipInsulation && t === 'insulation') continue;
         if (!seen.has(t)) { templates.push(t); seen.add(t); }
       }
+      // Авто-добавление pp_otsechi/flashings к НВФ-матчам, если в тексте позиции упомянуты откосы/отливы
+      const hasNvfCladding = templates.some(t => /^nvf_cladding_/.test(t));
+      if (hasNvfCladding) {
+        if (/откос/.test(searchText) && !seen.has('pp_otsechi')) {
+          templates.push('pp_otsechi'); seen.add('pp_otsechi');
+        }
+        if (/отлив/.test(searchText) && !seen.has('flashings')) {
+          templates.push('flashings'); seen.add('flashings');
+        }
+      }
       return { templates, ruleIndex: i, keyword: matchedKeyword, isCustom, ruleDefaultThickness: rule.defaultThickness };
     }
   }

@@ -138,10 +138,10 @@
           "isHeader": false,
           "templates": [
             "spk_profile",
+            "insulation",
             "spk_glass",
-            "spk_broneplenka",
             "scaffolding",
-            "kmd_spk"
+            "kmd_nvf"
           ]
         },
         {
@@ -618,9 +618,11 @@
           "role": "work",
           "isHeader": false,
           "templates": [
+            "wet_facade",
             "nvf_subsystem",
             "nvf_cladding_cassette",
-            "scaffolding"
+            "scaffolding",
+            "kmd_nvf"
           ]
         },
         {
@@ -629,9 +631,11 @@
           "role": "work",
           "isHeader": false,
           "templates": [
+            "wet_facade",
             "nvf_subsystem",
             "nvf_cladding_cassette",
-            "scaffolding"
+            "scaffolding",
+            "kmd_nvf"
           ]
         },
         {
@@ -640,9 +644,11 @@
           "role": "work",
           "isHeader": false,
           "templates": [
+            "wet_facade",
             "nvf_subsystem",
             "nvf_cladding_cassette",
-            "scaffolding"
+            "scaffolding",
+            "kmd_nvf"
           ]
         },
         {
@@ -651,9 +657,11 @@
           "role": "work",
           "isHeader": false,
           "templates": [
+            "wet_facade",
             "nvf_subsystem",
             "nvf_cladding_cassette",
-            "scaffolding"
+            "scaffolding",
+            "kmd_nvf"
           ]
         },
         {
@@ -802,8 +810,8 @@
           "isHeader": false,
           "templates": [
             "spk_profile",
-            "scaffolding",
-            "kmd_spk"
+            "vent_grilles",
+            "scaffolding"
           ]
         }
       ]
@@ -1056,9 +1064,11 @@
           "role": "work",
           "isHeader": false,
           "templates": [
-            "spk_profile",
+            "wet_facade",
+            "nvf_subsystem",
+            "nvf_cladding_cassette",
             "scaffolding",
-            "kmd_spk"
+            "kmd_nvf"
           ]
         },
         {
@@ -1164,56 +1174,28 @@
           "name": "Дверь остекленная, раздвижная в составе витража 2100х2400(h)",
           "role": "material",
           "isHeader": false,
-          "templates": [
-            "spk_profile",
-            "doors_entrance",
-            "spk_glass",
-            "spk_broneplenka",
-            "scaffolding",
-            "kmd_spk"
-          ]
+          "templates": []
         },
         {
           "code": "06.03.01.01.01.02",
           "name": "Дверь остекленная, раздвижная в составе витража 2200х2400(h)",
           "role": "material",
           "isHeader": false,
-          "templates": [
-            "spk_profile",
-            "doors_entrance",
-            "spk_glass",
-            "spk_broneplenka",
-            "scaffolding",
-            "kmd_spk"
-          ]
+          "templates": []
         },
         {
           "code": "06.03.01.01.01.03",
           "name": "Дверь остекленная, раздвижная в составе витража 2250х2400(h)",
           "role": "material",
           "isHeader": false,
-          "templates": [
-            "spk_profile",
-            "doors_entrance",
-            "spk_glass",
-            "spk_broneplenka",
-            "scaffolding",
-            "kmd_spk"
-          ]
+          "templates": []
         },
         {
           "code": "06.03.01.01.01.04",
           "name": "Дверь остекленная, раздвижная в составе витража 2430х2400(h)",
           "role": "material",
           "isHeader": false,
-          "templates": [
-            "spk_profile",
-            "doors_entrance",
-            "spk_glass",
-            "spk_broneplenka",
-            "scaffolding",
-            "kmd_spk"
-          ]
+          "templates": []
         },
         {
           "code": "06.03.01.01.01.05",
@@ -1608,70 +1590,35 @@
           "name": "Дверь остекленная, раздвижная в составе витража вторая нитка 2100х2400(h)",
           "role": "material",
           "isHeader": false,
-          "templates": [
-            "spk_profile",
-            "doors_entrance",
-            "spk_glass",
-            "spk_broneplenka",
-            "scaffolding",
-            "kmd_spk"
-          ]
+          "templates": []
         },
         {
           "code": "06.03.01.03.01.02",
           "name": "Дверь остекленная, раздвижная в составе витража вторая нитка 2250х2400(h)",
           "role": "material",
           "isHeader": false,
-          "templates": [
-            "spk_profile",
-            "doors_entrance",
-            "spk_glass",
-            "spk_broneplenka",
-            "scaffolding",
-            "kmd_spk"
-          ]
+          "templates": []
         },
         {
           "code": "06.03.01.03.01.03",
           "name": "Дверь остекленная, раздвижная в составе витража вторая нитка 2430х2400(h)",
           "role": "material",
           "isHeader": false,
-          "templates": [
-            "spk_profile",
-            "doors_entrance",
-            "spk_glass",
-            "spk_broneplenka",
-            "scaffolding",
-            "kmd_spk"
-          ]
+          "templates": []
         },
         {
           "code": "06.03.01.03.01.04",
           "name": "Дверь остекленная, раздвижная в составе витража вторая нитка 2200х2400(h)",
           "role": "material",
           "isHeader": false,
-          "templates": [
-            "spk_profile",
-            "doors_entrance",
-            "spk_glass",
-            "spk_broneplenka",
-            "scaffolding",
-            "kmd_spk"
-          ]
+          "templates": []
         },
         {
           "code": "06.03.01.03.01.05",
           "name": "Дверь остекленная, раздвижная в составе витража вторая нитка 2000х2400(h)",
           "role": "material",
           "isHeader": false,
-          "templates": [
-            "spk_profile",
-            "doors_entrance",
-            "spk_glass",
-            "spk_broneplenka",
-            "scaffolding",
-            "kmd_spk"
-          ]
+          "templates": []
         },
         {
           "code": "06.03.01.03.02",
@@ -1781,14 +1728,7 @@
           "name": "Дверь раздвижная остекленная в составе витража 2065х2280(h)",
           "role": "material",
           "isHeader": false,
-          "templates": [
-            "spk_profile",
-            "doors_entrance",
-            "spk_glass",
-            "spk_broneplenka",
-            "scaffolding",
-            "kmd_spk"
-          ]
+          "templates": []
         },
         {
           "code": "06.03.01.05.01.06",
