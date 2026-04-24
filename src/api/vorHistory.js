@@ -10,7 +10,10 @@ const PREFIX = 'vor-history';
  */
 export async function saveVorHistory(objectId, blob, fileName, stats = null) {
   const ts = Date.now();
-  const filePath = `${PREFIX}/${objectId}/${ts}-${fileName}`;
+  // Storage-ключ должен быть ASCII: кириллица/ё/спецсимволы заменяем на "_".
+  // Оригинальное fileName сохраняется отдельным полем — используется для download-атрибута.
+  const safeName = (fileName || 'vor.xlsx').replace(/[^\w.-]/g, '_');
+  const filePath = `${PREFIX}/${objectId}/${ts}-${safeName}`;
 
   // Загружаем в storage
   const { error: uploadError } = await supabase.storage

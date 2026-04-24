@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, Fragment } from 'react';
 import { mutate as swrMutate } from 'swr';
 import { parseEmptyVor, generateFilledVor, downloadBlob } from '../lib/vorExcelGenerator';
-import { matchPositionDetailed, isHeader } from '../lib/vorMatcher';
+import { matchPositionDetailed, isHeader, classifyRowRole, detectVorStyle } from '../lib/vorMatcher';
 import { loadWorkPrices } from '../lib/vorPriceLoader';
 import { TPL_NAMES, SECONDARY, tplLabel } from '../lib/vorTplNames';
 import { runReview, runPropose, collectProposeTargets } from '../lib/vorProposeRunner';
@@ -103,15 +103,22 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
   if (parsedVor) {
     const hdrOpts     = { priceAllWithQty: donstroy };
     const allPositions = parsedVor.sections.flatMap(s => s.positions);
+    const vorStyle = detectVorStyle(allPositions);
     let matched = 0, unmatched = 0;
     const sections = parsedVor.sections.map((section, sectionIdx) => ({
       name: section.name,
       rows: section.positions.map((pos, posIdx) => {
         const hdr = isHeader(pos, allPositions, hdrOpts);
+        const role = classifyRowRole(pos.name);
+        // В split-3 "Прочие материалы" собираются генератором из кластера — в превью считаем распознанными
+        const isAuxCluster = vorStyle === 'split-3' && role === 'auxiliary';
         const autoMatch = hdr ? { templates: [], keyword: null, isCustom: false } : matchPositionDetailed(pos.name, pos.noteCustomer || '', customRules);
         const override  = overrides.get(pos);
         const templates = override !== undefined ? override : autoMatch.templates;
-        if (!hdr) { templates.length > 0 ? matched++ : unmatched++; }
+        if (!hdr) {
+          if (templates.length > 0 || isAuxCluster) matched++;
+          else unmatched++;
+        }
         return {
           pos,
           rowKey: `${sectionIdx}:${posIdx}`,
@@ -121,6 +128,7 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
           keyword: autoMatch.keyword,
           isCustom: autoMatch.isCustom || false,
           isHeader: hdr,
+          isAuxCluster,
           isOverridden: override !== undefined,
         };
       }),
@@ -380,7 +388,12 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
                             </td>
                             <td className="col-ptpl">
                               {row.isHeader && <span className="vfm-chip vfm-chip-hdr">заголовок</span>}
-                              {!row.isHeader && row.templates.length === 0 && (
+                              {!row.isHeader && row.templates.length === 0 && row.isAuxCluster && (
+                                <span className="vfm-chip vfm-chip-hdr" title="Позиция типа «Прочие материалы» — состав собирается генератором из шаблонов предыдущих позиций кластера (split-3 режим)">
+                                  ⚙ из кластера
+                                </span>
+                              )}
+                              {!row.isHeader && !row.isAuxCluster && row.templates.length === 0 && (
                                 (() => {
                                   const pr = proposals.get(row.pos);
                                   if (!pr) {

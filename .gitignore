@@ -46,6 +46,11 @@ sokolniki_comparison.txt
 compare_sobytie.mjs
 diff_sobytie.mjs
 inspect_sobytie.mjs
+compare_muza.mjs
+muza_our.txt
+muza_correct.txt
+muza_v3_our.txt
+muza_v3_correct.txt
 
 # Выходы тестовых прогонов движка ВОР
 test_output_*.xlsx
