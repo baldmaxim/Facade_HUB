@@ -9,6 +9,7 @@ import { fetchWorkPrices, saveWorkPrices, countWorkPrices, entriesToPriceMap } f
 import { fetchCustomTemplates, customTemplatesToMap, customTemplatesToRules } from '../api/vorCustomTemplates';
 import { saveVorHistory } from '../api/vorHistory';
 import { saveReviewFeedback } from '../api/vorReviewFeedback';
+import { markAiProposalApplied } from '../api/vorAiProposals';
 import VorReviewRow from './VorReviewRow';
 import VorAltRow from './VorAltRow';
 import VorAiPanel from './VorAiPanel';
@@ -207,7 +208,7 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
         onResult:  map        => setProposals(map),
         onProgress:(done,total)=> setProposeProgress({ done, total }),
       },
-      { reviews, scoreThreshold: 70 },
+      { reviews, scoreThreshold: 70, objectId },
     );
     setProposing(false);
   }
@@ -217,24 +218,16 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
     const next = mode === 'merge'
       ? Array.from(new Set([...(currentTemplates || []), ...tplKeys]))
       : [...tplKeys];
-    setOverrides(prev => {
-      const n = new Map(prev);
-      n.set(pos, next);
-      return n;
-    });
-    setProposals(prev => {
-      const n = new Map(prev);
-      n.delete(pos);
-      return n;
-    });
+    setOverrides(prev => { const n = new Map(prev); n.set(pos, next); return n; });
+    const pr = proposals.get(pos);
+    if (pr && pr.proposalId) {
+      markAiProposalApplied(pr.proposalId, mode, next).catch(err => console.error('markAiProposalApplied:', err));
+    }
+    setProposals(prev => { const n = new Map(prev); n.delete(pos); return n; });
   }
 
   function toggleAlt(rowKey) {
-    setExpandedAlt(prev => {
-      const n = new Set(prev);
-      if (n.has(rowKey)) n.delete(rowKey); else n.add(rowKey);
-      return n;
-    });
+    setExpandedAlt(prev => { const n = new Set(prev); n.has(rowKey) ? n.delete(rowKey) : n.add(rowKey); return n; });
   }
 
   async function handleGenerate() {

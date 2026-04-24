@@ -35,3 +35,20 @@ dist-ssr
 # Claude temp files
 tmpclaude-*
 .claude/
+
+# VOR debug utilities + temp dumps (не релевантно в репо, регенерируется локально)
+.temp_feedback.json
+sobytie_our.txt
+sobytie_correct.txt
+sobytie_our.old.txt
+muza_final_comparison.txt
+sokolniki_comparison.txt
+compare_sobytie.mjs
+diff_sobytie.mjs
+inspect_sobytie.mjs
+
+# Выходы тестовых прогонов движка ВОР
+test_output_*.xlsx
+
+# Supabase локальный temp
+supabase/.temp/

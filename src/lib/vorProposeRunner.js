@@ -2,6 +2,7 @@
 // Оба шагают по позициям последовательно, обновляя Map инкрементально через колбеки.
 // Вынесено из VorFillModal.jsx, чтобы не разрастался лимит строк на файл.
 import { supabase } from './supabase';
+import { saveAiProposal } from '../api/vorAiProposals';
 
 async function readErrorDetail(error) {
   let detail = error?.message || 'unknown';
@@ -83,13 +84,14 @@ export function collectProposeTargets(matchPreview, reviews, scoreThreshold = 70
     for (const row of section.rows) {
       if (row.isHeader) continue;
       const hasTemplates = row.templates && row.templates.length > 0;
+      const engineTplKeys = row.templates || [];
       if (!hasTemplates) {
-        targets.push({ pos: row.pos, posCode: row.code || '', reason: 'unmatched' });
+        targets.push({ pos: row.pos, posCode: row.code || '', engineTplKeys, reason: 'unmatched' });
         continue;
       }
       const r = reviews && reviews.get(row.pos);
       if (r && typeof r.score === 'number' && r.score < scoreThreshold) {
-        targets.push({ pos: row.pos, posCode: row.code || '', reason: 'low-score' });
+        targets.push({ pos: row.pos, posCode: row.code || '', engineTplKeys, reason: 'low-score' });
       }
     }
   }
@@ -98,14 +100,16 @@ export function collectProposeTargets(matchPreview, reviews, scoreThreshold = 70
 
 export async function runPropose(matchPreview, cb, opts = {}) {
   const { onStart, onProgress, onResult, onDone } = cb;
-  const { reviews = null, scoreThreshold = 70 } = opts;
+  const { reviews = null, scoreThreshold = 70, objectId = null } = opts;
   const targets = collectProposeTargets(matchPreview, reviews, scoreThreshold);
   if (targets.length === 0) { onDone && onDone(); return; }
 
   onStart && onStart(targets.length);
   const results = new Map();
   for (let i = 0; i < targets.length; i++) {
-    const { pos, posCode } = targets[i];
+    const { pos, posCode, engineTplKeys } = targets[i];
+    let proposal;
+    let isError = false;
     try {
       const { data, error } = await supabase.functions.invoke('vor-review', {
         body: {
@@ -117,18 +121,40 @@ export async function runPropose(matchPreview, cb, opts = {}) {
       });
       if (error) {
         const detail = await readErrorDetail(error);
-        results.set(pos, { tplKeys: [], score: 0, reasoning: '', comment: 'Ошибка: ' + detail });
+        proposal = { tplKeys: [], score: 0, reasoning: '', comment: 'Ошибка: ' + detail };
+        isError = true;
       } else {
-        results.set(pos, {
+        proposal = {
           tplKeys: Array.isArray(data?.tplKeys) ? data.tplKeys : [],
           score: typeof data?.score === 'number' ? data.score : 0,
           reasoning: data?.reasoning || '',
           comment: data?.comment || '',
-        });
+        };
       }
     } catch (err) {
-      results.set(pos, { tplKeys: [], score: 0, reasoning: '', comment: 'Сбой сети: ' + (err?.message || err) });
+      proposal = { tplKeys: [], score: 0, reasoning: '', comment: 'Сбой сети: ' + (err?.message || err) };
+      isError = true;
     }
+    // Fire-and-forget логирование в DB. Ждём id, чтобы клиент мог потом обновить applied_mode.
+    try {
+      const saved = await saveAiProposal({
+        noteCustomer:     pos.noteCustomer || pos.name || '',
+        posName:          pos.name || '',
+        posCode,
+        objectId,
+        engineTplKeys:    engineTplKeys || [],
+        proposedTplKeys:  proposal.tplKeys,
+        aiScore:          proposal.score,
+        aiReasoning:      proposal.reasoning,
+        aiComment:        proposal.comment,
+        isError,
+      });
+      proposal.proposalId = saved?.id || null;
+    } catch (logErr) {
+      // Не блокируем основной поток: если лог упал — просто идём дальше
+      console.error('saveAiProposal:', logErr);
+    }
+    results.set(pos, proposal);
     onResult && onResult(new Map(results));
     onProgress && onProgress(i + 1, targets.length);
   }
