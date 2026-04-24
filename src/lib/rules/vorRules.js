@@ -100,11 +100,17 @@ export const MATCH_RULES = [
   // Двери входные (витражные, БКФН) — ВЫШЕ стоечно-ригельн
   { keywords: ['двер.*входн', 'входн.*двер', 'БКФН', 'бкфн', 'двер.*витражн', 'витражн.*двер'],
     templates: ['spk_profile', 'doors_entrance', 'spk_glass', 'spk_broneplenka'], secondary: ['scaffolding', 'kmd_spk'] },
-  // Общие двери (fallback) — ВЫШЕ стоечно-ригельн
+  // Окно (одиночное слово — ловит "Окно одностворчатое", "Окном балконное"). ВЫШЕ общих дверей, чтобы
+  // "Окно одностворчатое" не ушло в двери через "створч". Regex "окно" точно НЕ ловит "оконных"/"оконный"
+  // (там "окон" без последней "о") — это оставляем для fallback-правила окон ниже.
+  { keywords: ['окно', 'окном'],
+    templates: ['spk_profile', 'spk_glass', 'spk_broneplenka'], secondary: ['scaffolding', 'kmd_spk'] },
+
+  // Общие двери (fallback) — ВЫШЕ стоечно-ригельн. "створч" ловит "Одностворчатая витражная" из раздела "Фасадные двери" (без слов "окно"/"дверь" в имени)
   { keywords: ['двер', 'створч'],
     templates: ['spk_profile', 'doors_entrance', 'spk_glass', 'spk_broneplenka'], secondary: ['scaffolding', 'kmd_spk'] },
 
-  // Окна — ВЫШЕ "стекл", чтобы получить scaffolding+kmd+защиту
+  // Окна (общее правило, ниже дверей) — "оконн" ловит "оконных", "оконный", "оконном"
   { keywords: ['окна', 'оконн', 'аит'],
     templates: ['spk_profile', 'spk_glass', 'spk_broneplenka'], secondary: ['scaffolding', 'kmd_spk'] },
 

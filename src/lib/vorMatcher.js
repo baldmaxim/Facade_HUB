@@ -73,6 +73,15 @@ function runRules(rules, searchText, skipInsulation, isCustom = false) {
           templates.push('flashings'); seen.add('flashings');
         }
       }
+      // Авто-добавление custom_stvorka_spk к СПК/ПВХ-матчам (окна/витражи/двери/тамбуры/стемалит/ПВХ-окна),
+      // если в тексте есть признак створки. Сам custom-шаблон в vor_custom_templates — мержится
+      // в ALL_TEMPLATES в runtime, если пользователь удалит/переименует его — просто не генерируется.
+      const hasSpkOrPvh = templates.includes('spk_profile') || templates.includes('pvh_profile');
+      if (hasSpkOrPvh && !seen.has('custom_stvorka_spk')) {
+        if (/створ|откидн|одностворч|двустворч|поворот/.test(searchText)) {
+          templates.push('custom_stvorka_spk'); seen.add('custom_stvorka_spk');
+        }
+      }
       return { templates, ruleIndex: i, keyword: matchedKeyword, isCustom, ruleDefaultThickness: rule.defaultThickness };
     }
   }
