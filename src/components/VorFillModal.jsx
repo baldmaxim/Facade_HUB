@@ -13,7 +13,16 @@ import { markAiProposalApplied } from '../api/vorAiProposals';
 import VorReviewRow from './VorReviewRow';
 import VorAltRow from './VorAltRow';
 import VorAiPanel from './VorAiPanel';
+import VorPipelineSteps from './VorPipelineSteps';
 import './VorFillModal.css';
+
+const INITIAL_PIPELINE_STEPS = [
+  { id: 'parse',   label: 'Парсинг файла ВОР',         status: 'pending', detail: '', errorMessage: '' },
+  { id: 'context', label: 'Загрузка контекста (прайс/шаблоны)', status: 'pending', detail: '', errorMessage: '' },
+  { id: 'match',   label: 'Подбор шаблонов',           status: 'pending', detail: '', errorMessage: '' },
+  { id: 'gen',     label: 'Генерация Excel',           status: 'pending', detail: '', errorMessage: '' },
+  { id: 'ready',   label: 'Готов к скачиванию',        status: 'pending', detail: '', errorMessage: '' },
+];
 
 export default function VorFillModal({ objectId, objectName, onClose }) {
   const [vorFile, setVorFile]       = useState(null);
@@ -25,6 +34,8 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
   const [busy, setBusy]             = useState(false);
   const [error, setError]           = useState(null);
   const [stats, setStats]           = useState(null);
+  const [pipelineSteps, setPipelineSteps] = useState(INITIAL_PIPELINE_STEPS);
+  const [cachedResult, setCachedResult]   = useState(null); // {blob, stats} dry-run генерации
   const [overrides, setOverrides]   = useState(new Map()); // Map<positionRef, string[]>
   const [editingKey, setEditingKey] = useState(null);      // 'sectionIdx:posIdx' или null
   const [customTemplates, setCustomTemplates] = useState({});   // map key→tpl
@@ -63,11 +74,12 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
     return () => { cancelled = true; };
   }, [objectId]);
 
-  // Выбор ВОР → авто-парсинг и показ матчинга
+  // Выбор ВОР → парсинг (этап 1). Этапы 2–5 запускаются useEffect-ом ниже.
   async function handleVorFileChange(e) {
     const file = e.target.files[0] || null;
     setVorFile(file);
     setParsedVor(null);
+    setCachedResult(null);
     setStats(null);
     setError(null);
     setOverrides(new Map());
@@ -81,22 +93,123 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
     setProposals(new Map());
     setProposeProgress({ done: 0, total: 0 });
     setExpandedAlt(new Set());
+    setPipelineSteps(INITIAL_PIPELINE_STEPS);
     if (!file) return;
     setBusy(true);
+
+    // ─── Этап 1: Парсинг файла ВОР ───────────────────────────────────
+    setStep('parse', 'running');
     try {
       const buf = await file.arrayBuffer();
       const parsed = parseEmptyVor(new Uint8Array(buf));
       if (parsed.stats.totalPositions === 0) {
-        setError('Не найдено позиций в файле ВОР');
-      } else {
-        setParsedVor(parsed);
+        throw new Error('Не найдено позиций в файле ВОР (проверь шапку и структуру колонок)');
       }
+      setStep('parse', 'done', `${parsed.stats.totalPositions} позиций, ${parsed.stats.totalSections} разделов`);
+      setParsedVor(parsed); // запускает useEffect → этапы 2–5
     } catch (err) {
-      setError('Ошибка чтения файла: ' + err.message);
-    } finally {
-      setBusy(false);
+      setStep('parse', 'error', '', err.message);
     }
+    setBusy(false);
   }
+
+  // Этапы 2–5 — пересчитываются на любое изменение опций, влияющих на
+  // расценивание (donstroy, прайс, overrides, custom-шаблоны, AI-ревью).
+  // Этап 4 = dry-run генерация blob в память, кешируется в cachedResult,
+  // чтобы кнопка «Расценить и скачать» работала мгновенно.
+  useEffect(() => {
+    if (!parsedVor) return;
+    let cancelled = false;
+
+    (async () => {
+      // ─── Этап 2: Контекст (загрузка прайса в память) ─────────────
+      setStep('context', 'running');
+      let workPrices = null;
+      try {
+        let pricesInfo;
+        if (pricesMode === 'saved') {
+          const entries = await fetchWorkPrices(objectId);
+          if (cancelled) return;
+          if (entries.length > 0) {
+            workPrices = entriesToPriceMap(entries);
+            pricesInfo = `прайс из БД: ${entries.length} записей`;
+          } else {
+            pricesInfo = 'прайс из БД: пусто';
+          }
+        } else if (pricesMode === 'new' && pricesFile) {
+          const pb = await pricesFile.arrayBuffer();
+          if (cancelled) return;
+          workPrices = loadWorkPrices(new Uint8Array(pb));
+          pricesInfo = `новый прайс: ${pricesFile.name} (сохранится в БД при скачивании)`;
+        } else if (pricesMode === 'new' && !pricesFile) {
+          pricesInfo = 'выбран режим «новый прайс», но файл не загружен — генерация без цен';
+        } else {
+          pricesInfo = 'без прайса работ';
+        }
+        const customCount = Object.keys(customTemplates).length;
+        const ruleCount = customRules.length;
+        if (cancelled) return;
+        setStep('context', 'done', `${pricesInfo}; custom-шаблонов: ${customCount}, custom-правил: ${ruleCount}`);
+      } catch (err) {
+        if (!cancelled) setStep('context', 'error', '', err.message);
+        return;
+      }
+
+      // ─── Этап 3: Подбор шаблонов (учитывает overrides) ────────────
+      setStep('match', 'running');
+      try {
+        const allPositions = parsedVor.sections.flatMap(s => s.positions);
+        const hdrOpts = { priceAllWithQty: donstroy };
+        const vorStyle = detectVorStyle(allPositions);
+        let matched = 0, unmatched = 0;
+        for (const pos of allPositions) {
+          if (isHeader(pos, allPositions, hdrOpts)) continue;
+          const det = matchPositionDetailed(pos.name, pos.noteCustomer || '', customRules);
+          const role = classifyRowRole(pos.name);
+          const isAux = vorStyle === 'split-3' && role === 'auxiliary';
+          const ovr = overrides.get(pos);
+          const tpls = ovr !== undefined ? ovr : det.templates;
+          if (tpls.length > 0 || isAux) matched++;
+          else unmatched++;
+        }
+        const total = matched + unmatched;
+        const styleLabel = vorStyle === 'split-3' ? 'split-3' : 'simple';
+        if (cancelled) return;
+        setStep('match', 'done',
+          `стиль: ${styleLabel}; распознано ${matched}/${total}${unmatched ? ` (не распознано: ${unmatched})` : ''}`);
+      } catch (err) {
+        if (!cancelled) setStep('match', 'error', '', err.message);
+        return;
+      }
+
+      // ─── Этап 4: Генерация Excel (dry-run, blob в память) ─────────
+      setStep('gen', 'running');
+      try {
+        const result = generateFilledVor(parsedVor, {
+          priceAllWithQty: donstroy, workPrices, overrides,
+          customTemplates, customRules, reviews,
+        });
+        if (cancelled) return;
+        setCachedResult(result);
+        setStats(result.stats);
+        const s = result.stats;
+        setStep('gen', 'done',
+          `работ: ${s.totalWorks}, материалов: ${s.totalMaterials}, всего строк: ${s.totalRows}`);
+      } catch (err) {
+        if (!cancelled) {
+          setStep('gen', 'error', '', err.message);
+          setCachedResult(null);
+        }
+        return;
+      }
+
+      // ─── Этап 5: Готов к скачиванию ──────────────────────────────
+      if (cancelled) return;
+      setStep('ready', 'done', 'нажми «Расценить и скачать», чтобы сохранить файл');
+    })();
+
+    return () => { cancelled = true; };
+  }, [parsedVor, donstroy, pricesMode, pricesFile, overrides, customTemplates, customRules, reviews, objectId]);
 
   // Матчинг-превью — вычисляется из parsedVor + donstroy + overrides (синхронно)
   let matchPreview = null;
@@ -238,33 +351,22 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
     setExpandedAlt(prev => { const n = new Set(prev); n.has(rowKey) ? n.delete(rowKey) : n.add(rowKey); return n; });
   }
 
+  function setStep(id, status, detail = '', errorMessage = '') {
+    setPipelineSteps(prev => prev.map(s => s.id === id ? { ...s, status, detail, errorMessage } : s));
+  }
+
   async function handleGenerate() {
-    if (!vorFile) { setError('Загрузите пустой ВОР'); return; }
+    if (!cachedResult) { setError('Файл ещё не готов — подожди завершения этапов выше'); return; }
     setBusy(true);
     setError(null);
-    setStats(null);
-    try {
-      // Используем закэшированный parsed или парсим заново
-      let parsed = parsedVor;
-      if (!parsed) {
-        const vorBuf = await vorFile.arrayBuffer();
-        parsed = parseEmptyVor(new Uint8Array(vorBuf));
-        if (parsed.stats.totalPositions === 0) {
-          setError('Не найдено позиций в файле ВОР');
-          setBusy(false);
-          return;
-        }
-      }
 
-      let workPrices = null;
-      if (pricesMode === 'saved') {
-        const entries = await fetchWorkPrices(objectId);
-        if (entries.length > 0) workPrices = entriesToPriceMap(entries);
-      } else if (pricesMode === 'new' && pricesFile) {
+    try {
+      // Если новый прайс — сохраняем в БД при первом скачивании (молча).
+      if (pricesMode === 'new' && pricesFile) {
         const pb = await pricesFile.arrayBuffer();
-        workPrices = loadWorkPrices(new Uint8Array(pb));
+        const wp = loadWorkPrices(new Uint8Array(pb));
         const toSave = [];
-        for (const [tplKey, entries] of workPrices) {
+        for (const [tplKey, entries] of wp) {
           for (const e of entries) {
             toSave.push({ tplKey, workName: e.name, price: e.price, costPath: e.costPath, unit: null });
           }
@@ -272,20 +374,21 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
         await saveWorkPrices(objectId, toSave);
         const newCount = await countWorkPrices(objectId);
         setSavedCount(newCount);
+        setPricesMode('saved');
+        setPricesFile(null);
       }
 
-      const result = generateFilledVor(parsed, { priceAllWithQty: donstroy, workPrices, overrides, customTemplates, customRules, reviews });
       const baseName = (objectName || 'ВОР').replace(/[<>:"/\\|?*]+/g, '');
       const suffix   = donstroy ? '_Донстрой' : '';
       const fileName = `${baseName}${suffix}_расценённый.xlsx`;
-      downloadBlob(result.blob, fileName);
-      setStats(result.stats);
-      // Сохраняем в историю (не блокирует скачивание если упало)
-      saveVorHistory(objectId, result.blob, fileName, result.stats)
+      downloadBlob(cachedResult.blob, fileName);
+
+      // Сохранение в историю — молча, не блокирует скачивание.
+      saveVorHistory(objectId, cachedResult.blob, fileName, cachedResult.stats)
         .then(() => swrMutate(['vor-history', objectId]))
         .catch(err => console.error('Не удалось сохранить в историю:', err));
     } catch (err) {
-      setError('Ошибка: ' + err.message);
+      setError('Ошибка скачивания: ' + err.message);
     } finally {
       setBusy(false);
     }
@@ -601,9 +704,13 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
 
           {error && <div className="vfm-error">{error}</div>}
 
+          {(busy || pipelineSteps.some(s => s.status !== 'pending')) && (
+            <VorPipelineSteps steps={pipelineSteps} />
+          )}
+
           {stats && (
             <div className="vfm-stats">
-              <div><b>Готово!</b> Файл скачан.</div>
+              <div><b>Расценка готова.</b> Кликни «Расценить и скачать», чтобы сохранить файл.</div>
               <div>Позиций: {stats.totalPositions}</div>
               <div>Заголовков (не расценены): {stats.totalHeaders}</div>
               <div>Matched: {stats.totalMatched}</div>
@@ -627,9 +734,10 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
           <button
             className="vfm-btn-primary"
             onClick={handleGenerate}
-            disabled={busy || !vorFile || (pricesMode === 'new' && !pricesFile)}
+            disabled={busy || !cachedResult || pipelineSteps.some(s => s.status === 'running' || s.status === 'error')}
+            title={!cachedResult ? 'Подожди завершения этапов 1–5' : ''}
           >
-            {busy ? 'Генерация...' : 'Расценить и скачать'}
+            {busy ? 'Скачиваем...' : 'Расценить и скачать'}
           </button>
         </div>
       </div>

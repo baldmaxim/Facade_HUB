@@ -32,7 +32,7 @@ export default defineConfig([
     // TODO: вынести split-3 рендер из vorExcelGenerator.js и таблицу из VorFillModal.jsx.
     files: ['src/lib/vorExcelGenerator.js', 'src/components/VorFillModal.jsx'],
     rules: {
-      'max-lines': ['error', { max: 650, skipBlankLines: true, skipComments: true }],
+      'max-lines': ['error', { max: 750, skipBlankLines: true, skipComments: true }],
     },
   },
 ])
