@@ -618,7 +618,6 @@
           "role": "work",
           "isHeader": false,
           "templates": [
-            "wet_facade",
             "nvf_subsystem",
             "nvf_cladding_cassette",
             "scaffolding",
@@ -631,7 +630,6 @@
           "role": "work",
           "isHeader": false,
           "templates": [
-            "wet_facade",
             "nvf_subsystem",
             "nvf_cladding_cassette",
             "scaffolding",
@@ -644,7 +642,6 @@
           "role": "work",
           "isHeader": false,
           "templates": [
-            "wet_facade",
             "nvf_subsystem",
             "nvf_cladding_cassette",
             "scaffolding",
@@ -657,7 +654,6 @@
           "role": "work",
           "isHeader": false,
           "templates": [
-            "wet_facade",
             "nvf_subsystem",
             "nvf_cladding_cassette",
             "scaffolding",

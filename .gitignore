@@ -51,6 +51,7 @@ muza_our.txt
 muza_correct.txt
 muza_v3_our.txt
 muza_v3_correct.txt
+muza_feedback_neg.json
 
 # Выходы тестовых прогонов движка ВОР
 test_output_*.xlsx
