@@ -4,6 +4,65 @@ _Maintained at the end of each session. Contains decisions, results, open questi
 
 ---
 
+## Session 2026-04-28 (Фаза 6 — Б: requiredChain POC)
+
+**Контекст:** продолжение Фазы 6 (после Фазы А с энциклопедией). Цель — детерминированный слой авто-добавления обязательных «спутников» технологии (силикон, затирка, мембрана) к главному шаблону без AI. POC на одной паре `nvf_cladding_natural_stone → stone_sealant` для доказательства работоспособности механизма.
+
+**Done (Фаза 6-Б, коммит 36077ac, запушено в main):**
+- `src/lib/vorTemplates.js`:
+  - Новый шаблон-спутник `stone_sealant` (workMaterials: работа «Герметизация швов натурального камня» + материал «Силикон погодостойкий нейтральный (по проекту)», unit=м.п., j=1, k=1.05, без price).
+  - Поле `requiredChain: ['stone_sealant']` в `nvf_cladding_natural_stone`.
+- `src/lib/vorExcelGenerator.js`:
+  - Pre-pass `primaryKeysInVor` (Set всех tplKeys, возвращаемых matchPos по любой позиции ВОРа) — рядом с существующим pre-pass `excludeFromSecondary`.
+  - Функция `expandChain(tplKeys)` — глубина рекурсии 2, visited Set для защиты от циклов, троеуровневый фильтр (already added / `excludeFromSecondary` / `primaryKeysInVor`), финальный дедуп через `[...new Set(...)]`. Размещена ДО `getTemplate`.
+  - Три точки интеграции (после каждого `filterExcluded`):
+    1. `posInfos` pre-compute (split-3 подготовка, ~строка 296).
+    2. split-3 work/material role (~488).
+    3. simple mode (~638).
+- Все 6 снапшотов прошли без регрессий — натуральный камень в них не используется.
+- Build ок, lint чисто на наших файлах (другие ошибки pre-existing).
+- Smoke-тест 1: синтетический ВОР с одной позицией натурального камня → в выводе появились ровно 2 новые строки (Герметизация швов + Силикон). Все остальные шаблоны (подсистема/утеплитель/леса/КМД) рендерятся как раньше.
+- Smoke-тест 2: ВОР с двумя позициями (камень + override на stone_sealant) → внутри камня stone_sealant НЕ дублируется через primaryKeysInVor. Защита от дублей работает.
+
+**Decisions (зафиксированы):**
+- Глубина рекурсии цепочки = 2 (companion может иметь свой chain, но дальше не идём — артифакт защиты от ошибок в данных).
+- `excludeFromSecondary` (по keyword из текста ВОРа) И `primaryKeysInVor` (companion заведён как primary) — два независимых фильтра в expandChain.
+- workMaterials шаблонов (клинкер→затирка, утеплитель НВФ→мембрана+дюбели и т.п.) НЕ переписываем как requiredChain. requiredChain — только для НОВЫХ спутников (рендерится отдельной парой работа+материал).
+- Custom-шаблоны из Supabase (vor_custom_templates) пока БЕЗ requiredChain — добавим в портал позже, если потребуется.
+
+**Кандидаты на следующую сессию Фазы Б** (~10 пар, нужны новые шаблоны-спутники):
+1. `nvf_cladding_brick` → новый `brick_grout` (фугование швов кирпичной кладки)
+2. `nvf_cladding_cassette` / `nvf_cladding_akp` → новый `cassette_edges` (торцевые/угловые планки + заклёпки)
+3. `nvf_cladding_fcp` (фиброцемент) → новый `fcp_edges` (стартовые/финишные планки)
+4. `wet_facade_finish` (декор. штукатурка) → новый `wet_primer` (грунтовка под финиш)
+5. `glass_railing` / `glass_canopy` → новый `silicone_edge` (герметизация торцов стекла)
+6. `pp_otsechi` → новый `fire_sealant` (огнестойкий герметик в стык с мембраной — внимание: не пересекается с уже существующим СТИЗ-А/В в pp_otsechi, это другой герметик)
+7. Витраж стоечно-ригельный → новый `vitrage_perimeter_sealant` (герметик примыкания к монолиту)
+8. Окно/витраж → новый `window_seam` (ПСУЛ + пена + пароизоляция, 3-слойный шов по ГОСТ 30971)
+9. Тамбур / наружная дверь → новый `door_closer_kit` (доводчик + порог)
+10. `scaffolding` (леса) → новый `scaffolding_protection` (защитная сетка + козырёк над пешеходными зонами)
+
+**Open (Фазы В, Г — следующие сессии):**
+- **Фаза В (1 сессия):** Edge Function `supabase/functions/vor-tech-advisor/index.ts`. Копирование паттернов из `vor-review/index.ts` (CORS 4-9, errorResult 197-215, extractJson 274-283, loadSimilarFeedback 232-272, OpenRouter fetch 342-359). Энциклопедия из `supabase/functions/vor-tech-advisor/encyclopedia.md` встраивается в **system message** через `Deno.readTextFileSync(new URL('./encyclopedia.md', import.meta.url))` — критично для prompt caching. Payload `{ posName, noteCustomer, posCode, currentTplKeys, currentMaterials }`. Response `{ reasoning, additions: [{type: 'material'|'work', name, unit, reason}], confidence: 0..100, posCode, tokens }`. Валидация: ≤5 additions, имена ≤200 символов, reason ≤300. `max_tokens: 500`, `temperature: 0.2`, model `google/gemini-2.5-flash`. Бюджет: ~$0.013 на ВОР 50 позиций с prompt caching. Verify: curl с тестовым payload (камень с currentTplKeys включая `nvf_cladding_natural_stone`) → ожидаем additions «затирка швов / откосы / отливы / угловые элементы». 2-й запрос подряд → tokens.cached_input > 0.
+- **Фаза Г (1-2 сессии):** runner `vorTechAdvisorRunner.js` (паттерн `vorProposeRunner.js`). Третья кнопка `🔧 Найти упущенное` в `VorAiPanel.jsx`. Компонент `VorTechAdditionsRow.jsx` (паттерн `VorAltRow.jsx`, оранжевая рамка). State в `VorFillModal.jsx`: `advising`, `advisingProgress`, `techAdditions Map`, `expandedTech Set`. Apply → постпроцесс-цикл в `generateFilledVor` рендерит каждое добавление как отдельную строку. `VorFillModal.jsx` уже близок к лимиту — поднять `max-lines` 750→850.
+
+**План в файле:** `C:\Users\Usrr\.claude\plans\parsed-stirring-hare.md` — план Фазы Б (выполнен).
+**Предыдущий план:** `C:\Users\Usrr\.claude\plans\streamed-napping-thacker.md` — общий план всех 4 фаз (А/Б/В/Г), Фаза В детально расписана там.
+
+**Handoff prompt:**
+```
+Продолжаем Facade_HUB. Фаза 6-Б завершена и запушена коммитом 36077ac:
+работающий механизм requiredChain в движке ВОР (POC на паре nvf_cladding_natural_stone → stone_sealant), все снапшоты без регрессий, защита от дублей (primaryKeysInVor + excludeFromSecondary) проверена smoke-тестами. Энциклопедия из Фазы А лежит в src/data/encyclopediaFasad.md и supabase/functions/vor-tech-advisor/encyclopedia.md.
+
+Прочти memory.md (последние 2 session-записи 2026-04-28: Фазы А и Б) и общий план в C:\Users\Usrr\.claude\plans\streamed-napping-thacker.md (там Фаза В детально расписана).
+
+Сейчас на очереди — Фаза В: создание Edge Function `supabase/functions/vor-tech-advisor/index.ts`. Это AI-слой «Найти упущенное» через Gemini 2.5 Flash на OpenRouter. Скопируй паттерны из существующей `supabase/functions/vor-review/index.ts` (CORS, errorResult, extractJson, loadSimilarFeedback, OpenRouter fetch). Ключевые требования: энциклопедия в SYSTEM message для prompt caching, payload содержит currentTplKeys+currentMaterials чтобы AI не дублировал, response содержит additions: [{type, name, unit, reason}] с ≤5 элементами.
+
+Начни с уточняющих вопросов: (1) деплоить через Supabase MCP сразу или сначала локально через `supabase functions serve`? (2) использовать тот же OpenRouter API key из env что и vor-review? Не коммитить без команды.
+```
+
+---
+
 ## Session 2026-04-28 (Фаза 6 — А: фасадная энциклопедия для AI-tech-advisor)
 
 **Контекст:** пользователь хочет, чтобы AI-ревьюер мог давать комментарии не только по корректности подбора шаблонов, но и **по технологии** — предлагать упущенные материалы/работы (мембрана, грунтовка, затирка, силикон швов). Согласовали гибридную архитектуру (вариант №3): `requiredChain` в движке (детерминированный слой, ~90 % случаев) + новая Edge Function `vor-tech-advisor` с фасадной энциклопедией в base-prompt (умный слой, ~10 %).
