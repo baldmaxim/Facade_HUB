@@ -1,6 +1,8 @@
 # Автозаполнение ВОР по фасадным работам
 
-Автоматическая расценка Ведомости Объёмов Работ (ВОР) для фасадных конструкций: НВФ, СПК, мокрый фасад, утепление, ограждения, двери, козырьки. SPA на React 19 + Vite 7, бэкенд — Supabase, AI-ревьюер — Gemini 2.5 Flash через Edge Function.
+Автоматическая расценка Ведомости Объёмов Работ (ВОР) для фасадных конструкций: НВФ, СПК, мокрый фасад, утепление, ограждения, двери, козырьки. SPA на React 19 + Vite 7, бэкенд — Supabase. На AI завязаны два независимых блока, оба на Gemini 2.5 Flash через Edge Functions:
+- **AI-ревьюер** (`vor-review`) — оценивает корректность подбора шаблонов по позиции (verdict + score + RAG из базы фидбека).
+- **AI-техадвайзер** (`vor-tech-advisor`) — кнопка «Найти упущенное»: смотрит на технологию через встроенную энциклопедию фасадов и предлагает добавить недостающие материалы/работы.
 
 ---
 
@@ -14,18 +16,23 @@
 6. Файл скачивается + автоматически попадает в историю объекта.
 
 ```
-src/lib/vorMatcher.js               → matchPositionDetailed, isHeader, classifyRowRole, detectVorStyle
-src/lib/rules/vorRules.js           → MATCH_RULES (приоритетный массив правил)
-src/lib/vorTemplates.js             → 36+ код-шаблонов (источник истины)
-src/lib/vorExcelGenerator.js        → парсинг и генерация Excel (simple + split-3)
-src/lib/vorPriceLoader.js           → парсер прайса работ + 4-ступенчатый лукап
-src/components/VorFillModal.jsx     → модалка заполнения (5-этапный пайплайн + AI)
-src/components/VorPipelineSteps.jsx → индикатор этапов
-src/components/VorReviewRow.jsx     → раскрывашка AI-разбора + 👍/👎
-src/components/VorAiPanel.jsx       → панель управления Gemini-ревью/предложений
-src/pages/VorPage.jsx               → страница объекта: история ВОР + кнопка модалки
-src/pages/VorTemplatesPage.jsx      → база шаблонов (read-only код + редактируемые custom)
-supabase/functions/vor-review/      → Edge Function: Gemini 2.5 Flash + RAG
+src/lib/vorMatcher.js                  → matchPositionDetailed, isHeader, classifyRowRole, detectVorStyle
+src/lib/rules/vorRules.js              → MATCH_RULES (приоритетный массив правил)
+src/lib/vorTemplates.js                → 46+ код-шаблонов (источник истины), поле requiredChain
+src/lib/vorExcelGenerator.js           → парсинг и генерация Excel (simple + split-3, expandChain, applied tech-additions)
+src/lib/vorPriceLoader.js              → парсер прайса работ + 4-ступенчатый лукап
+src/lib/vorProposeRunner.js            → раннер vor-review (оценка подбора)
+src/lib/vorTechAdvisorRunner.js        → раннер vor-tech-advisor (поиск упущенного)
+src/data/encyclopediaFasad.md          → фасадная энциклопедия (14 разделов, без цен — Фаза 6-А)
+src/components/VorFillModal.jsx        → модалка заполнения (5-этапный пайплайн + AI)
+src/components/VorPipelineSteps.jsx    → индикатор этапов
+src/components/VorReviewRow.jsx        → раскрывашка AI-разбора + 👍/👎
+src/components/VorTechAdditionsRow.jsx → раскрывашка «Найти упущенное» + кнопка «Дополнить шаблон» (D+1)
+src/components/VorAiPanel.jsx          → панель управления AI: ревью + техадвайзер
+src/pages/VorPage.jsx                  → страница объекта: история ВОР + кнопка модалки
+src/pages/VorTemplatesPage.jsx         → база шаблонов (read-only код + редактируемые custom)
+supabase/functions/vor-review/         → Edge Function: оценка подбора (Gemini 2.5 Flash + RAG)
+supabase/functions/vor-tech-advisor/   → Edge Function: поиск упущенного (энциклопедия в SYSTEM_PROMPT)
 ```
 
 ---
@@ -99,6 +106,13 @@ supabase/functions/vor-review/      → Edge Function: Gemini 2.5 Flash + RAG
 - Откос («откос») к НВФ-облицовке → добавляется `pp_otsechi`.
 - Отлив («отлив») к НВФ → добавляется `flashings`.
 - Окно/витраж со створкой (`spk_profile|pvh_profile` + регэксп `створ|откидн|одностворч|двустворч|поворот`) → добавляется `custom_stvorka_spk`.
+
+**Технологические цепочки `requiredChain` (Фаза 6-Б):** в шаблоне можно объявить обязательных «спутников», которых движок дотащит автоматически. `expandChain` в генераторе раскрывает цепочку на 2 уровня вглубь с защитой от:
+- рекурсии (visited-Set);
+- дублирования (если companion уже стоит как primary в любой позиции ВОРа — не подмешиваем второй раз);
+- исключений (`excludeFromSecondary` — например, отдельная позиция «Леса» отменяет вторичные `scaffolding`).
+
+Источник истины по составу цепочек — `src/data/encyclopediaFasad.md`, Раздел 14. Пример: `nvf_cladding_natural_stone.requiredChain = ['stone_sealant']` — герметик швов натурального камня всегда идёт вместе с облицовкой, иначе фасад протечёт.
 
 **Пропускаемые позиции:**
 - Перголы — всегда ручная расценка.
@@ -260,7 +274,7 @@ supabase/functions/vor-review/      → Edge Function: Gemini 2.5 Flash + RAG
 - Кнопки 👍/👎 + форма правильной разметки — отправляет фидбек в `vor_review_feedback`.
 
 ### Страница «База шаблонов» (`VorTemplatesPage`)
-- 36 код-шаблонов из `src/lib/vorTemplates.js` — read-only.
+- 46+ код-шаблонов из `src/lib/vorTemplates.js` — read-only.
 - Custom-шаблоны из `vor_custom_templates` (Supabase) — редактируются через `VorCustomTemplateEditor`.
 - Custom-шаблоны fallback после кодовых.
 
@@ -351,6 +365,47 @@ GIN-индекс `pg_trgm` по `note_customer || ' ' || pos_name`. RLS: `anon r
 
 ---
 
+## AI-техадвайзер «Найти упущенное» (Gemini 2.5 Flash, vor-tech-advisor)
+
+Задача — найти материалы и работы, которые **технологически нужны**, но движок их не подобрал. Например к натуральному камню — герметик швов, к мокрому фасаду — антигрибковая грунтовка, к НВФ — противопожарные отсечки.
+
+**Архитектура:**
+- Клиент: `src/lib/vorTechAdvisorRunner.js` — собирает `currentMaterials` (плоский список работ+материалов из всех `tplKeys` позиции) и зовёт Edge Function. Прямой `fetch` + `AbortController` 60 сек + один retry на сетевую ошибку (`supabase.functions.invoke` имеет короткий таймаут, не подходит при cold start).
+- Edge Function: `supabase/functions/vor-tech-advisor/index.ts`. SYSTEM_PROMPT включает **встроенную энциклопедию** (596 строк, 14 разделов из `src/data/encyclopediaFasad.md`).
+- Энциклопедия лежит в `encyclopedia.ts` как обычный TS-модуль и собирается из `encyclopedia.md` скриптом `_embed.mjs` (Supabase CLI bundler не поддерживает text-импорт `.md`, файловой системы у Edge Runtime нет; модуль обязан быть стабильным между вызовами для prompt caching на OpenRouter).
+- Модель: `google/gemini-2.5-flash`, temperature 0.2, max_tokens 800, `response_format: json_object`.
+- Секрет: `OPENROUTER_API_KEY` (общий с `vor-review`).
+
+**Схема запрос/ответ:**
+```
+IN  POST { posCode, posName, noteCustomer, currentTplKeys[], currentMaterials[] }
+OUT 200  { reasoning, additions[], confidence (0..100), comment?, posCode, tokens }
+```
+
+`additions[]` — массив объектов `{ type: 'material'|'work', name, unit, qtyPerUnit, reason }`. Жёсткие ограничения на сервере (`validateAdditions`):
+- `≤ 5 элементов` — отсекает шум.
+- `name ≤ 200`, `unit ≤ 20`, `reason ≤ 300` символов.
+- `qtyPerUnit` — число > 0 и ≤ 1000 (sanity-check от бредовых значений), либо `null`. Это норма расхода **на единицу объёма позиции** (для дюбелей фасада 6 шт/м² → `qtyPerUnit=6`, для мембраны 1.05 м²/м² → `1.05`, для работы по объёму позиции → `1`).
+- При любой ошибке (сеть/JSON/секрет/пустой noteCustomer) — `200` с `additions: []`, `confidence: 0`, `comment: 'Отладка: <причина>'`. `supabase-js` не читает тело non-2xx, иначе клиент падает.
+
+### Применение предложений в превью и Excel (D+1)
+
+`VorTechAdditionsRow` рисует раскрывашку 🔧 «Найти упущенное» в строке позиции. Для каждой addition есть кнопка **➕ Дополнить шаблон**: после клика она подсвечивается зелёным, состояние через `toggleApplyAddition` пишется в `appliedTechAdditions: Map<pos, addition[]>` (сравнение по ссылке на объект — `techAdditions` не пересоздаётся между рендерами). Карта попадает в deps `useEffect`, dry-run генератор пересчитывается автоматически — пользователь сразу видит обновлённые этапы 4–5 пайплайна. Сброс карты — при загрузке нового ВОР файла.
+
+В `vorExcelGenerator.js` опция `appliedTechAdditions` передаётся внутрь генератора. `renderAppliedAdditions(pos, tplKeys)` пишет строки applied items сразу после штатных строк позиции во всех трёх ветках: split-3 standalone, split-3 clustered, simple. `costPath` наследуется от первого штатного шаблона позиции (`tplKeys[0]`); `qtyPerUnit` идёт в колонку `J` («Коэфф. перевода»). Цвет:
+- `type='work'` → фиолетовый `STYLE_WORK` (`#E6D9F2`).
+- `type='material'` → зелёный `STYLE_MATERIAL` (`#E8F5E0`).
+
+Кнопка **✓ Отменить** убирает строку из applied и пересчитывает dry-run обратно. В заголовке раскрывашки счётчик «применено N из M».
+
+**Roadmap техадвайзера:**
+- Фаза А — энциклопедия (14 разделов, без цен) и слияние FASAD+ADDON в один документ. **Done.**
+- Фаза Б — `requiredChain` в движке (детерминистичные обязательные спутники). **Done.**
+- Фаза В — конкуренция/синергия техадвайзера с `requiredChain`: исключать из подсказок AI то, что уже добавлено цепочкой. **TODO.**
+- Фаза Г — RAG-обучение по фидбеку, как у `vor-review`. **TODO.**
+
+---
+
 ## Supabase: таблицы и подвох с ключами
 
 **Основные таблицы:**
@@ -422,6 +477,11 @@ node compare_gemini_sobytie.mjs      # сравнение Gemini-моделей 
 - **Фаза 3** — `custom_stvorka_spk` авто-подмешивание + фикс дифференциации «Окно одностворчатое» vs «Одностворчатая витражная» через regex `окно`.
 - **Фаза 4** — split-3 генератор корректно раскидывает утеплитель (в material) и мембрану+крепёж (в «Прочие материалы») по unit, как в эталоне Музы.
 - **Фаза 5** — разделение правил «корзины А/С» (гибрид wet+НВФ) vs «ниши кондиционеров» (без wet) + чистка `detectInsulationThickness` (требует слово «утепл» рядом с числом) + `defaultThickness` в правилах.
+- **Фаза 6-А** — фасадная энциклопедия в `src/data/encyclopediaFasad.md` (14 разделов): слияние старых FASAD+ADDON в один файл, удалены устаревшие цены 2024–2025. Энциклопедия — единый источник истины и для AI-техадвайзера (вшита в SYSTEM_PROMPT), и для человека-инженера.
+- **Фаза 6-Б** — `requiredChain` в шаблонах + `expandChain` в генераторе. Обязательные спутники (например герметик швов натурального камня) добавляются автоматически с защитой от рекурсии и от дублей с уже заведёнными primary-позициями.
+- **D+1** — техадвайзер «Найти упущенное» возвращает `qtyPerUnit`, превью получило кнопку «Дополнить шаблон» с автоматическим пересчётом dry-run, генератор рендерит applied items сразу после штатных строк позиции с наследованием `costPath` и `qtyPerUnit` в колонке `J`.
+
+**В очереди (Фаза 6-В/Г):** конкуренция техадвайзера с `requiredChain` (не предлагать то, что уже подмешалось цепочкой) и RAG-обучение техадвайзера по фидбеку.
 
 **Метрики на снапшотах:**
 - Событие 6.2: 231/240 matched, 2407 строк.
@@ -465,9 +525,9 @@ Unmatched на Сокольниках — люки, калитки, ворота
 Альтернативная реализация на Python с поддержкой ГЭСН/ФЕР нормативной базы. CLI: `python vor-engine/fill_vor.py input.xlsx output.xlsx`.
 
 3 режима: `mvp` (без LLM), `smart` (1 агент), `multiagent` (параллельные эксперты).
-БД: `gesn.db` (152 МБ SQLite, 52K норм ГЭСН, 542K ресурсов, 34K ФЕР цен).
+БД: `gesn.db` (152 МБ SQLite, 52K норм ГЭСН, 542K ресурсов, 34K ФЕР цен) — лежит локально, в репо не коммитится.
 LLM: litellm (OpenRouter, Anthropic, OpenAI, Gemini).
 
-Изначально 8 доменных экспертов (MASONRY, CONCRETE, ELECTRICAL, **FACADE**, ROOFING, HVAC, EARTHWORKS, FINISHING) — **задача**: оставить только FACADE-эксперт. Фасадная энциклопедия теперь живёт во фронте: `src/data/encyclopediaFasad.md` (14 разделов, без цен — структурный справочник для AI-ревьюера). Старые `vor-engine/ENCYCLOPEDIA_FASAD*.md` удалены — содержали устаревшие цены 2024–2025.
+Изначально 8 доменных экспертов (MASONRY, CONCRETE, ELECTRICAL, **FACADE**, ROOFING, HVAC, EARTHWORKS, FINISHING) — **задача**: оставить только FACADE-эксперт. Фасадная энциклопедия теперь живёт во фронте: `src/data/encyclopediaFasad.md` (14 разделов, без цен — структурный справочник). Старые `vor-engine/ENCYCLOPEDIA_FASAD*.md` удалены — содержали устаревшие цены 2024–2025.
 
-Python-версия **не синхронизирована** с актуальными JS-фиксами (Фазы 1–5 не перенесены).
+Python-версия **не синхронизирована** с актуальными JS-фиксами (Фазы 1–6 не перенесены). В репо лежит как контекст для AI-ассистента и заготовка под будущую миграцию ГЭСН-расценок.
