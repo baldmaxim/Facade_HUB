@@ -127,6 +127,7 @@ export const TEMPLATES = {
     materials: [
       { name: 'Натуральный камень (по проекту)', unit: 'м2', kind: 'основн.', j: 1, k: 1.22 },
     ],
+    requiredChain: ['stone_sealant'],
   },
   nvf_cladding_akp: {
     costPath: 'ФАСАДНЫЕ РАБОТЫ / Облицовка НВФ / Здание',
@@ -231,6 +232,17 @@ export const TEMPLATES = {
         materials: [
           { name: 'Герметик акриловый СТИЗ-А 7 кг', unit: 'кг', kind: 'вспомогат.', j: 0.1, k: 1.05 },
           { name: 'Герметик акриловый СТИЗ-В 7 кг', unit: 'кг', kind: 'вспомогат.', j: 0.1, k: 1.05 },
+        ],
+      },
+    ],
+  },
+  stone_sealant: {
+    costPath: 'ФАСАДНЫЕ РАБОТЫ / Облицовка НВФ / Здание',
+    workMaterials: [
+      {
+        work: { name: 'Герметизация швов натурального камня', unit: 'м.п.' },
+        materials: [
+          { name: 'Силикон погодостойкий нейтральный (по проекту)', unit: 'м.п.', kind: 'основн.', j: 1, k: 1.05 },
         ],
       },
     ],

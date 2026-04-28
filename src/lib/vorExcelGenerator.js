@@ -187,6 +187,14 @@ export function generateFilledVor(parsed, options = {}) {
     }
   }
 
+  // Все шаблоны, появляющиеся как primary-ключи в любой позиции ВОРа.
+  // Используется expandChain'ом: если companion из requiredChain уже заведён
+  // как самостоятельная позиция — не подмешиваем его внутрь главной (избегаем дублей).
+  const primaryKeysInVor = new Set();
+  for (const p of allPositions) {
+    for (const k of matchPos(p)) primaryKeysInVor.add(k);
+  }
+
   // Убираем secondary шаблоны, но если ВСЕ шаблоны попадают под исключение — оставляем.
   // Если позиция явно упоминает утепление — insulation не убираем.
   function filterExcluded(tplKeys, posName = '') {
@@ -250,6 +258,33 @@ export function generateFilledVor(parsed, options = {}) {
     return tpl.materials || [];
   }
 
+  // Расширяет массив tplKeys обязательными «спутниками» из поля requiredChain
+  // (см. encyclopediaFasad.md Раздел 14). Глубина 2, защита от рекурсии и дублей.
+  function expandChain(tplKeys) {
+    const result = [...tplKeys];
+    const visited = new Set(tplKeys);
+    let frontier = tplKeys;
+    for (let depth = 0; depth < 2; depth++) {
+      const next = [];
+      for (const k of frontier) {
+        const tpl = ALL_TEMPLATES[k];
+        const chain = tpl && tpl.requiredChain;
+        if (!chain) continue;
+        for (const c of chain) {
+          if (visited.has(c)) continue;
+          if (excludeFromSecondary.has(c)) continue;
+          if (primaryKeysInVor.has(c)) continue;
+          visited.add(c);
+          result.push(c);
+          next.push(c);
+        }
+      }
+      if (next.length === 0) break;
+      frontier = next;
+    }
+    return [...new Set(result)];
+  }
+
   function getTemplate(key, posName, posNote, clusterThickness, ruleDefaultThickness) {
     if (key === 'insulation') {
       const t = clusterThickness || (posName ? (detectInsulationThickness(posName, posNote) ?? ruleDefaultThickness ?? 150) : ruleDefaultThickness ?? 150);
@@ -293,7 +328,7 @@ export function generateFilledVor(parsed, options = {}) {
       return {
         role: classifyRowRole(p.name),
         tplKeys: isHeader(p, allPositions, hdrOpts) ? [] :
-          filterExcluded(det.templates, p.name),
+          expandChain(filterExcluded(det.templates, p.name)),
         ruleDefaultThickness: det.ruleDefaultThickness,
       };
     }) : [];
@@ -485,7 +520,7 @@ export function generateFilledVor(parsed, options = {}) {
         }
 
         // role === 'work' или 'material' — матчим
-        let tplKeys = filterExcluded(matchPos(pos), pos.name);
+        let tplKeys = expandChain(filterExcluded(matchPos(pos), pos.name));
         // Если в кластере уже wet_facade_insulation, 'insulation' (НВФ) заменяем на него
         if (clusterTemplates.includes('wet_facade_insulation')) {
           tplKeys = tplKeys.map(k => k === 'insulation' ? 'wet_facade_insulation' : k);
@@ -635,7 +670,7 @@ export function generateFilledVor(parsed, options = {}) {
       // ─── simple режим (Сокольники — существующая логика) ─────────
       // Матчинг — убираем шаблоны, у которых есть отдельные позиции
       const simpleMatch = matchPosDetailed(pos);
-      let tplKeys = filterExcluded(simpleMatch.templates, pos.name);
+      let tplKeys = expandChain(filterExcluded(simpleMatch.templates, pos.name));
       if (tplKeys.length === 0) {
         unmatched.push(pos.name.slice(0, 60));
         continue;
