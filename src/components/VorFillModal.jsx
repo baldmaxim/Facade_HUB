@@ -5,6 +5,7 @@ import { matchPositionDetailed, isHeader, classifyRowRole, detectVorStyle } from
 import { loadWorkPrices } from '../lib/vorPriceLoader';
 import { TPL_NAMES, SECONDARY, tplLabel } from '../lib/vorTplNames';
 import { runReview, runPropose, collectProposeTargets } from '../lib/vorProposeRunner';
+import { runTechAdvisor } from '../lib/vorTechAdvisorRunner';
 import { fetchWorkPrices, saveWorkPrices, countWorkPrices, entriesToPriceMap } from '../api/vorPrices';
 import { fetchCustomTemplates, customTemplatesToMap, customTemplatesToRules } from '../api/vorCustomTemplates';
 import { saveVorHistory } from '../api/vorHistory';
@@ -12,6 +13,7 @@ import { saveReviewFeedback } from '../api/vorReviewFeedback';
 import { markAiProposalApplied } from '../api/vorAiProposals';
 import VorReviewRow from './VorReviewRow';
 import VorAltRow from './VorAltRow';
+import VorTechAdditionsRow from './VorTechAdditionsRow';
 import VorAiPanel from './VorAiPanel';
 import VorPipelineSteps from './VorPipelineSteps';
 import './VorFillModal.css';
@@ -51,6 +53,11 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
   const [proposing, setProposing]                 = useState(false);
   const [proposeProgress, setProposeProgress]     = useState({ done: 0, total: 0 });
   const [expandedAlt, setExpandedAlt]             = useState(new Set()); // Set<rowKey> — раскрытые строки альтернатив
+  const [techAdditions, setTechAdditions]         = useState(new Map()); // Map<pos, {additions, confidence, reasoning, comment}>
+  const [advising, setAdvising]                   = useState(false);
+  const [advisingProgress, setAdvisingProgress]   = useState({ done: 0, total: 0 });
+  const [expandedTech, setExpandedTech]           = useState(new Set()); // Set<rowKey> — раскрытые строки tech-additions
+  const [appliedTechAdditions, setAppliedTechAdditions] = useState(new Map()); // Map<pos, addition[]> — applied additions, идут в Excel
 
   const vorInputRef = useRef(null);
   const pricesInputRef = useRef(null);
@@ -93,6 +100,10 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
     setProposals(new Map());
     setProposeProgress({ done: 0, total: 0 });
     setExpandedAlt(new Set());
+    setTechAdditions(new Map());
+    setAdvisingProgress({ done: 0, total: 0 });
+    setExpandedTech(new Set());
+    setAppliedTechAdditions(new Map());
     setPipelineSteps(INITIAL_PIPELINE_STEPS);
     if (!file) return;
     setBusy(true);
@@ -187,7 +198,7 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
       try {
         const result = generateFilledVor(parsedVor, {
           priceAllWithQty: donstroy, workPrices, overrides,
-          customTemplates, customRules, reviews,
+          customTemplates, customRules, reviews, appliedTechAdditions,
         });
         if (cancelled) return;
         setCachedResult(result);
@@ -209,7 +220,7 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
     })();
 
     return () => { cancelled = true; };
-  }, [parsedVor, donstroy, pricesMode, pricesFile, overrides, customTemplates, customRules, reviews, objectId]);
+  }, [parsedVor, donstroy, pricesMode, pricesFile, overrides, customTemplates, customRules, reviews, appliedTechAdditions, objectId]);
 
   // Матчинг-превью — вычисляется из parsedVor + donstroy + overrides (синхронно)
   let matchPreview = null;
@@ -351,6 +362,37 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
     setExpandedAlt(prev => { const n = new Set(prev); n.has(rowKey) ? n.delete(rowKey) : n.add(rowKey); return n; });
   }
 
+  async function handleAdviseAll() {
+    if (!matchPreview) return;
+    setAdvising(true);
+    setTechAdditions(new Map());
+    setExpandedTech(new Set());
+    await runTechAdvisor(matchPreview, {
+      onStart:    total         => setAdvisingProgress({ done: 0, total }),
+      onResult:   map           => setTechAdditions(map),
+      onProgress: (done, total) => setAdvisingProgress({ done, total }),
+    });
+    setAdvising(false);
+  }
+
+  function toggleTech(rowKey) {
+    setExpandedTech(prev => { const n = new Set(prev); n.has(rowKey) ? n.delete(rowKey) : n.add(rowKey); return n; });
+  }
+
+  // Apply / unapply одну addition к позиции. Сравнение по ссылке на объект —
+  // addition объект живёт в techAdditions.get(pos).additions[i] и не пересоздаётся.
+  function toggleApplyAddition(pos, addition) {
+    setAppliedTechAdditions(prev => {
+      const next = new Map(prev);
+      const cur = next.get(pos) || [];
+      const idx = cur.indexOf(addition);
+      const updated = idx >= 0 ? cur.filter(x => x !== addition) : [...cur, addition];
+      if (updated.length === 0) next.delete(pos);
+      else next.set(pos, updated);
+      return next;
+    });
+  }
+
   function setStep(id, status, detail = '', errorMessage = '') {
     setPipelineSteps(prev => prev.map(s => s.id === id ? { ...s, status, detail, errorMessage } : s));
   }
@@ -440,13 +482,17 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
                 matchPreview={matchPreview}
                 reviewsCount={reviews.size}
                 proposeCount={proposeCount}
+                techAdditionsCount={techAdditions.size}
                 reviewing={reviewing}
                 proposing={proposing}
+                advising={advising}
                 busy={busy}
                 onReview={handleReviewAll}
                 onPropose={handleProposeAll}
+                onAdvise={handleAdviseAll}
                 reviewProgress={reviewProgress}
                 proposeProgress={proposeProgress}
+                advisingProgress={advisingProgress}
                 reviewError={reviewError}
               />
               {!proposing && proposals.size > 0 && (
@@ -587,6 +633,26 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
                                   </button>
                                 );
                               })()}
+                              {(() => {
+                                if (row.isHeader || row.templates.length === 0) return null;
+                                const ta = techAdditions.get(row.pos);
+                                if (!ta) return null;
+                                const open = expandedTech.has(row.rowKey);
+                                const count = ta.additions?.length || 0;
+                                const isError = ta.comment && /^(Ошибка|Сбой)/i.test(ta.comment);
+                                const cls = isError ? 'vfm-tech-badge vfm-tech-badge-err'
+                                          : count === 0 ? 'vfm-tech-badge vfm-tech-badge-ok'
+                                          : 'vfm-tech-badge';
+                                const tip = isError ? `Ошибка tech-advisor: ${ta.comment}`
+                                          : count === 0 ? `Gemini не нашёл упущений (${ta.confidence}/100). Клик — показать рассуждение.`
+                                          : `Gemini нашёл ${count} упущений (${ta.confidence}/100). Клик — показать.`;
+                                return (
+                                  <button type="button" className={cls} title={tip} onClick={() => toggleTech(row.rowKey)}>
+                                    🔧 <span className="vfm-tech-count">{isError ? '!' : count}</span>
+                                    <span className="vfm-verdict-caret">{open ? '▾' : '▸'}</span>
+                                  </button>
+                                );
+                              })()}
                               {!row.isHeader && (
                                 <button
                                   type="button"
@@ -645,6 +711,15 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
                               onReplace={() => { applyProposal(row.pos, proposals.get(row.pos).tplKeys, 'replace', row.templates); toggleAlt(row.rowKey); }}
                               onMerge={() => { applyProposal(row.pos, proposals.get(row.pos).tplKeys, 'merge', row.templates); toggleAlt(row.rowKey); }}
                               onCancel={() => toggleAlt(row.rowKey)}
+                            />
+                          )}
+                          {!row.isHeader && row.templates.length > 0 && (
+                            <VorTechAdditionsRow
+                              entry={techAdditions.get(row.pos)}
+                              expanded={expandedTech.has(row.rowKey)}
+                              appliedSet={new Set(appliedTechAdditions.get(row.pos) || [])}
+                              onToggleApply={(addition) => toggleApplyAddition(row.pos, addition)}
+                              onCancel={() => toggleTech(row.rowKey)}
                             />
                           )}
                           </Fragment>

@@ -119,6 +119,13 @@ export function generateFilledVor(parsed, options = {}) {
   const customTemplates = options.customTemplates || {}; // { key: tpl } — custom-шаблоны из БД
   const customRules = options.customRules || [];         // fallback-правила из БД
   const reviews = options.reviews instanceof Map && options.reviews.size > 0 ? options.reviews : null;
+  // Map<positionObject, addition[]> — пользовательские дополнения от tech-advisor.
+  // Каждый addition: { type: 'material'|'work', name, unit, qtyPerUnit, reason }.
+  // Рендерятся отдельными строками после штатных строк позиции, costPath наследуется
+  // от первого шаблона позиции, qtyPerUnit идёт в колонку «Коэфф. перевода» (j).
+  const appliedTechAdditions = options.appliedTechAdditions instanceof Map && options.appliedTechAdditions.size > 0
+    ? options.appliedTechAdditions
+    : null;
   const ALL_TEMPLATES = { ...TEMPLATES, ...customTemplates };
   let totalWorkPricesFilled = 0;
   const ws = {};
@@ -283,6 +290,38 @@ export function generateFilledVor(parsed, options = {}) {
       frontier = next;
     }
     return [...new Set(result)];
+  }
+
+  // Рендер applied additions (от tech-advisor) после штатных строк позиции.
+  // Возвращает количество отрендеренных строк (для счётчиков). costPath наследуется
+  // от первого шаблона позиции (из tplKeys[0]) — приемлемо для смежных по технологии
+  // упущений (мембрана к НВФ, дюбели к утеплителю и т.п.).
+  function renderAppliedAdditions(pos, tplKeys) {
+    if (!appliedTechAdditions) return;
+    const items = appliedTechAdditions.get(pos);
+    if (!items || items.length === 0) return;
+    const firstKey = tplKeys && tplKeys[0];
+    const firstTpl = firstKey ? ALL_TEMPLATES[firstKey] : null;
+    const costPath = firstTpl?.costPath || '';
+    for (const a of items) {
+      const isWork = a.type === 'work';
+      const style = isWork ? STYLE_WORK : STYLE_MATERIAL;
+      const row = new Array(NC).fill('');
+      row[2] = costPath;
+      if (!isWork) row[3] = 'да';
+      row[4] = isWork ? 'суб-раб' : 'суб-мат';
+      if (!isWork) row[5] = 'основн.';
+      row[6] = a.name;
+      row[7] = a.unit;
+      if (typeof a.qtyPerUnit === 'number' && a.qtyPerUnit > 0) row[9] = a.qtyPerUnit;
+      row[12] = 'RUB';
+      if (!isWork) row[13] = 'в цене';
+      for (let c = 0; c < NC; c++) {
+        ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(row[c], style);
+      }
+      R++;
+      if (isWork) totalWorks++; else totalMaterials++;
+    }
   }
 
   function getTemplate(key, posName, posNote, clusterThickness, ruleDefaultThickness) {
@@ -579,6 +618,7 @@ export function generateFilledVor(parsed, options = {}) {
               }
             }
           }
+          renderAppliedAdditions(pos, tplKeys);
           continue;
         }
 
@@ -664,6 +704,7 @@ export function generateFilledVor(parsed, options = {}) {
             }
           }
         }
+        renderAppliedAdditions(pos, tplKeys);
         continue;
       }
 
@@ -724,6 +765,7 @@ export function generateFilledVor(parsed, options = {}) {
           }
         }
       }
+      renderAppliedAdditions(pos, tplKeys);
     }
   }
 

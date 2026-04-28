@@ -1,14 +1,15 @@
 // Верхняя панель превью-таблицы — «AI-пульт»: суммарка + кнопки
-// «Проверить AI» и «Предложить альтернативы». Вынесено из VorFillModal,
-// чтобы уложиться в лимит 600 строк на файл.
+// «Проверить AI», «Найти упущенное» и «Предложить альтернативы».
+// Вынесено из VorFillModal, чтобы уложиться в лимит 600 строк на файл.
 
 export default function VorAiPanel({
-  matchPreview, reviewsCount, proposeCount,
-  reviewing, proposing, busy,
-  onReview, onPropose,
-  reviewProgress, proposeProgress,
+  matchPreview, reviewsCount, proposeCount, techAdditionsCount,
+  reviewing, proposing, advising, busy,
+  onReview, onPropose, onAdvise,
+  reviewProgress, proposeProgress, advisingProgress,
   reviewError,
 }) {
+  const anyAiBusy = reviewing || proposing || advising;
   return (
     <>
       <div className="vfm-ai-panel">
@@ -24,17 +25,26 @@ export default function VorAiPanel({
             type="button"
             className="vfm-review-btn"
             onClick={onReview}
-            disabled={reviewing || proposing || busy || matchPreview.matched === 0}
+            disabled={anyAiBusy || busy || matchPreview.matched === 0}
             title="Проверить подбор шаблонов с помощью Gemini 2.5 Flash"
           >
             {reviewing ? 'Ревью идёт…' : (reviewsCount > 0 ? 'Прогнать ревью ещё раз' : 'Проверить подбор AI')}
+          </button>
+          <button
+            type="button"
+            className="vfm-advise-btn"
+            onClick={onAdvise}
+            disabled={anyAiBusy || busy || matchPreview.matched === 0}
+            title="Gemini посмотрит на технологию каждой позиции и предложит упущенные материалы/работы (мембраны, грунтовки, герметики и т. п.)"
+          >
+            {advising ? 'Gemini ищет…' : (techAdditionsCount > 0 ? '🔧 Найти упущенное ещё раз' : '🔧 Найти упущенное')}
           </button>
           {proposeCount > 0 && (
             <button
               type="button"
               className="vfm-propose-btn"
               onClick={onPropose}
-              disabled={reviewing || proposing || busy}
+              disabled={anyAiBusy || busy}
               title="Gemini предложит набор шаблонов для нераспознанных позиций и тех, где ревью дало низкую оценку"
             >
               {proposing ? 'Gemini думает…' : `🤖 Предложить альтернативы (${proposeCount})`}
@@ -61,6 +71,17 @@ export default function VorAiPanel({
         <div className="vfm-review-banner vfm-review-banner-running">
           <span className="vfm-review-spinner" />
           <span>Gemini предлагает альтернативы… <b>{proposeProgress.done}</b> из <b>{proposeProgress.total}</b></span>
+        </div>
+      )}
+      {advising && (
+        <div className="vfm-review-banner vfm-review-banner-running">
+          <span className="vfm-review-spinner" />
+          <span>Gemini ищет упущенное… <b>{advisingProgress.done}</b> из <b>{advisingProgress.total}</b></span>
+        </div>
+      )}
+      {!advising && techAdditionsCount > 0 && (
+        <div className="vfm-review-banner vfm-review-banner-done">
+          <span>🔧 Gemini нашёл упущения в <b>{techAdditionsCount}</b> {techAdditionsCount === 1 ? 'позиции' : 'позициях'}. Раскрой по значку 🔧 в строке.</span>
         </div>
       )}
     </>

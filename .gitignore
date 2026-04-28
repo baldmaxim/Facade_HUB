@@ -58,3 +58,7 @@ test_output_*.xlsx
 
 # Supabase локальный temp
 supabase/.temp/
+
+# Python bytecode (vor-engine)
+__pycache__/
+*.pyc
