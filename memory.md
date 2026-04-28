@@ -4,6 +4,49 @@ _Maintained at the end of each session. Contains decisions, results, open questi
 
 ---
 
+## Session 2026-04-28 (Фаза 6 — А: фасадная энциклопедия для AI-tech-advisor)
+
+**Контекст:** пользователь хочет, чтобы AI-ревьюер мог давать комментарии не только по корректности подбора шаблонов, но и **по технологии** — предлагать упущенные материалы/работы (мембрана, грунтовка, затирка, силикон швов). Согласовали гибридную архитектуру (вариант №3): `requiredChain` в движке (детерминированный слой, ~90 % случаев) + новая Edge Function `vor-tech-advisor` с фасадной энциклопедией в base-prompt (умный слой, ~10 %).
+
+Перед этим — подготовка энциклопедии. Старые `vor-engine/ENCYCLOPEDIA_FASAD.md` (1666 строк) и `_ADDON.md` (285) содержали устаревшие цены 2024–2025. Пользователь попросил объединить, почистить от цен, удалить оригиналы.
+
+**Done (Фаза 6-А, коммит 4d59836):**
+- `src/data/encyclopediaFasad.md` (596 строк, 14 разделов) — мастер-копия, без цен (35 оставшихся матчей `руб|₽|/м²|/шт|/кг` — это нормы расхода, не цены).
+- `supabase/functions/vor-tech-advisor/encyclopedia.md` — копия для Edge Function, читается через `Deno.readTextFileSync`.
+- Раздел 14 «Технологические цепочки» — таблица 25 пар «материал → обязательные спутники + обоснование». Покрытие: утеплитель НВФ/СФТК, ПСБ при h>28м, клинкер, натуральный камень, кирпич, кассеты, керамогранит, фиброцемент, стеклянные ограждения, козырьки (стекло+металл), откосы, отливы, штукатурка, противопожарные отсечки, витражи, окна, тамбура, двери, противопожарные двери EI 60, леса, СОФ, балконные/кровельные ограждения. **Это ядро для AI-промпта в Фазе В.**
+- `vor-engine/ENCYCLOPEDIA_FASAD.md` и `_ADDON.md` удалены (были untracked).
+- README.md — упоминание заменено на новый путь.
+
+**Решения пользователя (фиксируем):**
+- `requiredChain` в шаблонах — только для **НОВЫХ** спутников. `workMaterials` (clinker → затирка уже встроена) **НЕ трогаем**.
+- Tech-advisor — **отдельная** Edge Function `vor-tech-advisor`, не третий mode в `vor-review`.
+- Старые энциклопедии после слияния — **удалить** (история в git).
+
+**Open (Фазы Б, В, Г — для следующих сессий):**
+- **Фаза Б (1 сессия):** новое поле `requiredChain: ['key']` в `src/lib/vorTemplates.js`. Функция `expandChain()` в `src/lib/vorExcelGenerator.js` рядом с `getTemplate()` (253–276). Защита от рекурсии (visited Set, глубина 2) + дедуп (`[...new Set(...)]`) + `excludeFromSecondary` паттерн (160–188). POC на 1 паре (`pp_otsechi → fire_sealant` или `nvf_cladding_natural_stone → stone_sealant`). Снапшот-тесты не должны регрессить.
+- **Фаза В (1 сессия):** `supabase/functions/vor-tech-advisor/index.ts`. Копировать паттерн из `vor-review/index.ts` (CORS 4–9, errorResult 197–215, extractJson 274–283, loadSimilarFeedback 232–254, OpenRouter call 342–359). Энциклопедия в **system message** (для prompt caching). Response: `{reasoning, additions: [{type, name, unit, reason}], confidence, tokens}`. Валидация: ≤5 additions, type только 'material'/'work'.
+- **Фаза Г (1–2 сессии):** runner `vorTechAdvisorRunner.js` (паттерн `vorProposeRunner.js`). Третья кнопка в `VorAiPanel.jsx`. Компонент `VorTechAdditionsRow.jsx` (паттерн `VorAltRow.jsx`, оранжевая рамка). State в `VorFillModal.jsx`: `advising`, `advisingProgress`, `techAdditions Map`, `expandedTech Set`. Apply → `techAdditions` в `generateFilledVor` → постпроцесс-цикл. Поднять `max-lines` для VorFillModal.jsx 750→850.
+
+**План в файле:** `C:\Users\Usrr\.claude\plans\streamed-napping-thacker.md` — детальный план со ссылками file:line, переиспользуемыми функциями, verification per phase.
+
+**Auto-memory:** добавлен `project_tech_advisor.md` в `~/.claude/projects/c--Users-Usrr-Facade-HUB/memory/` + индекс MEMORY.md обновлён + `project_vor_engine.md` обновлён (старые энциклопедии помечены удалёнными).
+
+**Handoff prompt:**
+```
+Продолжаем Facade_HUB. Фаза 6-А завершена коммитом 4d59836:
+объединена и почищена фасадная энциклопедия — `src/data/encyclopediaFasad.md`
+(596 строк, 14 разделов, без цен, Раздел 14 = 25 технологических цепочек).
+Копия для Edge Function в supabase/functions/vor-tech-advisor/. Старые
+ENCYCLOPEDIA_FASAD*.md в vor-engine/ удалены. Прочти memory и план в
+`C:\Users\Usrr\.claude\plans\streamed-napping-thacker.md`. Сейчас на
+очереди Фаза Б — добавить поле `requiredChain` в `src/lib/vorTemplates.js`
++ функцию `expandChain()` в `src/lib/vorExcelGenerator.js`. POC на одной
+паре. Реши с пользователем какую пару взять (`pp_otsechi → fire_sealant`
+или `nvf_cladding_natural_stone → stone_sealant`), потом проверь снапшоты.
+```
+
+---
+
 ## Session 2026-04-24 (Фаза 4: split-3 генератор — мембрана/крепёж в «Прочие материалы»)
 
 **Контекст:** пользователь загрузил `Муза правильная версия 3.xlsx` — актуальный эталон. Сравнение показало структурное расхождение: у нас в material-позиции «Утеплитель толщ. 150 мм» (unit=м³) выводились и утеплитель (м³), и мембрана (м²); в auxiliary-позиции «Прочие материалы» — только `kind='вспомогат.'` (1 дюбель, имя дублировалось). В эталоне v3: в material — только утеплитель; в «Прочих» — мембрана + два разных дюбеля (все `kind='основн.'`).
