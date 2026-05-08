@@ -126,6 +126,14 @@ export function generateFilledVor(parsed, options = {}) {
   const appliedTechAdditions = options.appliedTechAdditions instanceof Map && options.appliedTechAdditions.size > 0
     ? options.appliedTechAdditions
     : null;
+  // Если true и у позиции пуст qtyGp — берём qtyCustomer как объём ГП.
+  // Никогда не перезатирает уже заполненный qtyGp (по требованию пользователя).
+  const acceptCustomerVolume = options.acceptCustomerVolume === true;
+  const effectiveQtyGp = (pos) => {
+    if (pos.qtyGp != null) return pos.qtyGp;
+    if (acceptCustomerVolume && pos.qtyCustomer != null) return pos.qtyCustomer;
+    return null;
+  };
   const ALL_TEMPLATES = { ...TEMPLATES, ...customTemplates };
   let totalWorkPricesFilled = 0;
   const ws = {};
@@ -314,6 +322,10 @@ export function generateFilledVor(parsed, options = {}) {
       row[6] = a.name;
       row[7] = a.unit;
       if (typeof a.qtyPerUnit === 'number' && a.qtyPerUnit > 0) row[9] = a.qtyPerUnit;
+      if (isWork) {
+        const eqg = effectiveQtyGp(pos);
+        if (eqg != null) row[11] = eqg;
+      }
       row[12] = 'RUB';
       if (!isWork) row[13] = 'в цене';
       for (let c = 0; c < NC; c++) {
@@ -460,7 +472,8 @@ export function generateFilledVor(parsed, options = {}) {
       posData[6] = pos.name;
       posData[7] = pos.unit;
       if (pos.qtyCustomer != null) posData[8] = pos.qtyCustomer;
-      if (pos.qtyGp != null) posData[11] = pos.qtyGp;
+      const posEffQtyGp = effectiveQtyGp(pos);
+      if (posEffQtyGp != null) posData[11] = posEffQtyGp;
       if (pos.noteCustomer) posData[18] = pos.noteCustomer;
       if (pos.noteGp) posData[19] = pos.noteGp;
       if (reviews) {
@@ -509,6 +522,8 @@ export function generateFilledVor(parsed, options = {}) {
             wd[4] = 'суб-раб';
             wd[6] = w.name;
             wd[7] = w.unit;
+            const eqg1 = effectiveQtyGp(pos);
+            if (eqg1 != null) wd[11] = eqg1;
             wd[12] = 'RUB';
             const p = priceForWork(firstTplKey, w.name, firstTpl.costPath);
             if (p) wd[15] = p;
@@ -587,6 +602,8 @@ export function generateFilledVor(parsed, options = {}) {
                 wd[4] = 'суб-раб';
                 wd[6] = w.name;
                 wd[7] = w.unit;
+                const eqg2 = effectiveQtyGp(pos);
+                if (eqg2 != null) wd[11] = eqg2;
                 wd[12] = 'RUB';
                 const p = priceForWork(key, w.name, tpl.costPath);
                 if (p) wd[15] = p;
@@ -642,6 +659,8 @@ export function generateFilledVor(parsed, options = {}) {
               wd[4] = 'суб-раб';
               wd[6] = w.name;
               wd[7] = w.unit;
+              const eqg3 = effectiveQtyGp(pos);
+              if (eqg3 != null) wd[11] = eqg3;
               wd[12] = 'RUB';
               const p = priceForWork(key, w.name, tpl.costPath);
               if (p) wd[15] = p;
@@ -670,6 +689,8 @@ export function generateFilledVor(parsed, options = {}) {
               wd[4] = 'суб-раб';
               wd[6] = w.name;
               wd[7] = w.unit;
+              const eqg4 = effectiveQtyGp(pos);
+              if (eqg4 != null) wd[11] = eqg4;
               wd[12] = 'RUB';
               const p = priceForWork(key, w.name, tpl.costPath);
               if (p) wd[15] = p;
@@ -734,6 +755,8 @@ export function generateFilledVor(parsed, options = {}) {
             wd[4] = 'суб-раб';
             wd[6] = w.name;
             wd[7] = w.unit;
+            const eqg5 = effectiveQtyGp(pos);
+            if (eqg5 != null) wd[11] = eqg5;
             wd[12] = 'RUB';
             const p = priceForWork(key, w.name, tpl.costPath);
             if (p) wd[15] = p;

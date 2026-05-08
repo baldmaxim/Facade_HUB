@@ -58,6 +58,7 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
   const [advisingProgress, setAdvisingProgress]   = useState({ done: 0, total: 0 });
   const [expandedTech, setExpandedTech]           = useState(new Set()); // Set<rowKey> — раскрытые строки tech-additions
   const [appliedTechAdditions, setAppliedTechAdditions] = useState(new Map()); // Map<pos, addition[]> — applied additions, идут в Excel
+  const [acceptCustomerVolume, setAcceptCustomerVolume] = useState(false);     // toggle: для пустых qtyGp подставлять qtyCustomer + пробрасывать в работы
 
   const vorInputRef = useRef(null);
   const pricesInputRef = useRef(null);
@@ -104,6 +105,7 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
     setAdvisingProgress({ done: 0, total: 0 });
     setExpandedTech(new Set());
     setAppliedTechAdditions(new Map());
+    setAcceptCustomerVolume(false);
     setPipelineSteps(INITIAL_PIPELINE_STEPS);
     if (!file) return;
     setBusy(true);
@@ -199,6 +201,7 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
         const result = generateFilledVor(parsedVor, {
           priceAllWithQty: donstroy, workPrices, overrides,
           customTemplates, customRules, reviews, appliedTechAdditions,
+          acceptCustomerVolume,
         });
         if (cancelled) return;
         setCachedResult(result);
@@ -220,7 +223,7 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
     })();
 
     return () => { cancelled = true; };
-  }, [parsedVor, donstroy, pricesMode, pricesFile, overrides, customTemplates, customRules, reviews, appliedTechAdditions, objectId]);
+  }, [parsedVor, donstroy, pricesMode, pricesFile, overrides, customTemplates, customRules, reviews, appliedTechAdditions, acceptCustomerVolume, objectId]);
 
   // Матчинг-превью — вычисляется из parsedVor + donstroy + overrides (синхронно)
   let matchPreview = null;
@@ -476,6 +479,8 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
 
           {matchPreview && (() => {
             const proposeCount = collectProposeTargets(matchPreview, reviews, 70).length;
+            const allRows = matchPreview.sections.flatMap(s => s.rows);
+            const emptyGpCount = allRows.filter(r => !r.isHeader && r.pos.qtyGp == null && r.pos.qtyCustomer != null).length;
             return (
             <div className="vfm-preview">
               <VorAiPanel
@@ -498,6 +503,21 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
               {!proposing && proposals.size > 0 && (
                 <div className="vfm-review-banner vfm-review-banner-done">
                   <span>🤖 Gemini предложил шаблоны для <b>{proposals.size}</b> позиций. Нераспознанные — кнопка «Применить» в строке; для распознанных — значок 🤖 рядом с кружком.</span>
+                </div>
+              )}
+
+              {(emptyGpCount > 0 || acceptCustomerVolume) && (
+                <div className="vfm-accept-qty-bar">
+                  <button
+                    type="button"
+                    className={'vfm-accept-qty-btn' + (acceptCustomerVolume ? ' vfm-accept-qty-btn-on' : '')}
+                    onClick={() => setAcceptCustomerVolume(v => !v)}
+                    disabled={busy}
+                  >
+                    {acceptCustomerVolume
+                      ? `✓ Объёмы заказчика приняты — ${emptyGpCount} пустых позиций ГП заполнено, объём проброшен в работы`
+                      : `Принять объёмы заказчика (${emptyGpCount} позиций без ГП → возьмут объём заказчика и пробросят в работы)`}
+                  </button>
                 </div>
               )}
 

@@ -504,6 +504,33 @@
 .vfm-review-banner-done    { background: #f0f7f0; color: #2c6e2c; }
 .vfm-review-banner-err     { background: #fee; color: #c33; }
 
+.vfm-accept-qty-bar {
+  padding: 6px 10px;
+  border-top: 1px solid var(--color-border, #eee);
+  background: #fafafa;
+}
+.vfm-accept-qty-btn {
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  background: #fff;
+  color: #444;
+  border: 1px solid #cfd6e0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  text-align: left;
+}
+.vfm-accept-qty-btn:hover:not(:disabled) { background: #eef4ff; border-color: #94b3e0; color: #1c4faa; }
+.vfm-accept-qty-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.vfm-accept-qty-btn-on {
+  background: #f0f7f0;
+  border-color: #2c6e2c;
+  color: #1f5b1f;
+}
+.vfm-accept-qty-btn-on:hover:not(:disabled) { background: #e3f0e3; }
+
 .vfm-review-spinner {
   width: 12px;
   height: 12px;
