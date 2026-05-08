@@ -521,6 +521,12 @@ export default function VorFillModal({ objectId, objectName, onClose }) {
                 </div>
               )}
 
+              {stats && stats.totalUnitMismatch > 0 && (
+                <div className="vfm-unit-mismatch-banner">
+                  ⚠ У {stats.totalUnitMismatch} строк работ единица отличается от позиции (например отливы и отсечки в м.п. при позиции в м²). Объём не пробрасываем — ячейка L выделена жёлтым в Excel, впиши вручную.
+                </div>
+              )}
+
               <div className="vfm-preview-table-wrap">
                 <table className="vfm-preview-table">
                   <colgroup>

@@ -32,6 +32,9 @@ const STYLE_SECTION  = { fill: { fgColor: { rgb: 'FFF2CC' } }, font: { bold: tru
 const STYLE_POSITION = { fill: { fgColor: { rgb: 'FFCCCC' } }, font: { bold: true, sz: 10 } };
 const STYLE_WORK     = { fill: { fgColor: { rgb: 'E6D9F2' } }, font: { sz: 10 } };
 const STYLE_MATERIAL = { fill: { fgColor: { rgb: 'E8F5E0' } }, font: { sz: 10 } };
+// Жёлтая подсветка для ячейки L работы, у которой unit не совпадает с unit позиции —
+// объём не пробрасываем (м.п. ≠ м² для отливов/отсечек), пользователь должен вписать вручную.
+const STYLE_WORK_QTY_MISSING = { fill: { fgColor: { rgb: 'FFEB99' } }, font: { sz: 10 } };
 
 const BORDER = {
   top: { style: 'thin', color: { rgb: 'CCCCCC' } },
@@ -134,6 +137,14 @@ export function generateFilledVor(parsed, options = {}) {
     if (acceptCustomerVolume && pos.qtyCustomer != null) return pos.qtyCustomer;
     return null;
   };
+  // Сравнение единиц: «м2» / «м²» / «М2 » считаются одинаковыми. Пустой unit
+  // возвращает false → защита от мусорного проброса (лучше пусто, чем м.п.→м²).
+  const normalizeUnit = (u) => String(u || '').trim().toLowerCase().replace(/\s+/g, '').replace(/²/g, '2');
+  const unitMatches = (workUnit, posUnit) => {
+    const a = normalizeUnit(workUnit);
+    const b = normalizeUnit(posUnit);
+    return a !== '' && b !== '' && a === b;
+  };
   const ALL_TEMPLATES = { ...TEMPLATES, ...customTemplates };
   let totalWorkPricesFilled = 0;
   const ws = {};
@@ -164,6 +175,7 @@ export function generateFilledVor(parsed, options = {}) {
   let totalWorks = 0;
   let totalMaterials = 0;
   let totalHeaders = 0;
+  let totalUnitMismatch = 0; // строки работ, где unit ≠ unit позиции — L пуст + жёлтая ячейка
   const unmatched = [];
 
   // Собираем ВСЕ позиции для определения заголовков
@@ -322,14 +334,19 @@ export function generateFilledVor(parsed, options = {}) {
       row[6] = a.name;
       row[7] = a.unit;
       if (typeof a.qtyPerUnit === 'number' && a.qtyPerUnit > 0) row[9] = a.qtyPerUnit;
+      let unitMismatch = false;
       if (isWork) {
         const eqg = effectiveQtyGp(pos);
-        if (eqg != null) row[11] = eqg;
+        if (eqg != null) {
+          if (unitMatches(a.unit, pos.unit)) row[11] = eqg;
+          else { unitMismatch = true; totalUnitMismatch++; }
+        }
       }
       row[12] = 'RUB';
       if (!isWork) row[13] = 'в цене';
       for (let c = 0; c < NC; c++) {
-        ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(row[c], style);
+        const cs = (c === 11 && unitMismatch) ? STYLE_WORK_QTY_MISSING : style;
+        ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(row[c], cs);
       }
       R++;
       if (isWork) totalWorks++; else totalMaterials++;
@@ -523,13 +540,18 @@ export function generateFilledVor(parsed, options = {}) {
             wd[6] = w.name;
             wd[7] = w.unit;
             const eqg1 = effectiveQtyGp(pos);
-            if (eqg1 != null) wd[11] = eqg1;
+            let mm1 = false;
+            if (eqg1 != null) {
+              if (unitMatches(w.unit, pos.unit)) wd[11] = eqg1;
+              else { mm1 = true; totalUnitMismatch++; }
+            }
             wd[12] = 'RUB';
             const p = priceForWork(firstTplKey, w.name, firstTpl.costPath);
             if (p) wd[15] = p;
             if (w.noteGp) wd[19] = w.noteGp;
             for (let c = 0; c < NC; c++) {
-              ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], STYLE_WORK);
+              const cs = (c === 11 && mm1) ? STYLE_WORK_QTY_MISSING : STYLE_WORK;
+              ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], cs);
             }
             R++;
             totalWorks++;
@@ -603,13 +625,18 @@ export function generateFilledVor(parsed, options = {}) {
                 wd[6] = w.name;
                 wd[7] = w.unit;
                 const eqg2 = effectiveQtyGp(pos);
-                if (eqg2 != null) wd[11] = eqg2;
+                let mm2 = false;
+                if (eqg2 != null) {
+                  if (unitMatches(w.unit, pos.unit)) wd[11] = eqg2;
+                  else { mm2 = true; totalUnitMismatch++; }
+                }
                 wd[12] = 'RUB';
                 const p = priceForWork(key, w.name, tpl.costPath);
                 if (p) wd[15] = p;
                 if (w.noteGp) wd[19] = w.noteGp;
                 for (let c = 0; c < NC; c++) {
-                  ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], STYLE_WORK);
+                  const cs = (c === 11 && mm2) ? STYLE_WORK_QTY_MISSING : STYLE_WORK;
+                  ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], cs);
                 }
                 R++;
                 totalWorks++;
@@ -660,13 +687,18 @@ export function generateFilledVor(parsed, options = {}) {
               wd[6] = w.name;
               wd[7] = w.unit;
               const eqg3 = effectiveQtyGp(pos);
-              if (eqg3 != null) wd[11] = eqg3;
+              let mm3 = false;
+              if (eqg3 != null) {
+                if (unitMatches(w.unit, pos.unit)) wd[11] = eqg3;
+                else { mm3 = true; totalUnitMismatch++; }
+              }
               wd[12] = 'RUB';
               const p = priceForWork(key, w.name, tpl.costPath);
               if (p) wd[15] = p;
               if (w.noteGp) wd[19] = w.noteGp;
               for (let c = 0; c < NC; c++) {
-                ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], STYLE_WORK);
+                const cs = (c === 11 && mm3) ? STYLE_WORK_QTY_MISSING : STYLE_WORK;
+                ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], cs);
               }
               R++;
               totalWorks++;
@@ -690,13 +722,18 @@ export function generateFilledVor(parsed, options = {}) {
               wd[6] = w.name;
               wd[7] = w.unit;
               const eqg4 = effectiveQtyGp(pos);
-              if (eqg4 != null) wd[11] = eqg4;
+              let mm4 = false;
+              if (eqg4 != null) {
+                if (unitMatches(w.unit, pos.unit)) wd[11] = eqg4;
+                else { mm4 = true; totalUnitMismatch++; }
+              }
               wd[12] = 'RUB';
               const p = priceForWork(key, w.name, tpl.costPath);
               if (p) wd[15] = p;
               if (w.noteGp) wd[19] = w.noteGp;
               for (let c = 0; c < NC; c++) {
-                ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], STYLE_WORK);
+                const cs = (c === 11 && mm4) ? STYLE_WORK_QTY_MISSING : STYLE_WORK;
+                ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], cs);
               }
               R++;
               totalWorks++;
@@ -756,13 +793,18 @@ export function generateFilledVor(parsed, options = {}) {
             wd[6] = w.name;
             wd[7] = w.unit;
             const eqg5 = effectiveQtyGp(pos);
-            if (eqg5 != null) wd[11] = eqg5;
+            let mm5 = false;
+            if (eqg5 != null) {
+              if (unitMatches(w.unit, pos.unit)) wd[11] = eqg5;
+              else { mm5 = true; totalUnitMismatch++; }
+            }
             wd[12] = 'RUB';
             const p = priceForWork(key, w.name, tpl.costPath);
             if (p) wd[15] = p;
             if (w.noteGp) wd[19] = w.noteGp;
             for (let c = 0; c < NC; c++) {
-              ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], STYLE_WORK);
+              const cs = (c === 11 && mm5) ? STYLE_WORK_QTY_MISSING : STYLE_WORK;
+              ws[XLSX.utils.encode_cell({ r: R, c })] = styledCell(wd[c], cs);
             }
             R++;
             totalWorks++;
@@ -812,6 +854,7 @@ export function generateFilledVor(parsed, options = {}) {
       totalWorks,
       totalMaterials,
       totalWorkPricesFilled,
+      totalUnitMismatch,
       totalRows: R,
       unmatched,
       vorStyle,

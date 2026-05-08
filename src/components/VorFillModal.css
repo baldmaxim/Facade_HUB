@@ -531,6 +531,15 @@
 }
 .vfm-accept-qty-btn-on:hover:not(:disabled) { background: #e3f0e3; }
 
+.vfm-unit-mismatch-banner {
+  padding: 8px 12px;
+  font-size: 12px;
+  background: #fff8dc;
+  color: #6b5400;
+  border-top: 1px solid #f0d878;
+  border-bottom: 1px solid #f0d878;
+}
+
 .vfm-review-spinner {
   width: 12px;
   height: 12px;
